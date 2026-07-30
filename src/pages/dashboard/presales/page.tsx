@@ -5,10 +5,10 @@ import {
   useLaunchpadPresales,
   type PresaleWithStatus,
 } from "@/lib/hooks/useLaunchpadPresales";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import { ArrowRight, ExternalLink, Rocket } from "lucide-react";
-import { Link } from "react-router-dom";
 
 function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
   const progress = presale.hardCap > 0n

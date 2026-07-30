@@ -37,14 +37,16 @@ export function useSwap({
     },
   });
 
+  const amountsOutArr = amountsOut as readonly bigint[] | undefined;
+
   useEffect(() => {
-    if (amountsOut && toToken) {
-      const formattedAmount = formatUnits((amountsOut as bigint[])[1], toToken.decimals);
+    if (amountsOutArr && toToken) {
+      const formattedAmount = formatUnits(amountsOutArr[1], toToken.decimals);
       setToAmount(formattedAmount);
     } else {
       setToAmount("");
     }
-  }, [amountsOut, toToken]);
+  }, [amountsOutArr, toToken]);
 
   const { data: allowance, refetch } = useReadContract({
     address: fromToken?.address,
@@ -75,7 +77,7 @@ export function useSwap({
   };
 
   const swap = async () => {
-    if (!fromToken || !toToken || !address || !amountsOut) return;
+    if (!fromToken || !toToken || !address || !amountsOutArr) return;
 
     const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from now
 
@@ -85,7 +87,7 @@ export function useSwap({
     if (fromToken.address === Weth9Contract.address) {
       functionName = "swapExactETHForTokens";
       swapArgs = [
-        amountsOut[1],
+        amountsOutArr[1],
         [fromToken.address, toToken.address],
         address,
         deadline
@@ -94,7 +96,7 @@ export function useSwap({
       functionName = "swapExactTokensForETH";
       swapArgs = [
         amountIn,
-        amountsOut[1],
+        amountsOutArr[1],
         [fromToken.address, toToken.address],
         address,
         deadline
@@ -103,7 +105,7 @@ export function useSwap({
       functionName = "swapExactTokensForTokens";
       swapArgs = [
         amountIn,
-        amountsOut[1],
+        amountsOutArr[1],
         [fromToken.address, toToken.address],
         address,
         deadline

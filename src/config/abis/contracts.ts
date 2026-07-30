@@ -60,7 +60,7 @@ export const RouterContract = {
   address: CONTRACT_ADDRESSES.router,
   abi: [
     {
-      type: "function",
+      type: "function" as const,
       name: "swapExactTokensForTokens",
       inputs: [
         { name: "amountIn", type: "uint256" },
@@ -73,7 +73,7 @@ export const RouterContract = {
       stateMutability: "nonpayable",
     },
     {
-      type: "function",
+      type: "function" as const,
       name: "swapExactETHForTokens",
       inputs: [
         { name: "amountOutMin", type: "uint256" },
@@ -85,7 +85,7 @@ export const RouterContract = {
       stateMutability: "payable",
     },
     {
-      type: "function",
+      type: "function" as const,
       name: "swapExactTokensForETH",
       inputs: [
         { name: "amountIn", type: "uint256" },
@@ -98,47 +98,47 @@ export const RouterContract = {
       stateMutability: "nonpayable",
     },
   ],
-};
+} as const;
 
 export const FactoryContract = {
   address: CONTRACT_ADDRESSES.factory,
   abi: [
     {
-      type: "function",
+      type: "function" as const,
       name: "allPairsLength",
       inputs: [],
       outputs: [{ name: "", type: "uint256" }],
       stateMutability: "view",
     },
     {
-      type: "function",
+      type: "function" as const,
       name: "allPairs",
       inputs: [{ name: "", type: "uint256" }],
       outputs: [{ name: "", type: "address" }],
       stateMutability: "view",
     },
   ],
-};
+} as const;
 
 export const PairContract = {
   address: CONTRACT_ADDRESSES.factory, // placeholder
   abi: [
     {
-      type: "function",
+      type: "function" as const,
       name: "token0",
       inputs: [],
       outputs: [{ name: "", type: "address" }],
       stateMutability: "view",
     },
     {
-      type: "function",
+      type: "function" as const,
       name: "token1",
       inputs: [],
       outputs: [{ name: "", type: "address" }],
       stateMutability: "view",
     },
     {
-      type: "function",
+      type: "function" as const,
       name: "getReserves",
       inputs: [],
       outputs: [
@@ -149,7 +149,7 @@ export const PairContract = {
       stateMutability: "view",
     },
   ],
-};
+} as const;
 
 // Re-export etherlink chain for use by wagmi config
 export const ETHERLINK_CHAIN = etherlink;

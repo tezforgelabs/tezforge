@@ -5,7 +5,6 @@ import { getStakingContractAddress, StakingContract } from "@/config";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   BarChart3,
-  Coins,
   Gift,
   Loader2,
   Wallet

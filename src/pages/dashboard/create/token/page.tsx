@@ -154,21 +154,21 @@ export default function CreateTokenPage() {
     <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-8">
-        <div className="border-4 border-[#1A1A2E] bg-[#0F59FF] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
-          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3 text-white">
+        <div className="border-2 border-[#1A1A2E] bg-[#0F59FF] p-6 shadow-[0px_0px_0_rgba(26,26,46,1)]">
+          <h1 className="text-3xl md:text-4xl font-bold uppercase tracking-wider flex items-center gap-3 text-white">
             <Coins className="w-8 h-8" /> Create Token
           </h1>
           <p className="text-sm text-white/80 mt-2">
-            Deploy your own ERC-20 token on Etherlink.
+            Deploy your own ERC-20 token on Tezos X.
           </p>
         </div>
       </div>
 
       {/* Success Message */}
       {createdTokenAddress && (
-        <Card className="max-w-2xl mx-auto mb-8 border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+        <Card className="max-w-2xl mx-auto mb-8 border-2 border-[#1A1A2E] shadow-[2px_2px_0_rgba(26,26,46,1)] p-0 gap-0">
           <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#64FE3E] p-6">
-            <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-white">
+            <CardTitle className="font-bold uppercase tracking-wider flex items-center gap-2 text-white">
               <CheckCircle2 className="w-5 h-5" />
               Token Created Successfully!
             </CardTitle>
@@ -187,13 +187,13 @@ export default function CreateTokenPage() {
                 rel="noopener noreferrer"
                 className="flex-1"
               >
-                <Button className="w-full border-4 border-[#1A1A2E] bg-white text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-gray-100">
+                <Button className="w-full border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-100">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View on Explorer
                 </Button>
               </a>
               <Link to={`/dashboard/tools/token-locker?token=${createdTokenAddress}`} className="flex-1">
-                <Button className="w-full border-4 border-[#1A1A2E] bg-[#64FE3E] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]">
+                <Button className="w-full border-2 border-[#1A1A2E] bg-[#64FE3E] text-black font-bold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]">
                   Lock Tokens
                 </Button>
               </Link>
@@ -211,13 +211,13 @@ export default function CreateTokenPage() {
 
       {/* Create Token Form */}
       {!createdTokenAddress && (
-        <Card className="max-w-2xl mx-auto border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+        <Card className="max-w-2xl mx-auto border-2 border-[#1A1A2E] shadow-[2px_2px_0_rgba(26,26,46,1)] p-0 gap-0">
           <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-6">
-            <CardTitle className="font-black uppercase tracking-wider">Token Details</CardTitle>
+            <CardTitle className="font-bold uppercase tracking-wider">Token Details</CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="token-type" className="font-bold uppercase text-xs">Token Type</Label>
+              <Label htmlFor="token-type" className="font-semibold uppercase text-xs">Token Type</Label>
               <Select onValueChange={(value) => setTokenType(parseInt(value) as TokenType)} defaultValue={TokenType.Plain.toString()}>
                 <SelectTrigger id="token-type" className="border-2 border-[#1A1A2E]">
                   <SelectValue placeholder="Select token type" />
@@ -329,7 +329,7 @@ export default function CreateTokenPage() {
             <Button 
               onClick={handleCreateToken} 
               disabled={isPending || isConfirming || !name || !symbol} 
-              className="w-full border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] transition-[transform,shadow,opacity,colors]"
+              className="w-full border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-bold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] transition-[transform,shadow,opacity,colors]"
             >
               {isPending ? 'Confirm in Wallet...' : isConfirming ? 'Creating Token...' : 'Create Token'}
             </Button>

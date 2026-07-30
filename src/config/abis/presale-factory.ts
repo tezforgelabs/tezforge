@@ -11,6 +11,32 @@ export const PresaleFactory = {
       type: "function",
     },
     {
+      inputs: [],
+      name: "feeRecipient",
+      outputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "newRecipient",
+          type: "address",
+        },
+      ],
+      name: "setFeeRecipient",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
       inputs: [
         {
           components: [

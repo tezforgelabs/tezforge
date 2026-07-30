@@ -26,7 +26,7 @@ function WhitelistChecker() {
   } = useReadContract({
     address: presaleFactory,
     abi: PresaleFactory.abi,
-    functionName: "whitelistedCreators",
+    functionName: "isWhitelistedCreator",
     args: addressToCheck ? [addressToCheck] : undefined,
     query: {
       enabled: Boolean(addressToCheck),

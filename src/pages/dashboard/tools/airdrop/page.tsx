@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AirdropMultisenderContract } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { useUserTokens } from "@/lib/hooks/useUserTokens";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { erc20Abi, formatUnits, maxUint256, parseUnits } from "viem";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
@@ -23,14 +30,46 @@ import {
   Upload,
   CheckCircle2,
   AlertCircle,
-  Users,
-  Wallet,
+  Plus,
+  ArrowRight,
 } from "lucide-react";
+
+function TokenSymbol({ address }: { address: `0x${string}` }) {
+  const { data: symbol } = useReadContract({
+    abi: erc20Abi,
+    address,
+    functionName: "symbol",
+  });
+  return <>{symbol ?? "..."}</>;
+}
 
 export default function AirdropPage() {
   const [searchParams] = useSearchParams();
   const { address } = useAccount();
   const { airdropMultisender } = useChainContracts();
+
+  // Check if token came from URL
+  const tokenFromUrl = searchParams.get("token")?.trim() ?? "";
+  const [tokenAddress, setTokenAddress] = useState(tokenFromUrl);
+  const [recipientsData, setRecipientsData] = useState("");
+  const [sendType, setSendType] = useState<"erc20" | "react">(
+    tokenFromUrl ? "erc20" : "react"
+  );
+
+  const { tokens: userTokens, isLoading: isUserTokensLoading } = useUserTokens();
+
+  // Auto-select token from URL if it matches a user-created token
+  useEffect(() => {
+    if (tokenFromUrl && userTokens.length > 0 && !isUserTokensLoading) {
+      const matched = userTokens.find(
+        (t) => t.toLowerCase() === tokenFromUrl.toLowerCase()
+      );
+      if (matched) {
+        setTokenAddress(matched);
+        setSendType("erc20");
+      }
+    }
+  }, [tokenFromUrl, userTokens, isUserTokensLoading]);
 
   const {
     data: sendHash,
@@ -47,26 +86,22 @@ export default function AirdropPage() {
     reset: resetApprove,
   } = useWriteContract();
 
-  // Check if token came from URL
-  const tokenFromUrl = searchParams.get("token")?.trim() ?? "";
-  const [tokenAddress, setTokenAddress] = useState(tokenFromUrl);
-  const [recipientsData, setRecipientsData] = useState("");
-  const [sendType, setSendType] = useState<"erc20" | "react">(
-    tokenFromUrl ? "erc20" : "react"
-  );
-
   // Normalize token address
   const normalizedTokenAddress = useMemo(() => {
     return tokenAddress.trim().toLowerCase() as `0x${string}`;
   }, [tokenAddress]);
 
   const isValidTokenAddress = useMemo(() => {
-    return (
-      !!tokenAddress &&
-      tokenAddress.trim().length === 42 &&
-      tokenAddress.startsWith("0x")
-    );
-  }, [tokenAddress]);
+    if (!tokenAddress) return false;
+    const trimmed = tokenAddress.trim();
+    if (trimmed.length !== 42 || !trimmed.startsWith("0x")) return false;
+    if (sendType === "erc20" && userTokens.length > 0) {
+      return userTokens.some(
+        (t) => t.toLowerCase() === trimmed.toLowerCase()
+      );
+    }
+    return true;
+  }, [tokenAddress, userTokens, sendType]);
 
   // Token info
   const { data: tokenDecimals } = useReadContract({
@@ -308,7 +343,7 @@ export default function AirdropPage() {
     <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-8">
-        <div className="border-4 border-[#1A1A2E] bg-[#90EE90] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+        <div className="border-2 border-[#1A1A2E] bg-[#90EE90] p-6 shadow-[0px_0px_0_rgba(26,26,46,1)]">
           <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3">
             <Send className="w-7 h-7 md:w-8 md:h-8" /> Airdrop
           </h1>
@@ -320,19 +355,13 @@ export default function AirdropPage() {
 
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Send Type Selection */}
-        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#0F59FF] p-4">
-            <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
-              <Coins className="w-5 h-5" />
-              Select Token Type
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
+        <Card className="border-0 border-[#1A1A2E] shadow-[0px_0px_0_rgba(26,26,46,1)] p-0 gap-0">
+          <CardContent className="p-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setSendType("erc20")}
-                className={`p-4 border-4 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
+                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
                   sendType === "erc20"
                     ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                     : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
@@ -346,7 +375,7 @@ export default function AirdropPage() {
                   />
                   <div>
                     <p className="font-black uppercase text-sm sm:text-base">
-                      ERC-20 Token
+                      ERC-20
                     </p>
                     <p className="text-xs text-gray-600">Any ERC-20 token</p>
                   </div>
@@ -358,7 +387,7 @@ export default function AirdropPage() {
                   setSendType("react");
                   setTokenAddress("");
                 }}
-                className={`p-4 border-4 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
+                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
                   sendType === "react"
                     ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                     : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
@@ -374,7 +403,7 @@ export default function AirdropPage() {
                     <p className="font-black uppercase text-sm sm:text-base">
                       XTZ
                     </p>
-                    <p className="text-xs text-gray-600">Native currency</p>
+                    <p className="text-xs text-gray-600">Native</p>
                   </div>
                 </div>
               </button>
@@ -382,54 +411,80 @@ export default function AirdropPage() {
           </CardContent>
         </Card>
 
-        {/* Token Address (for ERC-20) */}
+        {/* Token Select (for ERC-20) */}
         {sendType === "erc20" && (
-          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+          <Card className="border-0 border-[#1A1A2E] shadow-[0px_0px_0_rgba(26,26,46,1)] p-0 gap-0">
             <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#64FE3E] p-4">
               <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
-                <Wallet className="w-5 h-5" />
                 Token Details
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="token-address"
-                  className="font-bold uppercase text-xs"
-                >
-                  Token Address
-                </Label>
-                <Input
-                  id="token-address"
-                  placeholder="0x..."
-                  value={tokenAddress}
-                  onChange={(e) => setTokenAddress(e.target.value)}
-                  className="border-2 border-[#1A1A2E] font-mono"
-                />
-              </div>
-              {isValidTokenAddress && tokenSymbol && (
-                <div className="p-3 bg-gray-100 border-2 border-[#1A1A2E]">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500 text-xs uppercase font-bold">
-                        Token
-                      </p>
-                      <p className="font-black">{tokenSymbol}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-xs uppercase font-bold">
-                        Your Balance
-                      </p>
-                      <p className="font-black">
-                        {tokenBalance !== undefined
-                          ? `${Number(
-                              formatUnits(tokenBalance, tokenDecimals ?? 18)
-                            ).toLocaleString()} ${tokenSymbol}`
-                          : "Loading..."}
-                      </p>
-                    </div>
-                  </div>
+              {isUserTokensLoading ? (
+                <div className="p-6 text-center text-gray-500 font-bold">
+                  Loading your tokens...
                 </div>
+              ) : userTokens.length === 0 ? (
+                <div className="p-6 text-center space-y-4">
+                  <Link to="/dashboard/create/token">
+                    <Button className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[4px_4px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create a Token
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label className="font-bold uppercase text-xs">
+                      Your Token
+                    </Label>
+                    <Select
+                      value={tokenAddress}
+                      onValueChange={(value) => setTokenAddress(value)}
+                    >
+                      <SelectTrigger className="border-2 border-[#1A1A2E] font-mono">
+                        <SelectValue placeholder="Select a token you created..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {userTokens.map((token) => (
+                          <SelectItem key={token} value={token}>
+                            <TokenSymbol address={token as `0x${string}`} /> (
+                            {token.slice(0, 6)}...{token.slice(-4)})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {isValidTokenAddress && tokenSymbol && (
+                    <div className="p-3 bg-gray-100 border-2 border-[#1A1A2E]">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-500 text-xs uppercase font-bold">
+                            Token
+                          </p>
+                          <p className="font-black">{tokenSymbol}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 text-xs uppercase font-bold">
+                            Your Balance
+                          </p>
+                          <p className="font-black">
+                            {tokenBalance !== undefined
+                              ? `${Number(
+                                  formatUnits(
+                                    tokenBalance,
+                                    tokenDecimals ?? 18
+                                  )
+                                ).toLocaleString()} ${tokenSymbol}`
+                              : "Loading..."}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
@@ -437,7 +492,7 @@ export default function AirdropPage() {
 
         {/* XTZ Balance (for native) */}
         {sendType === "react" && reactBalance && (
-          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+          <Card className="border-0 border-[#1A1A2E] shadow-[0px_0px_0_rgba(26,26,46,1)] p-0 gap-0">
             <CardContent className="p-4">
               <div className="p-3 bg-gray-100 border-2 border-[#1A1A2E]">
                 <div className="flex justify-between items-center">
@@ -460,10 +515,9 @@ export default function AirdropPage() {
         )}
 
         {/* Recipients */}
-        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+        <Card className="border-0 border-[#1A1A2E] shadow-[0px_0px_0_rgba(26,26,46,1)] p-0 gap-0">
           <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FFB6C1] p-4">
             <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
-              <Users className="w-5 h-5" />
               Recipients
             </CardTitle>
           </CardHeader>
@@ -546,7 +600,7 @@ export default function AirdropPage() {
         </Card>
 
         {/* Action Buttons */}
-        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+        <Card className="border-0 border-[#1A1A2E] shadow-[0px_0px_0_rgba(26,26,46,1)] p-0 gap-0">
           <CardContent className="p-4">
             {sendType === "erc20" && needsApproval && isFormValid ? (
               <div className="space-y-3">
@@ -556,7 +610,7 @@ export default function AirdropPage() {
                 <Button
                   onClick={handleApprove}
                   disabled={isApproving || isApproveConfirming || !isFormValid}
-                  className="w-full border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#EDE972] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] py-6 text-lg"
+                  className="w-full border-2 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[0px_0px_0_rgba(26,26,46,1)] hover:bg-[#EDE972] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] py-6 text-lg"
                 >
                   <Upload className="w-5 h-5 mr-2" />
                   {isApproving || isApproveConfirming
@@ -579,7 +633,7 @@ export default function AirdropPage() {
                     !isFormValid ||
                     !hasSufficientBalance
                   }
-                  className="w-full border-4 border-[#1A1A2E] bg-[#90EE90] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#7DE07D] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] py-6 text-lg"
+                  className="w-full border-0 border-[#1A1A2E] bg-[#90EE90] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#7DE07D] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] py-6 text-lg"
                 >
                   <Send className="w-5 h-5 mr-2" />
                   {isSending || isSendConfirming
@@ -592,7 +646,7 @@ export default function AirdropPage() {
             {!isFormValid && recipientsData && (
               <p className="text-center text-xs text-gray-500 mt-2">
                 {sendType === "erc20" && !isValidTokenAddress
-                  ? "Enter a valid token address"
+                  ? "Select a token you created"
                   : parsedRecipients.recipients.length === 0
                   ? "Add valid recipients"
                   : "Fix errors above to continue"}

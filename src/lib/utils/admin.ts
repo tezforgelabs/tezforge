@@ -16,7 +16,7 @@ export function useFactoryOwner() {
   const { data: factoryOwner, isLoading, refetch } = useReadContract({
     address: presaleFactory,
     abi: PresaleFactory.abi,
-    functionName: 'factoryOwner',
+    functionName: 'owner',
     query: {
       refetchInterval: 30000, // Refetch every 30 seconds
     },

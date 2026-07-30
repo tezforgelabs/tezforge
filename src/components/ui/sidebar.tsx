@@ -60,7 +60,7 @@ const SidebarContent = () => {
       </div>
 
       {isConnected && (
-        <div className="mx-6 my-3 p-4 border-2 border-[#1A1A2E] bg-[#64FE3E] shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
+        <div className="mx-6 my-3 p-4 border-0 border-[#1A1A2E] bg-[#64FE3E] shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-mono font-medium uppercase text-[#1A1A2E]">
               {address?.slice(0, 6)}...{address?.slice(-4)}
@@ -86,7 +86,7 @@ const SidebarContent = () => {
               <DialogTrigger asChild>
                 <button
                   type="button"
-                  className="w-full bg-red-500 text-white font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-2 py-2"
+                  className="w-full bg-red-500 text-white font-bold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-2 py-2"
                 >
                   DISCONNECT
                 </button>
@@ -113,7 +113,7 @@ const SidebarContent = () => {
                   <button
                     onClick={() => disconnect()}
                     type="button"
-                    className="flex-1 bg-red-500 text-white font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
+                    className="flex-1 bg-red-500 text-white font-bold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
                   >
                     Disconnect
                   </button>
@@ -132,7 +132,7 @@ const SidebarContent = () => {
               <li key={item.name}>
                 <Link
                   to={item.href}
-                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-semibold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${isActive
+                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-semibold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${isActive
                     ? "bg-[#1A1A2E] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                     : "text-[#1A1A2E] bg-white hover:bg-[#0F59FF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
                     }`}
@@ -163,7 +163,7 @@ const SidebarContent = () => {
         <div className="mt-8 mb-3">
           <Link
             to="/dashboard/create"
-            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname === "/dashboard/create"
+            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${pathname === "/dashboard/create"
               ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
               : "bg-[#0F59FF] text-white hover:bg-[#0A3DBF] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
               }`}

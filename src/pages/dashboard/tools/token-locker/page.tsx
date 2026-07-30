@@ -959,7 +959,7 @@ export default function TokenLockerPage() {
     <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <div className="border-b-4 border-[#1A1A2E] bg-[#0F59FF] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+        <div className="border-2 border-[#1A1A2E] bg-[#0F59FF] p-4 sm:p-6 shadow-[0px_0px_0_rgba(26,26,46,1)]">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3">
@@ -973,7 +973,7 @@ export default function TokenLockerPage() {
             {userLocks.length > 0 && (
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="border-4 border-[#1A1A2E] bg-[#FFFFFF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-gray-100 hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]"
+                className="border-2 border-[#1A1A2E] bg-[#FFFFFF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-100 hover:shadow-[3px_3px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Lock
@@ -986,13 +986,13 @@ export default function TokenLockerPage() {
       {/* Content */}
       <div>
         {isLoadingLocks ? (
-          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+          <Card className="border-2 border-[#1A1A2E] shadow-[2px_2px_0_rgba(26,26,46,1)]">
             <CardContent className="p-12 text-center">
               <p className="text-lg font-bold">Loading your locks...</p>
             </CardContent>
           </Card>
         ) : activeLocks.length === 0 ? (
-          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+          <Card className="border-2 border-[#1A1A2E] shadow-[2px_2px_0_rgba(26,26,46,1)]">
             <CardContent className="p-12 text-center space-y-4">
               <Lock className="w-16 h-16 mx-auto text-gray-400" />
               <p className="text-lg font-bold">No Active Locks</p>
@@ -1001,7 +1001,7 @@ export default function TokenLockerPage() {
               </p>
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+                className="border-1 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Lock
