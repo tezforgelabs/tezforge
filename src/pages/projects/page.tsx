@@ -28,13 +28,13 @@ export default function ProjectsPage() {
 
   return (
     <div className="bg-[#F7F3EE] min-h-screen text-[#1A1A2E]">
-      <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-20 max-w-7xl">
-        <div className="mb-12 sm:mb-20 text-center sm:text-left">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase leading-none mb-6 tracking-tight">
-            Launchpad<br />Projects
+      <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-10 max-w-7xl">
+        <div className="mb-6 sm:mb-10 text-center sm:text-left">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-none mb-3 tracking-tight">
+            Launchpad Projects
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto sm:mx-0">
-            Discover and participate in token launches from the best builders on Tezos.
+            Discover and participate in token launches.
           </p>
         </div>
 

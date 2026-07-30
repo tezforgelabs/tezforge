@@ -1,12 +1,12 @@
 import { TelegramIcon } from "@/components/ui/icons/telegram-icon";
 import { XIcon as XSocialIcon } from "@/components/ui/icons/x-icon";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useCountUp } from "@/lib/hooks/useCountUp";
 import { useLaunchpadPresales } from "@/lib/hooks/useLaunchpadPresales";
 import { useReactPriceUsd } from "@/lib/hooks/useReactPriceUsd";
-import { BookOpen, Menu, X, Hammer } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { BookOpen, Menu, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
