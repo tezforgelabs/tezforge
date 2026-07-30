@@ -53,9 +53,9 @@ export default function ProjectsPage() {
               <button
                 key={filter.value}
                 onClick={() => setActiveFilter(filter.value)}
-                className={`px-4 py-2 sm:px-6 sm:py-3 text-sm font-bold uppercase tracking-wider border-2 border-[#1A1A2E] transition-all ${activeFilter === filter.value
-                  ? "bg-[#1B2838] text-white"
-                  : "bg-white text-[#1A1A2E] hover:bg-[#1B2838] hover:text-white"
+                className={`px-4 py-2 sm:px-6 sm:py-3 text-sm font-bold uppercase tracking-wider border-2 border-[#1A1A2E] transition-[transform,shadow,opacity,colors] ${activeFilter === filter.value
+                  ? "bg-[#1A1A2E] text-white"
+                  : "bg-white text-[#1A1A2E] hover:bg-[#1A1A2E] hover:text-white"
                   }`}
               >
                 {filter.label}

@@ -63,7 +63,7 @@ export default function CreateHubPage() {
     <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 text-[#1A1A2E]">
       {/* Header */}
       <section className="mb-8 sm:mb-12">
-        <div className="border-2 border-[#1A1A2E] bg-[#1B2838] p-6 shadow-[2px_2px_0_rgba(26,26,46,1)]">
+        <div className="border-2 border-[#1A1A2E] bg-[#1A1A2E] p-6 shadow-[2px_2px_0_rgba(26,26,46,1)]">
           <div className="flex items-center gap-3">
             <div>
               <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white">Create</h1>
@@ -77,8 +77,8 @@ export default function CreateHubPage() {
           <h2 className="text-2xl font-black uppercase tracking-wider mb-6">Assets</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {creationOptions.map((item) => (
-              <Link to={item.to} key={item.to} className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1B2838] hover:text-white transition-all group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[2px_2px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
-                <item.icon className="w-8 h-8 mb-4 text-[#FF6B35] group-hover:text-[#FF6B35]" />
+              <Link to={item.to} key={item.to} className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1A1A2E] hover:text-white transition-[transform,shadow,opacity,colors] group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[2px_2px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
+                <item.icon className="w-8 h-8 mb-4 text-[#0F59FF] group-hover:text-[#0F59FF]" />
                 <h3 className="font-black text-xl mb-2 uppercase tracking-wider">{item.title}</h3>
                 <p className="text-sm opacity-70 mb-4">{item.description}</p>
                 <div className="flex justify-end">
@@ -93,8 +93,8 @@ export default function CreateHubPage() {
           <h2 className="text-2xl font-black uppercase tracking-wider mb-6">Tools</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {toolOptions.map((item) => (
-              <Link to={item.to} key={item.to} className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1B2838] hover:text-white transition-all group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
-                <item.icon className="w-8 h-8 mb-4 text-[#00B4D8] group-hover:text-[#00B4D8]" />
+              <Link to={item.to} key={item.to} className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1A1A2E] hover:text-white transition-[transform,shadow,opacity,colors] group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
+                <item.icon className="w-8 h-8 mb-4 text-[#0F59FF] group-hover:text-[#0F59FF]" />
                 <h3 className="font-black text-xl mb-2 uppercase tracking-wider">{item.title}</h3>
                 <p className="text-sm opacity-70 mb-4">{item.description}</p>
                 <div className="flex justify-end">

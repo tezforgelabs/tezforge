@@ -417,7 +417,7 @@ function CreatePresaleForm({
                   handleToggleWhitelist(event.target.checked)
                 }
               />
-              <div className="h-7 w-12 rounded-full border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] transition-colors peer-checked:bg-[#1B2838]" />
+              <div className="h-7 w-12 rounded-full border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] transition-colors peer-checked:bg-[#1A1A2E]" />
               <div className="absolute left-1 top-1 h-5 w-5 rounded-full bg-black transition-transform peer-checked:translate-x-5 peer-checked:bg-white" />
             </label>
           </div>

@@ -11,9 +11,9 @@ import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 const cardStyles = [
-  { bg: "bg-[#FF6B35]", text: "text-white" },
-  { bg: "bg-[#00B4D8]", text: "text-white" },
-  { bg: "bg-[#1B2838]", text: "text-white" },
+  { bg: "bg-[#0F59FF]", text: "text-white" },
+  { bg: "bg-[#64FE3E]", text: "text-black" },
+  { bg: "bg-[#1A1A2E]", text: "text-white" },
 ];
 
 export default function Home() {
@@ -65,17 +65,17 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#F7F3EE] text-[#1A1A2E]">
-      <div className="container mx-auto px-4 sm:px-6 py-7 max-w-7xl">
+      <div className="container mx-auto px-4 text-pretty sm:px-6 py-7 max-w-7xl">
         {/* ── Header ── */}
         <header className="mb-16">
-          <div className="border-4 border-[#1A1A2E] bg-white px-4 py-4 sm:px-6 sm:py-5 shadow-[6px_6px_0px_0px_rgba(26,26,46,1)]">
+          <div className="border-2 border-[#1A1A2E] bg-white px-4 py-4 sm:px-6 sm:py-5 shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
             <div className="flex items-center justify-between gap-4">
               <Link
                 to="/"
                 className="inline-flex items-center gap-3 text-2xl sm:text-3xl font-black tracking-wider uppercase"
               >
-                <div className="w-10 h-10 bg-[#FF6B35] border-2 border-[#1A1A2E] flex items-center justify-center">
-                  <span className="text-white font-black text-xl">T</span>
+                <div className="size-12 flex items-center justify-center">
+                  <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="w-17 h-17 object-contain" />
                 </div>
                 <span className="text-[#1A1A2E]">Tezforge</span>
               </Link>
@@ -85,7 +85,7 @@ export default function Home() {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="hover:text-[#FF6B35] transition-colors"
+                    className="hover:text-[#0F59FF] transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -94,7 +94,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => openConnectModal?.()}
-                    className="inline-flex items-center bg-[#1B2838] text-white px-4 py-2 border-2 border-[#1A1A2E] hover:bg-[#FF6B35] hover:text-white transition-colors"
+                    className="inline-flex items-center bg-[#1A1A2E] text-white px-4 py-2 border-2 border-[#1A1A2E] hover:bg-[#0F59FF] hover:text-white transition-colors"
                   >
                     CONNECT WALLET
                   </button>
@@ -107,7 +107,7 @@ export default function Home() {
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-nav-menu"
                 aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-                className="md:hidden inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#FF6B35] p-2 text-white"
+                className="md:hidden inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#0F59FF] p-2 text-white"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -115,7 +115,7 @@ export default function Home() {
 
             <div
               id="mobile-nav-menu"
-              className={`md:hidden overflow-hidden transition-all duration-200 ${
+              className={`md:hidden overflow-hidden transition-[transform,shadow,opacity,colors] duration-200 ${
                 isMobileMenuOpen ? "max-h-80 mt-4 border-t-2 border-[#1A1A2E] pt-4" : "max-h-0"
               }`}
             >
@@ -137,7 +137,7 @@ export default function Home() {
                       setIsMobileMenuOpen(false);
                       openConnectModal?.();
                     }}
-                    className="inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#1B2838] text-white px-4 py-3"
+                    className="inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#1A1A2E] text-white px-4 py-3"
                   >
                     CONNECT WALLET
                   </button>
@@ -149,28 +149,27 @@ export default function Home() {
 
         {/* ── Hero ── */}
         <section className="mb-32 text-center">
-          <div className="inline-flex items-center gap-2 bg-[#1B2838] text-white px-4 py-2 mb-8 border-2 border-[#1A1A2E]">
-            <Hammer className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 bg-[#1A1A2E] text-white px-4 py-2 mb-8 border-2 border-[#1A1A2E]">
             <span className="text-xs font-black uppercase tracking-widest">The Builder OS on Tezos</span>
           </div>
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black uppercase leading-none mb-8 tracking-tight animate-fade-in-up">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black uppercase leading-none mb-8 tracking-tight text-balance animate-fade-in-up">
             FORGE YOUR
             <br />
-            <span className="text-[#FF6B35]">ONCHAIN</span> FUTURE.
+            <span className="text-[#0F59FF]">ONCHAIN</span> FUTURE.
           </h1>
-          <p className="text-xl sm:text-2xl md:text-3xl mb-12 max-w-3xl mx-auto font-bold px-4 animate-fade-in-up animation-delay-200">
-            Tools, infrastructure, and capital formation for launching and growing ambitious projects on Tezos.
+          <p className="text-xl sm:text-2xl md:text-3xl mb-12 max-w-3xl mx-auto font-bold px-4 text-pretty animate-fade-in-up animation-delay-200">
+            Tools, infrastructure, and capital formation for launching and growing projects.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
             <a
               href="/projects"
-              className="inline-block bg-[#FF6B35] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-[#1A1A2E] uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+              className="inline-block bg-[#0F59FF] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-2 border-[#1A1A2E] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200"
             >
               EXPLORE PROJECTS →
             </a>
             <a
               href="/dashboard/create"
-              className="inline-block bg-white text-[#1A1A2E] font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-[#1A1A2E] uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+              className="inline-block bg-white text-[#1A1A2E] font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-2 border-[#1A1A2E] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200"
             >
               LAUNCH A PROJECT
             </a>
@@ -179,19 +178,19 @@ export default function Home() {
 
         {/* ── Stats ── */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-          <div className="bg-[#FF6B35] text-white border-4 border-[#1A1A2E] p-8 shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-200">
+          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 animate-fade-in-up animation-delay-200">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Projects
             </p>
-            <p ref={totalProjectsRef} className="text-6xl font-black">
+            <p ref={totalProjectsRef} className="text-6xl font-black tabular-nums">
               {Math.floor(totalProjects).toLocaleString()}
             </p>
           </div>
-          <div className="bg-[#2ECC71] text-white border-4 border-[#1A1A2E] p-8 shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-400">
+          <div className="bg-[#64FE3E] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 animate-fade-in-up animation-delay-400">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Raised
             </p>
-            <p ref={totalRaisedRef} className="text-6xl font-black">
+            <p ref={totalRaisedRef} className="text-6xl font-black tabular-nums">
               {totalRaisedUsd === null
                 ? "..."
                 : `$${totalRaisedUsd.toLocaleString(undefined, {
@@ -203,11 +202,11 @@ export default function Home() {
               {totalRaised < 0.01 ? "0" : totalRaised.toFixed(2)} XTZ
             </p>
           </div>
-          <div className="bg-[#00B4D8] text-white border-4 border-[#1A1A2E] p-8 shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-600">
+          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 animate-fade-in-up animation-delay-600">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Active Presales
             </p>
-            <p ref={activePresalesRef} className="text-6xl font-black">
+            <p ref={activePresalesRef} className="text-6xl font-black tabular-nums">
               {Math.floor(activePresales).toLocaleString()}
             </p>
           </div>
@@ -215,29 +214,29 @@ export default function Home() {
 
         {/* ── How It Works ── */}
         <section className="mb-32">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-center">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-balance text-center">
             HOW IT WORKS
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="border-4 border-[#1A1A2E] p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(26,26,46,1)]">
-              <div className="text-6xl font-black mb-4 text-[#FF6B35]">1</div>
+            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+              <div className="text-6xl font-black mb-4 text-[#0F59FF]">1</div>
               <h3 className="text-2xl font-black uppercase mb-4">DISCOVER</h3>
               <p className="font-bold text-lg">
-                Browse ambitious projects building on Tezos and find the next opportunity to back.
+                Browse projects building on Tezos.
               </p>
             </div>
-            <div className="border-4 border-[#1A1A2E] p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(26,26,46,1)]">
-              <div className="text-6xl font-black mb-4 text-[#FF6B35]">2</div>
+            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+              <div className="text-6xl font-black mb-4 text-[#0F59FF]">2</div>
               <h3 className="text-2xl font-black uppercase mb-4">BACK</h3>
               <p className="font-bold text-lg">
-                Support projects you believe in by participating in their token launch or NFT drop.
+                Support projects you believe in.
               </p>
             </div>
-            <div className="border-4 border-[#1A1A2E] p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(26,26,46,1)]">
-              <div className="text-6xl font-black mb-4 text-[#FF6B35]">3</div>
+            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+              <div className="text-6xl font-black mb-4 text-[#0F59FF]">3</div>
               <h3 className="text-2xl font-black uppercase mb-4">LAUNCH</h3>
               <p className="font-bold text-lg">
-                Help projects reach their goals and watch them grow within the Tezos ecosystem.
+                Help projects reach their goals and watch them grow.
               </p>
             </div>
           </div>
@@ -245,7 +244,7 @@ export default function Home() {
 
         {/* ── Featured Launches ── */}
         <section className="mb-32">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-balance">
             FEATURED LAUNCHES
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -258,9 +257,15 @@ export default function Home() {
                 <p className="text-2xl font-bold uppercase mb-2">
                   No Projects to Feature
                 </p>
-                <p className="text-gray-600">
+                <p className="text-gray-600 mb-6">
                   Check back soon for the latest launches.
                 </p>
+                <a
+                  href="/dashboard/create"
+                  className="inline-block bg-[#0F59FF] text-white font-black py-3 px-6 text-sm border-2 border-[#1A1A2E] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] hover:shadow-[5px_5px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,colors]"
+                >
+                  Launch Your Project
+                </a>
               </div>
             ) : (
               featuredPresales.map((presale, index) => (
@@ -268,7 +273,7 @@ export default function Home() {
                   <div
                     className={`${cardStyles[index % cardStyles.length].bg} ${
                       cardStyles[index % cardStyles.length].text
-                    } border-4 border-[#1A1A2E] p-8 cursor-pointer shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 h-full flex flex-col`}
+                    } border-2 border-[#1A1A2E] p-8 cursor-pointer shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 h-full flex flex-col`}
                   >
                     <h3 className="text-2xl font-black uppercase mb-4 flex-grow">
                       {presale.saleTokenName || "Unnamed Project"}
@@ -284,16 +289,16 @@ export default function Home() {
         </section>
 
         {/* ── CTA ── */}
-        <section className="bg-[#1B2838] text-white border-4 border-[#1A1A2E] p-8 sm:p-12 md:p-16 text-center mb-16 shadow-[8px_8px_0px_0px_#FF6B35]">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-6 tracking-tight">
+        <section className="bg-[#1A1A2E] text-white border-2 border-[#1A1A2E] p-8 sm:p-12 md:p-16 text-center mb-16 shadow-[4px_4px_0px_0px_#0F59FF]">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-6 tracking-tight text-balance">
             Ready to Build?
           </h2>
-          <p className="text-lg sm:text-xl md:text-2xl mb-10 max-w-2xl mx-auto px-4">
+          <p className="text-lg sm:text-xl md:text-2xl mb-10 max-w-2xl mx-auto px-4 text-pretty">
             Got the next big idea? Launch your project on Tezforge and get the tools, funding, and community you need to make it a reality.
           </p>
           <a
             href="/dashboard/create"
-            className="inline-block bg-[#FF6B35] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-white uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.5)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+            className="inline-block bg-[#0F59FF] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-2 border-black uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200"
           >
             CREATE A PROJECT
           </a>
@@ -301,7 +306,7 @@ export default function Home() {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="bg-[#1B2838] text-white border-t-4 border-[#1A1A2E]">
+      <footer className="bg-[#1A1A2E] text-white border-t-2 border-[#1A1A2E]">
         <div className="container mx-auto px-6 py-8 max-w-7xl flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-bold uppercase tracking-wider text-center md:text-left">
             &copy; {new Date().getFullYear()} Tezforge
@@ -311,7 +316,7 @@ export default function Home() {
               href="https://x.com/tezforge"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#FF6B35] transition-colors"
+              className="hover:text-[#0F59FF] transition-colors"
             >
               <XSocialIcon size={24} />
             </a>
@@ -319,7 +324,7 @@ export default function Home() {
               href="https://t.me/tezforge"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#FF6B35] transition-colors"
+              className="hover:text-[#0F59FF] transition-colors"
             >
               <TelegramIcon size={24} />
             </a>
@@ -327,7 +332,7 @@ export default function Home() {
               href="https://docs.tezforge.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#FF6B35] transition-colors"
+              className="hover:text-[#0F59FF] transition-colors"
             >
               <BookOpen size={24} />
             </a>

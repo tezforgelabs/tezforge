@@ -78,7 +78,7 @@ export default function CreateNftPage() {
         <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
             {/* Header */}
             <div className="mb-8">
-                <div className="border-4 border-[#1A1A2E] bg-[#00B4D8] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+                <div className="border-4 border-[#1A1A2E] bg-[#0F59FF] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
                     <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3 text-white">
                         <ImageIcon className="w-8 h-8" /> Create NFT Collection
                     </h1>
@@ -140,7 +140,7 @@ export default function CreateNftPage() {
                         <Input id="payout-wallet" placeholder="0x..." value={payoutWallet} onChange={e => setPayoutWallet(e.target.value)} className="border-2 border-[#1A1A2E] font-mono" />
                     </div>
 
-                    <Button onClick={handleCreateNFT} disabled={isPending || isConfirming} className="w-full border-4 border-[#1A1A2E] bg-[#00B4D8] text-white font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#0096B8] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] transition-all py-6">
+                    <Button onClick={handleCreateNFT} disabled={isPending || isConfirming} className="w-full border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] transition-[transform,shadow,opacity,colors] py-6">
                         {isPending || isConfirming ? "Creating Collection..." : "Create Collection"}
                     </Button>
                 </CardContent>

@@ -63,7 +63,7 @@ function AdminDashboardContent() {
     <div className="container mx-auto py-8 px-4">
       {/* Header */}
       <div className="mb-8">
-        <div className="border-b-4 border-[#1A1A2E] bg-[#F1C40F] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+        <div className="border-b-4 border-[#1A1A2E] bg-[#64FE3E] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <h1 className="text-4xl font-black uppercase tracking-wider">Admin Dashboard</h1>
           <p className="text-sm text-gray-700 mt-2">
             Manage presales, whitelisted creators, and platform settings.
@@ -108,7 +108,7 @@ function AdminDashboardContent() {
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4 mb-8">
-        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#FF6B35]">
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#0F59FF]">
           <CardContent className="p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-gray-700">Total Presales</p>
             <p className="text-3xl font-black">{isLoadingPresales ? "..." : totalPresales}</p>
@@ -120,7 +120,7 @@ function AdminDashboardContent() {
             <p className="text-3xl font-black">{isLoadingPresales ? "..." : livePresales}</p>
           </CardContent>
         </Card>
-        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#F1C40F]">
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#64FE3E]">
           <CardContent className="p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-gray-700">Upcoming</p>
             <p className="text-3xl font-black">{isLoadingPresales ? "..." : upcomingPresales}</p>
@@ -137,10 +137,10 @@ function AdminDashboardContent() {
       {/* Quick Actions */}
       <div className="grid gap-6 md:grid-cols-3 mb-8">
         <Link to="/admin/presales">
-          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer bg-white">
+          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] cursor-pointer bg-white">
             <CardContent className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#FF6B35] border-2 border-[#1A1A2E]">
+                <div className="p-3 bg-[#0F59FF] border-2 border-[#1A1A2E]">
                   <Coins className="w-6 h-6" />
                 </div>
                 <div>
@@ -154,7 +154,7 @@ function AdminDashboardContent() {
         </Link>
 
         <Link to="/admin/whitelist">
-          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer bg-white">
+          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] cursor-pointer bg-white">
             <CardContent className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-[#90EE90] border-2 border-[#1A1A2E]">
@@ -173,7 +173,7 @@ function AdminDashboardContent() {
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-white">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-[#F1C40F] border-2 border-[#1A1A2E]">
+              <div className="p-3 bg-[#64FE3E] border-2 border-[#1A1A2E]">
                 <Settings className="w-6 h-6" />
               </div>
               <div>
@@ -204,7 +204,7 @@ function AdminDashboardContent() {
             <Button
               onClick={handleSetFeeRecipient}
               disabled={isSettingFeeRecipient || !newFeeRecipient}
-              className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#FF4911] whitespace-nowrap"
+              className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#FF4911] whitespace-nowrap"
             >
               {isSettingFeeRecipient ? "Updating..." : "Update Recipient"}
             </Button>

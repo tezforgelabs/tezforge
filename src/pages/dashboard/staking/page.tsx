@@ -475,7 +475,7 @@ export default function StakingPage() {
     <div className="container mx-auto px-4 py-6 sm:py-8 text-[#1A1A2E]">
       {/* Header Banner */}
       <div className="mb-6 sm:mb-8">
-          <div className="border-b-4 border-[#1A1A2E] bg-[#FF6B35] p-4 sm:p-6 shadow-[3px_3px_0_rgba(26,26,46,1)] mb-8">
+          <div className="border-b-4 border-[#1A1A2E] bg-[#0F59FF] p-4 sm:p-6 shadow-[3px_3px_0_rgba(26,26,46,1)] mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3 flex-wrap">
               Staking
             </h1>
@@ -493,7 +493,7 @@ export default function StakingPage() {
             </div>
             <Button
               onClick={openConnectModal}
-              className="bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#5DD5F5] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all px-8 py-6 text-lg"
+              className="bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#5DD5F5] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-8 py-6 text-lg"
             >
               Connect Wallet
             </Button>
@@ -504,7 +504,7 @@ export default function StakingPage() {
           {/* User Stats */}
           <div className="lg:col-span-1 space-y-4">
             <Card className="border-2 border-[#1A1A2E] shadow-[2px_2px_0_rgba(26,26,46,1)] p-0 gap-0">
-              <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-4">
+              <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#0F59FF] p-4">
                 <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
                   <Wallet className="w-5 h-5" />
                   Your Position
@@ -524,7 +524,7 @@ export default function StakingPage() {
                 <div className="p-4 border border-gray-200 bg-white">
                   <p className="text-xs uppercase font-bold text-gray-500">Pending Rewards</p>
                   <p
-                    className={`text-2xl font-black transition-all duration-700 ${isPendingRewardsAnimating
+                    className={`text-2xl font-black transition-[transform,opacity] duration-200 ${isPendingRewardsAnimating
                       ? "text-emerald-700 scale-[1.03] animate-pulse"
                       : "text-gray-900 scale-100"
                       }`}
@@ -583,7 +583,7 @@ export default function StakingPage() {
                   <button
                     onClick={() => setActiveTab("stake")}
                     className={`flex-1 py-4 font-black uppercase tracking-wider text-sm transition-colors ${activeTab === "stake"
-                      ? "bg-[#FF6B35] text-[#1A1A2E]"
+                      ? "bg-[#0F59FF] text-[#1A1A2E]"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                   >
@@ -592,7 +592,7 @@ export default function StakingPage() {
                   <button
                     onClick={() => setActiveTab("unstake")}
                     className={`flex-1 py-4 font-black uppercase tracking-wider text-sm transition-colors border-l-2 border-[#1A1A2E] ${activeTab === "unstake"
-                      ? "bg-[#FF6B35] text-[#1A1A2E]"
+                      ? "bg-[#0F59FF] text-[#1A1A2E]"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                   >
@@ -635,7 +635,7 @@ export default function StakingPage() {
                     <Button
                       onClick={handleStake}
                       disabled={isApproving || isStaking || !stakeAmount || hasInsufficientStakeBalance}
-                      className={`w-full py-6 text-[#1A1A2E] font-black uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50 ${needsApproval ? "bg-[#FFFB8F] hover:bg-[#FFF570]" : "bg-[#FF6B35] hover:bg-[#5DD5F5]"
+                      className={`w-full py-6 text-[#1A1A2E] font-black uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] disabled:opacity-50 ${needsApproval ? "bg-[#FFFB8F] hover:bg-[#FFF570]" : "bg-[#0F59FF] hover:bg-[#5DD5F5]"
                         }`}
                     >
                       {isApproving ? (
@@ -694,7 +694,7 @@ export default function StakingPage() {
                     <Button
                       onClick={handleUnstake}
                       disabled={isUnstaking || !unstakeAmount || hasInsufficientUnstakeBalance}
-                      className="w-full py-6 bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#5DD5F5] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50"
+                      className="w-full py-6 bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#5DD5F5] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] disabled:opacity-50"
                     >
                       {isUnstaking ? (
                         <>

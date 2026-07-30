@@ -8,7 +8,7 @@ export default function CreateProjectPage() {
       <div className="container mx-auto px-6 py-10 max-w-5xl">
         {/* Header */}
         <div className="mb-8">
-          <div className="border-4 border-[#1A1A2E] bg-[#1B2838] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+          <div className="border-4 border-[#1A1A2E] bg-[#1A1A2E] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-wider text-white">
               Submit<br />Project
             </h1>

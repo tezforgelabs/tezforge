@@ -18,11 +18,11 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "live":
-        return "bg-[#2ECC71]";
+        return "bg-[#64FE3E]";
       case "upcoming":
-        return "bg-[#F1C40F]";
+        return "bg-[#64FE3E]";
       case "finalized":
-        return "bg-[#00B4D8]";
+        return "bg-[#0F59FF]";
       case "cancelled":
         return "bg-red-500";
       default:
@@ -54,7 +54,7 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
           <Button
             size="sm"
             asChild
-            className="border-2 border-[#1A1A2E] bg-[#F1C40F] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]"
+            className="border-2 border-[#1A1A2E] bg-[#64FE3E] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]"
           >
             <Link to={`/dashboard/presales/manage/${presale.address}`}>
               Manage <ExternalLink className="ml-1 h-3 w-3" />
@@ -114,7 +114,7 @@ export default function PresalesListPage() {
               My Presales
             </CardTitle>
             <Link to="/dashboard/create/presale">
-              <Button className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
+              <Button className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
                 Create Presale
               </Button>
             </Link>
@@ -141,7 +141,7 @@ export default function PresalesListPage() {
                 You do not have any presales yet.
               </p>
               <Link to="/dashboard/create/presale">
-                <Button className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
+                <Button className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
                   Create Your First Presale <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>

@@ -188,7 +188,7 @@ export default function LockDetailPage() {
                         <p className="text-lg sm:text-xl font-black">Lock Not Found</p>
                         <p className="text-gray-600 text-sm sm:text-base">Lock #{id} does not exist or has not been created yet.</p>
                         <Link to="/dashboard/user">
-                            <Button className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
+                            <Button className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
                                 <ArrowLeft className="w-4 h-4 mr-2" />
                                 Back to Dashboard
                             </Button>
@@ -215,7 +215,7 @@ export default function LockDetailPage() {
                 <div className={`border-4 border-[#1A1A2E] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] ${
                     lockStatus === 'withdrawn' ? 'bg-gray-300' :
                     lockStatus === 'unlockable' ? 'bg-[#90EE90]' :
-                    'bg-[#F1C40F]'
+                    'bg-[#64FE3E]'
                 }`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
@@ -244,7 +244,7 @@ export default function LockDetailPage() {
             <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
                 {/* Token Info */}
                 <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-                    <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-3 sm:p-4">
+                    <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#0F59FF] p-3 sm:p-4">
                         <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-sm sm:text-base">
                             <Coins className="w-4 h-4 sm:w-5 sm:h-5" />
                             Locked Token
@@ -351,7 +351,7 @@ export default function LockDetailPage() {
                             
                             {/* Lock Created */}
                             <div className="relative flex items-start gap-3 sm:gap-4 pb-6 sm:pb-8">
-                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#FF6B35] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center z-10 flex-shrink-0">
+                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#0F59FF] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center z-10 flex-shrink-0">
                                     <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
                                 </div>
                                 <div className="pt-0.5">
@@ -412,7 +412,7 @@ export default function LockDetailPage() {
             <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0 mt-4 sm:mt-6 bg-[#F7F3EE]">
                 <CardContent className="p-4 sm:p-6">
                     <div className="flex items-start gap-3 sm:gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FF6B35] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0F59FF] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center flex-shrink-0">
                             <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                         <div>

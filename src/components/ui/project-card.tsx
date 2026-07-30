@@ -64,20 +64,20 @@ function CountdownTimer({ targetDate, isStart = false }: { targetDate: Date; isS
 export function ProjectCard({ project }: { project: Project }) {
     const getStatusColor = () => {
         switch (project.statusType) {
-            case 'live': return 'bg-[#FF6B35]';
-            case 'upcoming': return 'bg-[#F1C40F]';
-            case 'completed': return 'bg-[#2FFF2F]';
+            case 'live': return 'bg-[#0F59FF]';
+            case 'upcoming': return 'bg-[#64FE3E]';
+            case 'completed': return 'bg-[#64FE3E]';
             default: return 'bg-[#F7F3EE]';
         }
     };
 
     const getCategoryStyle = () => {
         switch (project.category) {
-            case 'defi': return { bg: 'bg-[#FF6B35]', label: 'DeFi' };
+            case 'defi': return { bg: 'bg-[#0F59FF]', label: 'DeFi' };
             case 'ai': return { bg: 'bg-[#E879F9]', label: 'AI' };
             case 'gaming': return { bg: 'bg-[#FB923C]', label: 'Gaming' };
             case 'infrastructure': return { bg: 'bg-[#A78BFA]', label: 'Infra' };
-            case 'meme': return { bg: 'bg-[#F1C40F]', label: 'Meme' };
+            case 'meme': return { bg: 'bg-[#64FE3E]', label: 'Meme' };
             default: return { bg: 'bg-[#D1D5DB]', label: 'Other' };
         }
     };
@@ -85,9 +85,9 @@ export function ProjectCard({ project }: { project: Project }) {
     const categoryStyle = getCategoryStyle();
 
     return (
-        <div className="relative border-4 border-[#1A1A2E] p-6 bg-[#F7F3EE] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 group cursor-pointer">
+        <div className="relative border-4 border-[#1A1A2E] p-6 bg-[#F7F3EE] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 group cursor-pointer">
             {/* Status indicator */}
-            <div className={`absolute top-0 right-0 w-4 h-4 border-2 border-[#1A1A2E] ${getStatusColor()}`}></div>
+            <div className={`absolute top-0 right-0 size-4 border-2 border-[#1A1A2E] ${getStatusColor()}`}></div>
 
             {/* Category badge */}
             <div className={`absolute top-4 left-4 px-3 py-1 ${categoryStyle.bg} border-2 border-[#1A1A2E] text-xs font-black uppercase tracking-wider`}>
@@ -96,7 +96,7 @@ export function ProjectCard({ project }: { project: Project }) {
 
             <div className="flex items-center space-x-4 mb-6 mt-8">
                 <div className="border-2 border-[#1A1A2E] rounded-full p-1 bg-white">
-                    <Avatar className="w-14 h-14 border-2 border-[#1A1A2E] rounded-full">
+                    <Avatar className="size-14 border-2 border-[#1A1A2E] rounded-full">
                         <AvatarImage src={project.logo} alt={`${project.name} logo`} />
                         <AvatarFallback className="text-lg font-black uppercase">
                             {project.name.slice(0, 2)}
@@ -120,9 +120,10 @@ export function ProjectCard({ project }: { project: Project }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="w-8 h-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
+                            aria-label="Twitter"
+                            className="size-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
                         >
-                            <Twitter className="w-4 h-4" />
+                            <Twitter className="size-4" />
                         </a>
                     )}
                     {project.socials.telegram && (
@@ -131,9 +132,10 @@ export function ProjectCard({ project }: { project: Project }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="w-8 h-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
+                            aria-label="Telegram"
+                            className="size-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
                         >
-                            <Send className="w-4 h-4" />
+                            <Send className="size-4" />
                         </a>
                     )}
                     {project.socials.discord && (
@@ -142,9 +144,10 @@ export function ProjectCard({ project }: { project: Project }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="w-8 h-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
+                            aria-label="Discord"
+                            className="size-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
                         >
-                            <MessageCircle className="w-4 h-4" />
+                            <MessageCircle className="size-4" />
                         </a>
                     )}
                     {project.socials.website && (
@@ -153,9 +156,10 @@ export function ProjectCard({ project }: { project: Project }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="w-8 h-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
+                            aria-label="Website"
+                            className="size-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
                         >
-                            <Globe className="w-4 h-4" />
+                            <Globe className="size-4" />
                         </a>
                     )}
                 </div>
@@ -166,11 +170,11 @@ export function ProjectCard({ project }: { project: Project }) {
             <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-black uppercase tracking-wider">PROGRESS</span>
-                    <span className="text-sm font-black">{project.progress}%</span>
+                    <span className="text-sm font-black tabular-nums">{project.progress}%</span>
                 </div>
                 <div className="w-full bg-white border-2 border-[#1A1A2E] h-4">
                     <div
-                        className="bg-black h-full transition-all"
+                        className="bg-black h-full transition-[width]"
                         style={{ width: `${project.progress}%` }}
                     ></div>
                 </div>
@@ -183,7 +187,7 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.statusType === 'live' && project.endTime && (
                 <div className="pt-6 border-t-2 border-[#1A1A2E]">
                     <CountdownTimer targetDate={project.endTime} />
-                    <button className="w-full mt-4 bg-[#FF6B35] text-[#1A1A2E] h-12 font-black uppercase text-sm tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+                    <button className="w-full mt-4 bg-[#0F59FF] text-[#1A1A2E] h-12 font-black uppercase text-sm tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]">
                         PARTICIPATE
                     </button>
                 </div>
@@ -192,7 +196,7 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.statusType === 'upcoming' && project.startTime && (
                 <div className="pt-6 border-t-2 border-[#1A1A2E]">
                     <CountdownTimer targetDate={project.startTime} isStart={true} />
-                    <button className="w-full mt-4 bg-[#F1C40F] text-[#1A1A2E] h-12 font-black uppercase text-sm tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+                    <button className="w-full mt-4 bg-[#64FE3E] text-[#1A1A2E] h-12 font-black uppercase text-sm tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]">
                         NOTIFY ME
                     </button>
                 </div>

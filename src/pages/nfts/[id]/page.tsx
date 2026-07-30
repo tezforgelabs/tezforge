@@ -73,7 +73,7 @@ export default function NFTDetailPage() {
             <CardContent className="space-y-4 p-6">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <Input type="number" placeholder="Amount" className="flex-grow border-2 border-[#1A1A2E]" value={mintAmount} onChange={e => setMintAmount(e.target.value)} />
-                <Button onClick={handleMint} className="w-full sm:w-auto border-4 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E55A2B]">Mint</Button>
+                <Button onClick={handleMint} className="w-full sm:w-auto border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF]">Mint</Button>
               </div>
             </CardContent>
           </Card>
@@ -99,7 +99,7 @@ export default function NFTDetailPage() {
               </div>
               <div className="w-full bg-gray-200 border-2 border-[#1A1A2E] h-4 mt-4">
                 <div
-                  className="bg-[#FF6B35] h-full transition-all"
+                  className="bg-[#0F59FF] h-full transition-[width]"
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>

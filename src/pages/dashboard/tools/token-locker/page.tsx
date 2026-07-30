@@ -158,7 +158,7 @@ function LockCard({
             ? "bg-gray-200"
             : isUnlocked
             ? "bg-[#90EE90]"
-            : "bg-[#F1C40F]"
+            : "bg-[#64FE3E]"
         }`}
       >
         <div className="flex items-center justify-between">
@@ -582,7 +582,7 @@ function CreateLockModal({
         className="border-4 border-[#1A1A2E] shadow-[8px_8px_0_rgba(26,26,46,1)] max-w-2xl w-full p-0 gap-0"
         onClick={(e) => e.stopPropagation()}
       >
-        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-6">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#0F59FF] p-6">
           <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
             <Plus className="w-5 h-5" />
             Create New Lock
@@ -669,7 +669,7 @@ function CreateLockModal({
             <Button
               onClick={handleApprove}
               disabled={!isFormValid || isApproving || isApproveConfirming}
-              className="w-full border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#EDE972]"
+              className="w-full border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#EDE972]"
             >
               {isApproving || isApproveConfirming
                 ? "Approving..."
@@ -679,7 +679,7 @@ function CreateLockModal({
             <Button
               onClick={handleLock}
               disabled={!isFormValid || isLocking || isLockConfirming}
-              className="w-full border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#6AD8E8]"
+              className="w-full border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#6AD8E8]"
             >
               <Lock className="w-4 h-4 mr-2" />
               {isLocking || isLockConfirming ? "Locking..." : "Lock Tokens"}
@@ -759,7 +759,7 @@ function ExtendLockModal({
         className="border-4 border-[#1A1A2E] shadow-[8px_8px_0_rgba(26,26,46,1)] max-w-md w-full mx-4 p-0 gap-0"
         onClick={(e) => e.stopPropagation()}
       >
-        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#F1C40F] p-4">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#64FE3E] p-4">
           <CardTitle className="font-black uppercase tracking-wider">
             Extend Lock
           </CardTitle>
@@ -789,7 +789,7 @@ function ExtendLockModal({
             <Button
               onClick={handleExtend}
               disabled={!additionalDays || isPending || isConfirming}
-              className="flex-1 border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase shadow-[3px_3px_0_rgba(26,26,46,1)]"
+              className="flex-1 border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase shadow-[3px_3px_0_rgba(26,26,46,1)]"
             >
               {isPending || isConfirming ? "Extending..." : "Extend"}
             </Button>
@@ -959,7 +959,7 @@ export default function TokenLockerPage() {
     <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <div className="border-b-4 border-[#1A1A2E] bg-[#FF6B35] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+        <div className="border-b-4 border-[#1A1A2E] bg-[#0F59FF] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3">
@@ -973,7 +973,7 @@ export default function TokenLockerPage() {
             {userLocks.length > 0 && (
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="border-4 border-[#1A1A2E] bg-[#FFFFFF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-gray-100 hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
+                className="border-4 border-[#1A1A2E] bg-[#FFFFFF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-gray-100 hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Lock
@@ -1001,7 +1001,7 @@ export default function TokenLockerPage() {
               </p>
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+                className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Lock

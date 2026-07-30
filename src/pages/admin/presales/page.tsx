@@ -215,7 +215,7 @@ function PresaleCard({
             <Button
               onClick={handleUpdateFees}
               disabled={isBusy || !newTokenFeeBps || !newProceedsFeeBps}
-              className="w-full border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+              className="w-full border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
             >
               {isBusy ? "Updating..." : "Confirm Update"}
             </Button>
@@ -257,7 +257,7 @@ function AdminPresalesContent() {
           <ArrowLeft className="w-4 h-4" />
           <span className="font-bold">Back to Admin</span>
         </Link>
-        <div className="border-b-4 border-[#1A1A2E] bg-[#FF6B35] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+        <div className="border-b-4 border-[#1A1A2E] bg-[#0F59FF] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <h1 className="text-4xl font-black uppercase tracking-wider">Manage Presales</h1>
           <p className="text-sm text-gray-700 mt-2">
             View all presales and update fees.

@@ -54,7 +54,7 @@ function LockSearchCard() {
                     <Button
                         onClick={handleSearch}
                         disabled={!searchId.trim()}
-                        className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#6AD8E8]"
+                        className="border-4 border-black bg-[#0F59FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#6AD8E8]"
                     >
                         <Search className="w-4 h-4" />
                     </Button>
@@ -225,7 +225,7 @@ export default function LocksPage() {
         <div className="container mx-auto px-4 py-8 text-black">
             {/* Header */}
             <div className="mb-8">
-                <div className="border-b-4 border-black bg-[#7DF9FF] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
+                <div className="border-b-4 border-black bg-[#0F59FF] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
                     <h1 className="text-4xl font-black uppercase tracking-wider flex items-center gap-3">
                         <Lock className="w-8 h-8" /> Lock Explorer
                     </h1>
@@ -292,7 +292,7 @@ export default function LocksPage() {
                             <p className="text-xl font-black">No Locks Yet</p>
                             <p className="text-gray-600">Be the first to create a token lock!</p>
                             <Link to="/dashboard/tools/token-locker">
-                                <Button className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
+                                <Button className="border-4 border-black bg-[#0F59FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
                                     Create Lock
                                 </Button>
                             </Link>
@@ -312,10 +312,10 @@ export default function LocksPage() {
             </div>
 
             {/* Transparency Notice */}
-            <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0 mt-8 bg-[#FFF9F0]">
+            <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0 mt-8 bg-white">
                 <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full bg-[#7DF9FF] border-4 border-black flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-[#0F59FF] border-4 border-black flex items-center justify-center flex-shrink-0">
                             <CheckCircle2 className="w-6 h-6" />
                         </div>
                         <div>

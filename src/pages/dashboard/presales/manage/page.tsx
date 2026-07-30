@@ -131,7 +131,7 @@ export default function ManagePresalePage() {
   return (
     <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
       <Card className="max-w-2xl mx-auto p-0 gap-0">
-        <CardHeader className="border-b-4 border-[#1A1A2E] bg-[#F1C40F] p-6">
+        <CardHeader className="border-b-4 border-[#1A1A2E] bg-[#64FE3E] p-6">
           <CardTitle className="text-3xl text-center font-black uppercase tracking-wider">
             Manage Your Presale
           </CardTitle>
@@ -654,7 +654,7 @@ function ManagePresaleView({
               hasDeposited || presaleHasEnded
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : hasSufficientAllowance
-                ? "bg-[#FF6B35] text-[#1A1A2E] ring-4 ring-[#FF6B35] ring-opacity-50"
+                ? "bg-[#0F59FF] text-[#1A1A2E] ring-4 ring-[#0F59FF] ring-opacity-50"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
@@ -709,7 +709,7 @@ function ManagePresaleView({
                   type="button"
                   onClick={handleAddSingleWhitelist}
                   disabled={whitelistBusy || !singleWhitelist}
-                  className="border-4 border-[#1A1A2E] bg-[#2ECC71] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+                  className="border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
                 >
                   {whitelistBusy && activeWhitelistAction === "addOne"
                     ? "Adding..."
@@ -755,7 +755,7 @@ function ManagePresaleView({
               type="button"
               onClick={handleBulkWhitelist}
               disabled={whitelistBusy || !bulkWhitelist}
-              className="border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+              className="border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
             >
               {whitelistBusy && activeWhitelistAction === "bulkAdd"
                 ? "Uploading..."
@@ -795,7 +795,7 @@ function ManagePresaleView({
             disabled={
               ownerActionBusy || presale.claimEnabled || presale.refundsEnabled
             }
-            className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+            className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
           >
             {ownerActionBusy && activeOwnerAction === "finalize"
               ? "Finalizing..."
@@ -822,7 +822,7 @@ function ManagePresaleView({
             className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
               !presale.claimEnabled
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#2ECC71] text-[#1A1A2E]"
+                : "bg-[#64FE3E] text-[#1A1A2E]"
             }`}
           >
             {ownerActionBusy && activeOwnerAction === "withdrawProceeds"
@@ -835,7 +835,7 @@ function ManagePresaleView({
             className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
               !presale.claimEnabled
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#F1C40F] text-[#1A1A2E]"
+                : "bg-[#64FE3E] text-[#1A1A2E]"
             }`}
           >
             {ownerActionBusy && activeOwnerAction === "withdrawTokens"

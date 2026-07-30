@@ -321,7 +321,7 @@ export default function AirdropPage() {
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Send Type Selection */}
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-4">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#0F59FF] p-4">
             <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
               <Coins className="w-5 h-5" />
               Select Token Type
@@ -332,7 +332,7 @@ export default function AirdropPage() {
               <button
                 type="button"
                 onClick={() => setSendType("erc20")}
-                className={`p-4 border-4 border-[#1A1A2E] text-left transition-all ${
+                className={`p-4 border-4 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
                   sendType === "erc20"
                     ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                     : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
@@ -358,7 +358,7 @@ export default function AirdropPage() {
                   setSendType("react");
                   setTokenAddress("");
                 }}
-                className={`p-4 border-4 border-[#1A1A2E] text-left transition-all ${
+                className={`p-4 border-4 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
                   sendType === "react"
                     ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                     : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
@@ -385,7 +385,7 @@ export default function AirdropPage() {
         {/* Token Address (for ERC-20) */}
         {sendType === "erc20" && (
           <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-            <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#F1C40F] p-4">
+            <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#64FE3E] p-4">
               <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
                 <Wallet className="w-5 h-5" />
                 Token Details
@@ -452,7 +452,7 @@ export default function AirdropPage() {
                       XTZ
                     </p>
                   </div>
-                  <Coins className="w-8 h-8 text-[#7DF9FF]" />
+                  <Coins className="w-8 h-8 text-[#0F59FF]" />
                 </div>
               </div>
             </CardContent>
@@ -556,7 +556,7 @@ export default function AirdropPage() {
                 <Button
                   onClick={handleApprove}
                   disabled={isApproving || isApproveConfirming || !isFormValid}
-                  className="w-full border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#EDE972] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all py-6 text-lg"
+                  className="w-full border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#EDE972] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] py-6 text-lg"
                 >
                   <Upload className="w-5 h-5 mr-2" />
                   {isApproving || isApproveConfirming
@@ -579,7 +579,7 @@ export default function AirdropPage() {
                     !isFormValid ||
                     !hasSufficientBalance
                   }
-                  className="w-full border-4 border-[#1A1A2E] bg-[#90EE90] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#7DE07D] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all py-6 text-lg"
+                  className="w-full border-4 border-[#1A1A2E] bg-[#90EE90] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#7DE07D] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] py-6 text-lg"
                 >
                   <Send className="w-5 h-5 mr-2" />
                   {isSending || isSendConfirming

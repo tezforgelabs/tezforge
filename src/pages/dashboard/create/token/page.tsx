@@ -154,7 +154,7 @@ export default function CreateTokenPage() {
     <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-8">
-        <div className="border-4 border-[#1A1A2E] bg-[#FF6B35] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+        <div className="border-4 border-[#1A1A2E] bg-[#0F59FF] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3 text-white">
             <Coins className="w-8 h-8" /> Create Token
           </h1>
@@ -167,7 +167,7 @@ export default function CreateTokenPage() {
       {/* Success Message */}
       {createdTokenAddress && (
         <Card className="max-w-2xl mx-auto mb-8 border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#2ECC71] p-6">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#64FE3E] p-6">
             <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-white">
               <CheckCircle2 className="w-5 h-5" />
               Token Created Successfully!
@@ -193,7 +193,7 @@ export default function CreateTokenPage() {
                 </Button>
               </a>
               <Link to={`/dashboard/tools/token-locker?token=${createdTokenAddress}`} className="flex-1">
-                <Button className="w-full border-4 border-[#1A1A2E] bg-[#F1C40F] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]">
+                <Button className="w-full border-4 border-[#1A1A2E] bg-[#64FE3E] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]">
                   Lock Tokens
                 </Button>
               </Link>
@@ -329,7 +329,7 @@ export default function CreateTokenPage() {
             <Button 
               onClick={handleCreateToken} 
               disabled={isPending || isConfirming || !name || !symbol} 
-              className="w-full border-4 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#E55A2B] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] transition-all"
+              className="w-full border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] transition-[transform,shadow,opacity,colors]"
             >
               {isPending ? 'Confirm in Wallet...' : isConfirming ? 'Creating Token...' : 'Create Token'}
             </Button>

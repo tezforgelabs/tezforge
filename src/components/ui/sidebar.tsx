@@ -7,17 +7,27 @@ import {
   PiggyBank,
   Plus,
   Shield,
-  Sparkles,
-  WalletMinimal
+  AlertTriangle,
+  WalletMinimal, Rocket
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Address } from "viem";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard/user", icon: LayoutGrid},
-  { name: "Launchpad", href: "/projects", icon: Sparkles },
+  { name: "Launchpad", href: "/projects", icon: Rocket },
   { name: "Staking", href: "/dashboard/staking", icon: PiggyBank },
 ];
 
@@ -40,17 +50,17 @@ const SidebarContent = () => {
 
   return (
     <div className="flex flex-col flex-1 h-full">
-      <div className="p-1 border-b-4 border-[#1A1A2E] bg-[#1B2838] flex items-center justify-center">
+      <div className="p-1 border-b-4 border-[#1A1A2E] bg-[#1A1A2E] flex items-center justify-center">
         <Link to="/" className="flex items-center justify-center gap-2">
-          <div className="w-8 h-8 bg-[#FF6B35] border-2 border-white flex items-center justify-center">
-            <span className="text-white font-black text-sm">T</span>
+          <div className="size-11 flex items-center justify-center">
+            <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="w-17 h-17 object-contain" />
           </div>
           <span className="text-white font-black text-sm uppercase tracking-wider">Tezforge</span>
         </Link>
       </div>
 
       {isConnected && (
-        <div className="mx-6 my-3 p-4 border-2 border-[#1A1A2E] bg-[#2ECC71] shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
+        <div className="mx-6 my-3 p-4 border-2 border-[#1A1A2E] bg-[#64FE3E] shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-mono font-black uppercase text-[#1A1A2E]">
               {address?.slice(0, 6)}...{address?.slice(-4)}
@@ -60,7 +70,7 @@ const SidebarContent = () => {
             </button>
           </div>
           <div>
-            <div className="text-3xl font-black text-[#1A1A2E]">
+            <div className="text-3xl font-black text-[#1A1A2E] tabular-nums">
               {balance.toLocaleString(undefined, { maximumFractionDigits: 4 })}
             </div>
             <div className="text-sm font-black uppercase mt-1 text-[#1A1A2E]">
@@ -75,13 +85,44 @@ const SidebarContent = () => {
             )}
           </div>
           <div className="mt-4 space-y-2">
-            <button
-              onClick={() => disconnect()}
-              type="button"
-              className="w-full bg-red-500 text-white font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all px-2 py-2"
-            >
-              DISCONNECT
-            </button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="w-full bg-red-500 text-white font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-2 py-2"
+                >
+                  DISCONNECT
+                </button>
+              </DialogTrigger>
+              <DialogContent className="border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-xl">
+                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                    Disconnect Wallet
+                  </DialogTitle>
+                  <DialogDescription className="text-base font-medium">
+                    Are you sure you want to disconnect your wallet? You will need to reconnect to interact with the platform.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2">
+                  <DialogClose asChild>
+                    <button
+                      type="button"
+                      className="flex-1 bg-white text-[#1A1A2E] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
+                    >
+                      Cancel
+                    </button>
+                  </DialogClose>
+                  <button
+                    onClick={() => disconnect()}
+                    type="button"
+                    className="flex-1 bg-red-500 text-white font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
+                  >
+                    Disconnect
+                  </button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       )}
@@ -94,12 +135,12 @@ const SidebarContent = () => {
               <li key={item.name}>
                 <Link
                   to={item.href}
-                  className={`flex items-center px-4 py-3 transition-all font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${isActive
-                    ? "bg-[#1B2838] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                    : "text-[#1A1A2E] bg-white hover:bg-[#1B2838] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${isActive
+                    ? "bg-[#1A1A2E] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                    : "text-[#1A1A2E] bg-white hover:bg-[#0F59FF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
                     }`}
                 >
-                  <item.icon className="w-5 h-5 mr-3" strokeWidth={1.5} />
+                  <item.icon className="size-5 mr-3" strokeWidth={1.5} />
                   <span>{item.name}</span>
                 </Link>
               </li>
@@ -110,12 +151,12 @@ const SidebarContent = () => {
             <li>
               <Link
                 to="/admin"
-                className={`flex items-center px-4 py-3 transition-all font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname.startsWith("/admin")
-                  ? "bg-[#F1C40F] text-black shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                  : "text-black bg-[#F1C40F] hover:bg-[#FF6B35] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname.startsWith("/admin")
+                  ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                  : "text-white bg-[#0F59FF] hover:bg-[#0A3DBF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
                   }`}
               >
-                <Shield className="w-5 h-5 mr-3" strokeWidth={2.5} />
+                <Shield className="size-5 mr-3" strokeWidth={2.5} />
                 <span>Admin</span>
               </Link>
             </li>
@@ -125,12 +166,12 @@ const SidebarContent = () => {
         <div className="mt-8 mb-3">
           <Link
             to="/dashboard/create"
-            className={`flex items-center justify-center w-full px-4 py-4 transition-all font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname === "/dashboard/create"
-              ? "bg-[#FF6B35] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-              : "bg-[#FF6B35] text-white hover:bg-[#E55A2B] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname === "/dashboard/create"
+              ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+              : "bg-[#0F59FF] text-white hover:bg-[#0A3DBF] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
               }`}
           >
-            <Plus className="w-5 h-5 mr-2" />
+            <Plus className="size-5 mr-2" />
             CREATE
           </Link>
         </div>
@@ -140,7 +181,7 @@ const SidebarContent = () => {
             <button
               onClick={openConnectModal}
               type="button"
-              className="w-full bg-[#FF6B35] text-white font-black uppercase text-xs tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all px-4 py-4"
+              className="w-full bg-[#0F59FF] text-white font-black uppercase text-xs tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-4"
             >
               CONNECT WALLET
             </button>
@@ -183,7 +224,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         <SidebarContent />
       </div>
 
-      <div className="flex h-screen bg-[#F7F3EE] text-[#1A1A2E]">
+      <div className="flex h-dvh bg-[#F7F3EE] text-[#1A1A2E]">
         {/* Desktop sidebar */}
         <div className="hidden lg:flex lg:flex-shrink-0">
           <div className="flex flex-col w-72">
@@ -197,8 +238,8 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           {/* Mobile header */}
           <div className="lg:hidden relative z-10 flex-shrink-0 h-16 bg-white border-b-4 border-[#1A1A2E] flex items-center justify-between px-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#FF6B35] border-2 border-[#1A1A2E] flex items-center justify-center">
-                <span className="text-white font-black text-sm">T</span>
+              <div className="size-14 flex items-center justify-center">
+                <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="size-14 object-contain" />
               </div>
               <span className="font-black text-sm uppercase tracking-wider">Tezforge</span>
             </Link>

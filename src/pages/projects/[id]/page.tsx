@@ -125,10 +125,10 @@ export default function ProjectDetailPage() {
                 <div className="overflow-hidden h-4 text-xs flex rounded bg-gray-200 border-2 border-[#1A1A2E]">
                   <div
                     style={{ width: `${presale.progress}%` }}
-                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#FF6B35] transition-all duration-500"
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#0F59FF] transition-[transform,shadow,opacity,colors] duration-200"
                   ></div>
                 </div>
-                <p className="text-right font-semibold text-[#FF6B35]">
+                <p className="text-right font-semibold text-[#0F59FF]">
                   {presale.progress.toFixed(2)}%
                 </p>
               </div>
@@ -166,13 +166,13 @@ export default function ProjectDetailPage() {
               <p className="font-bold">Status</p>
               <Badge
                 className={`capitalize ${presale.status === "live"
-                  ? "bg-[#2ECC71] text-white"
+                  ? "bg-[#64FE3E] text-white"
                   : presale.status === "finalized"
-                    ? "bg-[#00B4D8] text-white"
+                    ? "bg-[#0F59FF] text-white"
                     : presale.status === "cancelled"
                       ? "bg-red-500 text-white"
                       : presale.status === "upcoming"
-                        ? "bg-[#F1C40F] text-black"
+                        ? "bg-[#64FE3E] text-black"
                         : "bg-gray-500 text-white"
                   }`}
               >
@@ -207,7 +207,7 @@ export default function ProjectDetailPage() {
               </p>
             </div>
             {presale.requiresWhitelist && (
-              <div className="col-span-2 border-2 border-[#1A1A2E] bg-[#F1C40F] p-3">
+              <div className="col-span-2 border-2 border-[#1A1A2E] bg-[#64FE3E] p-3">
                 <p className="font-bold uppercase text-xs">Participation</p>
                 <p className="text-sm text-gray-700">
                   This sale is limited to wallets the project owner adds to the whitelist.
@@ -220,7 +220,7 @@ export default function ProjectDetailPage() {
 
       <div className="space-y-4">
         {presale.requiresWhitelist && (
-          <Card className="border-4 border-[#1A1A2E] bg-[#F1C40F] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+          <Card className="border-4 border-[#1A1A2E] bg-[#64FE3E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <CardContent className="p-4">
               <p className="font-black uppercase text-xs mb-1 text-[#1A1A2E]">Whitelist Required</p>
               <p className="text-sm text-gray-700">
@@ -246,7 +246,7 @@ export default function ProjectDetailPage() {
             }
             alt={`${presale.saleTokenName} logo`}
           />
-          <AvatarFallback className="bg-[#FF6B35] text-white font-black">
+          <AvatarFallback className="bg-[#0F59FF] text-white font-black">
             {presale.saleTokenSymbol?.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
@@ -259,7 +259,7 @@ export default function ProjectDetailPage() {
             {presale.owner.slice(-4)}
           </p>
           {presale.requiresWhitelist && (
-            <Badge className="mt-2 bg-[#F1C40F] text-black border border-[#1A1A2E] uppercase tracking-wider">
+            <Badge className="mt-2 bg-[#64FE3E] text-black border border-[#1A1A2E] uppercase tracking-wider">
               Whitelist Only
             </Badge>
           )}
