@@ -50,19 +50,19 @@ const SidebarContent = () => {
 
   return (
     <div className="flex flex-col flex-1 h-full">
-      <div className="p-1 border-b-4 border-[#1A1A2E] bg-[#1A1A2E] flex items-center justify-center">
+      <div className="p-2 pl-3 border-b-4 border-[#1A1A2E] bg-[#1A1A2E] flex items-center ">
         <Link to="/" className="flex items-center justify-center gap-2">
           <div className="size-11 flex items-center justify-center">
             <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="w-17 h-17 object-contain" />
           </div>
-          <span className="text-white font-black text-sm uppercase tracking-wider">Tezforge</span>
+          <span className="text-white font-semibold text-md uppercase tracking-wider">Tezforge</span>
         </Link>
       </div>
 
       {isConnected && (
         <div className="mx-6 my-3 p-4 border-2 border-[#1A1A2E] bg-[#64FE3E] shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-mono font-black uppercase text-[#1A1A2E]">
+            <span className="text-xs font-mono font-medium uppercase text-[#1A1A2E]">
               {address?.slice(0, 6)}...{address?.slice(-4)}
             </span>
             <button className="hover:scale-110 transition-transform">
@@ -70,7 +70,7 @@ const SidebarContent = () => {
             </button>
           </div>
           <div>
-            <div className="text-3xl font-black text-[#1A1A2E] tabular-nums">
+            <div className="text-3xl font-bold text-[#1A1A2E] tabular-nums">
               {balance.toLocaleString(undefined, { maximumFractionDigits: 4 })} <span className="text-sm uppercase text-[#1A1A2E]">{'XTZ'}</span>
             </div>
             {(reactPriceUsd ?? 0) > 0 && (
@@ -86,7 +86,7 @@ const SidebarContent = () => {
               <DialogTrigger asChild>
                 <button
                   type="button"
-                  className="w-full bg-red-500 text-white font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-2 py-2"
+                  className="w-full bg-red-500 text-white font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-2 py-2"
                 >
                   DISCONNECT
                 </button>
@@ -105,7 +105,7 @@ const SidebarContent = () => {
                   <DialogClose asChild>
                     <button
                       type="button"
-                      className="flex-1 bg-white text-[#1A1A2E] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
+                      className="flex-1 bg-white text-[#1A1A2E] font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
                     >
                       Cancel
                     </button>
@@ -113,7 +113,7 @@ const SidebarContent = () => {
                   <button
                     onClick={() => disconnect()}
                     type="button"
-                    className="flex-1 bg-red-500 text-white font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
+                    className="flex-1 bg-red-500 text-white font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-3"
                   >
                     Disconnect
                   </button>
@@ -132,7 +132,7 @@ const SidebarContent = () => {
               <li key={item.name}>
                 <Link
                   to={item.href}
-                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${isActive
+                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-semibold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${isActive
                     ? "bg-[#1A1A2E] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                     : "text-[#1A1A2E] bg-white hover:bg-[#0F59FF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
                     }`}
@@ -148,7 +148,7 @@ const SidebarContent = () => {
             <li>
               <Link
                 to="/admin"
-                className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname.startsWith("/admin")
+                className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname.startsWith("/admin")
                   ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                   : "text-white bg-[#0F59FF] hover:bg-[#0A3DBF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
                   }`}
@@ -163,7 +163,7 @@ const SidebarContent = () => {
         <div className="mt-8 mb-3">
           <Link
             to="/dashboard/create"
-            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-black uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname === "/dashboard/create"
+            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname === "/dashboard/create"
               ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
               : "bg-[#0F59FF] text-white hover:bg-[#0A3DBF] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
               }`}
@@ -178,7 +178,7 @@ const SidebarContent = () => {
             <button
               onClick={openConnectModal}
               type="button"
-              className="w-full bg-[#0F59FF] text-white font-black uppercase text-xs tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-4"
+              className="w-full bg-[#0F59FF] text-white font-bold uppercase text-xs tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-4 py-4"
             >
               CONNECT WALLET
             </button>
@@ -238,7 +238,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
               <div className="size-14 flex items-center justify-center">
                 <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="size-14 object-contain" />
               </div>
-              <span className="font-black text-sm uppercase tracking-wider">Tezforge</span>
+              <span className="font-bold text-sm uppercase tracking-wider">Tezforge</span>
             </Link>
             <button
               onClick={() => setSidebarOpen(true)}
