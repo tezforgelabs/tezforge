@@ -71,10 +71,7 @@ const SidebarContent = () => {
           </div>
           <div>
             <div className="text-3xl font-black text-[#1A1A2E] tabular-nums">
-              {balance.toLocaleString(undefined, { maximumFractionDigits: 4 })}
-            </div>
-            <div className="text-sm font-black uppercase mt-1 text-[#1A1A2E]">
-              {'XTZ'}
+              {balance.toLocaleString(undefined, { maximumFractionDigits: 4 })} <span className="text-sm uppercase text-[#1A1A2E]">{'XTZ'}</span>
             </div>
             {(reactPriceUsd ?? 0) > 0 && (
               <div className="text-xs font-bold mt-1 text-[#1A1A2E]">
