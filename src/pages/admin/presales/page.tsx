@@ -104,8 +104,8 @@ function PresaleCard({
   };
 
   return (
-    <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)]">
-      <CardHeader className="border-b-2 border-black bg-white p-4">
+    <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+      <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <CardTitle className="font-black uppercase tracking-wider text-lg">
@@ -117,7 +117,7 @@ function PresaleCard({
           </div>
           <Link
             to={`/projects/${presale.address}`}
-            className="text-gray-600 hover:text-black"
+            className="text-gray-600 hover:text-[#1A1A2E]"
           >
             <ExternalLink className="w-5 h-5" />
           </Link>
@@ -128,11 +128,11 @@ function PresaleCard({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <p className="text-gray-500 text-xs uppercase font-bold">Hard Cap</p>
-            <p className="font-bold">{formatEther(presale.hardCap)} REACT</p>
+            <p className="font-bold">{formatEther(presale.hardCap)} XTZ</p>
           </div>
           <div>
             <p className="text-gray-500 text-xs uppercase font-bold">Total Raised</p>
-            <p className="font-bold">{Math.round(Number(formatEther(presale.totalRaised))).toLocaleString()} REACT</p>
+            <p className="font-bold">{Math.round(Number(formatEther(presale.totalRaised))).toLocaleString()} XTZ</p>
           </div>
           <div>
             <p className="text-gray-500 text-xs uppercase font-bold">Progress</p>
@@ -153,7 +153,7 @@ function PresaleCard({
         </div>
 
         {/* Current Fees */}
-        <div className="flex items-center gap-4 p-3 bg-[#FFF9F0] border-2 border-black">
+        <div className="flex items-center gap-4 p-3 bg-[#F7F3EE] border-2 border-[#1A1A2E]">
           <div>
             <p className="text-xs text-gray-600 uppercase font-bold">Token Fee</p>
             <p className="font-bold">
@@ -175,7 +175,7 @@ function PresaleCard({
               variant="outline"
               size="sm"
               onClick={() => setShowFeeForm(!showFeeForm)}
-              className="ml-auto border-2 border-black font-bold uppercase text-xs"
+              className="ml-auto border-2 border-[#1A1A2E] font-bold uppercase text-xs"
             >
               {showFeeForm ? "Cancel" : "Update Fees"}
             </Button>
@@ -184,7 +184,7 @@ function PresaleCard({
 
         {/* Update Fees Form */}
         {showFeeForm && isFeeRecipient && (
-          <div className="p-4 bg-white border-2 border-black space-y-3">
+          <div className="p-4 bg-white border-2 border-[#1A1A2E] space-y-3">
             <p className="text-sm font-bold">Update fees (in basis points, 100 = 1%)</p>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -196,7 +196,7 @@ function PresaleCard({
                   placeholder={currentTokenFeeBps?.toString() ?? "200"}
                   value={newTokenFeeBps}
                   onChange={(e) => setNewTokenFeeBps(e.target.value)}
-                  className="border-2 border-black"
+                  className="border-2 border-[#1A1A2E]"
                 />
               </div>
               <div>
@@ -208,14 +208,14 @@ function PresaleCard({
                   placeholder={currentProceedsFeeBps?.toString() ?? "300"}
                   value={newProceedsFeeBps}
                   onChange={(e) => setNewProceedsFeeBps(e.target.value)}
-                  className="border-2 border-black"
+                  className="border-2 border-[#1A1A2E]"
                 />
               </div>
             </div>
             <Button
               onClick={handleUpdateFees}
               disabled={isBusy || !newTokenFeeBps || !newProceedsFeeBps}
-              className="w-full border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]"
+              className="w-full border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
             >
               {isBusy ? "Updating..." : "Confirm Update"}
             </Button>
@@ -252,12 +252,12 @@ function AdminPresalesContent() {
       <div className="mb-8">
         <Link
           to="/admin"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-black mb-4"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A2E] mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="font-bold">Back to Admin</span>
         </Link>
-        <div className="border-b-4 border-black bg-[#7DF9FF] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <div className="border-b-4 border-[#1A1A2E] bg-[#FF6B35] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <h1 className="text-4xl font-black uppercase tracking-wider">Manage Presales</h1>
           <p className="text-sm text-gray-700 mt-2">
             View all presales and update fees.
@@ -275,7 +275,7 @@ function AdminPresalesContent() {
         <Button
           variant={filter === "all" ? "default" : "outline"}
           onClick={() => setFilter("all")}
-          className={`border-2 border-black font-bold uppercase text-xs ${
+          className={`border-2 border-[#1A1A2E] font-bold uppercase text-xs ${
             filter === "all" ? "bg-black text-white" : ""
           }`}
         >
@@ -284,7 +284,7 @@ function AdminPresalesContent() {
         <Button
           variant={filter === "live" ? "default" : "outline"}
           onClick={() => setFilter("live")}
-          className={`border-2 border-black font-bold uppercase text-xs ${
+          className={`border-2 border-[#1A1A2E] font-bold uppercase text-xs ${
             filter === "live" ? "bg-green-500 text-white" : ""
           }`}
         >
@@ -293,7 +293,7 @@ function AdminPresalesContent() {
         <Button
           variant={filter === "upcoming" ? "default" : "outline"}
           onClick={() => setFilter("upcoming")}
-          className={`border-2 border-black font-bold uppercase text-xs ${
+          className={`border-2 border-[#1A1A2E] font-bold uppercase text-xs ${
             filter === "upcoming" ? "bg-yellow-500 text-white" : ""
           }`}
         >
@@ -302,7 +302,7 @@ function AdminPresalesContent() {
         <Button
           variant={filter === "ended" ? "default" : "outline"}
           onClick={() => setFilter("ended")}
-          className={`border-2 border-black font-bold uppercase text-xs ${
+          className={`border-2 border-[#1A1A2E] font-bold uppercase text-xs ${
             filter === "ended" ? "bg-gray-500 text-white" : ""
           }`}
         >
@@ -315,7 +315,7 @@ function AdminPresalesContent() {
         <Button
           variant="outline"
           onClick={() => refetch()}
-          className="border-2 border-black font-bold uppercase text-xs ml-auto"
+          className="border-2 border-[#1A1A2E] font-bold uppercase text-xs ml-auto"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
@@ -325,7 +325,7 @@ function AdminPresalesContent() {
       {/* Presales List */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A1A2E] mx-auto mb-4"></div>
           <p className="text-gray-500">Loading presales...</p>
         </div>
       ) : filteredPresales && filteredPresales.length > 0 ? (
@@ -339,7 +339,7 @@ function AdminPresalesContent() {
           ))}
         </div>
       ) : (
-        <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardContent className="p-8 text-center">
             <p className="text-gray-500">No presales found.</p>
           </CardContent>

@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { getPresaleMetadata } from "@/config/presale-metadata";
 
 export default function ProjectDetailPage() {
-  const { id } = useParams(); // This is the presale_address
+  const { id } = useParams();
   const {
     presale,
     isLoading: isLoadingPresale,
@@ -28,8 +28,6 @@ export default function ProjectDetailPage() {
     [presale?.address, id]
   );
 
-  // React purity rule: avoid calling `Date.now()` during render.
-  // Keep a ticking "now" in state and update it in an effect instead.
   const [nowMs, setNowMs] = useState<number | null>(null);
   useEffect(() => {
     const updateNow = () => setNowMs(Date.now());
@@ -61,8 +59,6 @@ export default function ProjectDetailPage() {
   const presaleHasEnded =
     presaleEndMs !== null && nowMs !== null ? presaleEndMs < nowMs : false;
 
-  // Show presale view (with claim/refund UI) after the sale ends as well,
-  // so participants can claim tokens or refunds instead of seeing Market Not Available.
   const showPresaleView =
     presaleIsActive || isPresaleFinalized || isPresaleCancelled || presaleHasEnded;
 
@@ -89,19 +85,19 @@ export default function ProjectDetailPage() {
         <div className="text-center py-10">
           <p className="text-xl font-bold">Market Not Available</p>
           <p className="text-gray-500">
-            The presale has ended, but a trading market has not been created for
+            The launch has ended, but a trading market has not been created for
             this token yet.
           </p>
         </div>
       );
     }
 
-    const dexScreenerUrl = `https://dexscreener.com/reactive-mainnet/${market.pairAddress}?embed=1&theme=dark&info=0`;
+    const dexScreenerUrl = `https://dexscreener.com/etherlink/${market.pairAddress}?embed=1&theme=dark&info=0`;
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <Card className="w-full h-[600px] overflow-hidden">
+          <Card className="w-full h-[600px] overflow-hidden border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <iframe
               src={dexScreenerUrl}
               className="w-full h-full border-0"
@@ -119,20 +115,20 @@ export default function ProjectDetailPage() {
   const renderPresaleView = (presale: PresaleWithStatus) => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2 space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Presale Progress</CardTitle>
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
+            <CardTitle className="font-black uppercase tracking-wider">Presale Progress</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="relative pt-1">
-                <div className="overflow-hidden h-4 text-xs flex rounded bg-gray-200">
+                <div className="overflow-hidden h-4 text-xs flex rounded bg-gray-200 border-2 border-[#1A1A2E]">
                   <div
                     style={{ width: `${presale.progress}%` }}
-                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500 transition-all duration-500"
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#FF6B35] transition-all duration-500"
                   ></div>
                 </div>
-                <p className="text-right font-semibold text-green-600">
+                <p className="text-right font-semibold text-[#FF6B35]">
                   {presale.progress.toFixed(2)}%
                 </p>
               </div>
@@ -161,23 +157,23 @@ export default function ProjectDetailPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Sale Details</CardTitle>
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
+            <CardTitle className="font-black uppercase tracking-wider">Sale Details</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-bold">Status</p>
               <Badge
                 className={`capitalize ${presale.status === "live"
-                  ? "bg-green-500"
+                  ? "bg-[#2ECC71] text-white"
                   : presale.status === "finalized"
-                    ? "bg-blue-500"
+                    ? "bg-[#00B4D8] text-white"
                     : presale.status === "cancelled"
-                      ? "bg-red-500"
+                      ? "bg-red-500 text-white"
                       : presale.status === "upcoming"
-                        ? "bg-yellow-500"
-                        : "bg-gray-500"
+                        ? "bg-[#F1C40F] text-black"
+                        : "bg-gray-500 text-white"
                   }`}
               >
                 {presale.claimEnabled
@@ -211,7 +207,7 @@ export default function ProjectDetailPage() {
               </p>
             </div>
             {presale.requiresWhitelist && (
-              <div className="col-span-2 border-2 border-black bg-[#FFFB8F] p-3 rounded">
+              <div className="col-span-2 border-2 border-[#1A1A2E] bg-[#F1C40F] p-3">
                 <p className="font-bold uppercase text-xs">Participation</p>
                 <p className="text-sm text-gray-700">
                   This sale is limited to wallets the project owner adds to the whitelist.
@@ -224,9 +220,9 @@ export default function ProjectDetailPage() {
 
       <div className="space-y-4">
         {presale.requiresWhitelist && (
-          <Card className="border-4 border-black bg-[#FFFB8F]">
+          <Card className="border-4 border-[#1A1A2E] bg-[#F1C40F] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <CardContent className="p-4">
-              <p className="font-black uppercase text-xs mb-1">Whitelist Required</p>
+              <p className="font-black uppercase text-xs mb-1 text-[#1A1A2E]">Whitelist Required</p>
               <p className="text-sm text-gray-700">
                 Connect your wallet below to check if you've been approved to join this sale.
               </p>
@@ -239,9 +235,9 @@ export default function ProjectDetailPage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-12 text-black">
+    <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
       <section className="mb-8 flex items-center gap-4">
-        <Avatar className="h-20 w-20">
+        <Avatar className="h-20 w-20 border-4 border-[#1A1A2E]">
           <AvatarImage
             src={
               presale.logo ||
@@ -250,12 +246,12 @@ export default function ProjectDetailPage() {
             }
             alt={`${presale.saleTokenName} logo`}
           />
-          <AvatarFallback>
+          <AvatarFallback className="bg-[#FF6B35] text-white font-black">
             {presale.saleTokenSymbol?.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-4xl font-bold">
+          <h1 className="text-4xl font-black">
             {presale.saleTokenName} ({presale.saleTokenSymbol})
           </h1>
           <p className="text-lg text-gray-500">
@@ -263,7 +259,7 @@ export default function ProjectDetailPage() {
             {presale.owner.slice(-4)}
           </p>
           {presale.requiresWhitelist && (
-            <Badge className="mt-2 bg-[#FFB3C1] text-black border border-black uppercase tracking-wider">
+            <Badge className="mt-2 bg-[#F1C40F] text-black border border-[#1A1A2E] uppercase tracking-wider">
               Whitelist Only
             </Badge>
           )}

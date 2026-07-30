@@ -4,16 +4,16 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useCountUp } from "@/lib/hooks/useCountUp";
 import { useLaunchpadPresales } from "@/lib/hooks/useLaunchpadPresales";
 import { useReactPriceUsd } from "@/lib/hooks/useReactPriceUsd";
-import { BookOpen, Menu, X } from "lucide-react";
+import { BookOpen, Menu, X, Hammer } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 const cardStyles = [
-  { bg: "bg-[#7DF9FF]", text: "text-black" },
-  { bg: "bg-[#FF4911]", text: "text-black" },
-  { bg: "bg-[#3300FF]", text: "text-white" },
+  { bg: "bg-[#FF6B35]", text: "text-white" },
+  { bg: "bg-[#00B4D8]", text: "text-white" },
+  { bg: "bg-[#1B2838]", text: "text-white" },
 ];
 
 export default function Home() {
@@ -36,7 +36,7 @@ export default function Home() {
     return [...live, ...upcoming].slice(0, 3);
   }, [allPresales]);
 
-  // Calculate total raised across all presales in REACT
+  // Calculate total raised across all presales in XTZ
   const totalRaisedValue = useMemo(() => {
     const sum = allPresales.reduce((acc, p) => acc + (p.totalRaised || 0n), 0n);
     return parseFloat(formatEther(sum));
@@ -64,23 +64,20 @@ export default function Home() {
   }, [reactPriceUsd, totalRaised]);
 
   return (
-    <main className="min-h-screen bg-[#FFF9F0] text-black">
+    <main className="min-h-screen bg-[#F7F3EE] text-[#1A1A2E]">
       <div className="container mx-auto px-4 sm:px-6 py-7 max-w-7xl">
+        {/* ── Header ── */}
         <header className="mb-16">
-          <div className="border-4 border-black bg-white px-4 py-4 sm:px-6 sm:py-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-[#1A1A2E] bg-white px-4 py-4 sm:px-6 sm:py-5 shadow-[6px_6px_0px_0px_rgba(26,26,46,1)]">
             <div className="flex items-center justify-between gap-4">
               <Link
                 to="/"
                 className="inline-flex items-center gap-3 text-2xl sm:text-3xl font-black tracking-wider uppercase"
               >
-                <img
-                  src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1764289640/reactpad_swlsov.png"
-                  alt="ReactPad Logo"
-                  width={44}
-                  height={44}
-                  className="h-10 w-10 object-contain"
-                />
-                <span>ReactPad</span>
+                <div className="w-10 h-10 bg-[#FF6B35] border-2 border-[#1A1A2E] flex items-center justify-center">
+                  <span className="text-white font-black text-xl">T</span>
+                </div>
+                <span className="text-[#1A1A2E]">Tezforge</span>
               </Link>
 
               <nav className="hidden md:flex items-center gap-6 text-sm lg:text-base font-black uppercase tracking-wider">
@@ -88,7 +85,7 @@ export default function Home() {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="hover:text-[#3300FF] transition-colors"
+                    className="hover:text-[#FF6B35] transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -97,7 +94,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => openConnectModal?.()}
-                    className="inline-flex items-center bg-black text-white px-4 py-2 border-2 border-black hover:bg-[#7DF9FF] hover:text-black transition-colors"
+                    className="inline-flex items-center bg-[#1B2838] text-white px-4 py-2 border-2 border-[#1A1A2E] hover:bg-[#FF6B35] hover:text-white transition-colors"
                   >
                     CONNECT WALLET
                   </button>
@@ -110,7 +107,7 @@ export default function Home() {
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-nav-menu"
                 aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-                className="md:hidden inline-flex items-center justify-center border-2 border-black bg-[#7DF9FF] p-2"
+                className="md:hidden inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#FF6B35] p-2 text-white"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -119,7 +116,7 @@ export default function Home() {
             <div
               id="mobile-nav-menu"
               className={`md:hidden overflow-hidden transition-all duration-200 ${
-                isMobileMenuOpen ? "max-h-80 mt-4 border-t-2 border-black pt-4" : "max-h-0"
+                isMobileMenuOpen ? "max-h-80 mt-4 border-t-2 border-[#1A1A2E] pt-4" : "max-h-0"
               }`}
             >
               <nav className="flex flex-col gap-3 text-sm font-black uppercase tracking-wider">
@@ -128,7 +125,7 @@ export default function Home() {
                     key={`${link.href}-mobile`}
                     to={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="border-2 border-black bg-[#FFF9F0] px-4 py-3"
+                    className="border-2 border-[#1A1A2E] bg-[#F7F3EE] px-4 py-3"
                   >
                     {link.label}
                   </Link>
@@ -140,7 +137,7 @@ export default function Home() {
                       setIsMobileMenuOpen(false);
                       openConnectModal?.();
                     }}
-                    className="inline-flex items-center justify-center border-2 border-black bg-black text-white px-4 py-3"
+                    className="inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#1B2838] text-white px-4 py-3"
                   >
                     CONNECT WALLET
                   </button>
@@ -150,28 +147,39 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Hero Section */}
+        {/* ── Hero ── */}
         <section className="mb-32 text-center">
+          <div className="inline-flex items-center gap-2 bg-[#1B2838] text-white px-4 py-2 mb-8 border-2 border-[#1A1A2E]">
+            <Hammer className="w-4 h-4" />
+            <span className="text-xs font-black uppercase tracking-widest">The Builder OS on Tezos</span>
+          </div>
           <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black uppercase leading-none mb-8 tracking-tight animate-fade-in-up">
-            LAUNCH IDEAS.
+            FORGE YOUR
             <br />
-            MOON PROJECTS.
+            <span className="text-[#FF6B35]">ONCHAIN</span> FUTURE.
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl mb-12 max-w-3xl mx-auto font-bold px-4 animate-fade-in-up animation-delay-200">
-            Discover, back, and launch the most promising projects on the
-            Reactive Network.
+            Tools, infrastructure, and capital formation for launching and growing ambitious projects on Tezos.
           </p>
-          <a
-            href="/projects"
-            className="inline-block bg-[#7DF9FF] text-black font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-black uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-400"
-          >
-            EXPLORE PROJECTS →
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
+            <a
+              href="/projects"
+              className="inline-block bg-[#FF6B35] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-[#1A1A2E] uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+            >
+              EXPLORE PROJECTS →
+            </a>
+            <a
+              href="/dashboard/create"
+              className="inline-block bg-white text-[#1A1A2E] font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-[#1A1A2E] uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+            >
+              LAUNCH A PROJECT
+            </a>
+          </div>
         </section>
 
-        {/* Stats Section */}
+        {/* ── Stats ── */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-          <div className="bg-[#7DF9FF] border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-200">
+          <div className="bg-[#FF6B35] text-white border-4 border-[#1A1A2E] p-8 shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-200">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Projects
             </p>
@@ -179,7 +187,7 @@ export default function Home() {
               {Math.floor(totalProjects).toLocaleString()}
             </p>
           </div>
-          <div className="bg-[#2FFF2F] border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-400">
+          <div className="bg-[#2ECC71] text-white border-4 border-[#1A1A2E] p-8 shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-400">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Raised
             </p>
@@ -192,10 +200,10 @@ export default function Home() {
                 })}`}
             </p>
             <p className="text-xl font-black mt-2">
-              {totalRaised < 0.01 ? "0" : totalRaised.toFixed(2)} REACT
+              {totalRaised < 0.01 ? "0" : totalRaised.toFixed(2)} XTZ
             </p>
           </div>
-          <div className="bg-[#FF00F5] border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-600">
+          <div className="bg-[#00B4D8] text-white border-4 border-[#1A1A2E] p-8 shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 animate-fade-in-up animation-delay-600">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Active Presales
             </p>
@@ -205,40 +213,37 @@ export default function Home() {
           </div>
         </section>
 
-        {/* How It Works Section */}
+        {/* ── How It Works ── */}
         <section className="mb-32">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-center">
             HOW IT WORKS
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="border-4 border-black p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="text-6xl font-black mb-4">1</div>
+            <div className="border-4 border-[#1A1A2E] p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(26,26,46,1)]">
+              <div className="text-6xl font-black mb-4 text-[#FF6B35]">1</div>
               <h3 className="text-2xl font-black uppercase mb-4">DISCOVER</h3>
               <p className="font-bold text-lg">
-                Browse a curated list of innovative projects seeking funding on
-                the Reactive Network.
+                Browse ambitious projects building on Tezos and find the next opportunity to back.
               </p>
             </div>
-            <div className="border-4 border-black p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="text-6xl font-black mb-4">2</div>
+            <div className="border-4 border-[#1A1A2E] p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(26,26,46,1)]">
+              <div className="text-6xl font-black mb-4 text-[#FF6B35]">2</div>
               <h3 className="text-2xl font-black uppercase mb-4">BACK</h3>
               <p className="font-bold text-lg">
-                Support the projects you believe in by participating in their
-                Funding Round.
+                Support projects you believe in by participating in their token launch or NFT drop.
               </p>
             </div>
-            <div className="border-4 border-black p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="text-6xl font-black mb-4">3</div>
+            <div className="border-4 border-[#1A1A2E] p-8 text-center bg-white shadow-[8px_8px_0px_0px_rgba(26,26,46,1)]">
+              <div className="text-6xl font-black mb-4 text-[#FF6B35]">3</div>
               <h3 className="text-2xl font-black uppercase mb-4">LAUNCH</h3>
               <p className="font-bold text-lg">
-                Help projects reach their funding goals and watch them launch
-                into the stratosphere.
+                Help projects reach their goals and watch them grow within the Tezos ecosystem.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Featured Projects Section */}
+        {/* ── Featured Launches ── */}
         <section className="mb-32">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight">
             FEATURED LAUNCHES
@@ -263,7 +268,7 @@ export default function Home() {
                   <div
                     className={`${cardStyles[index % cardStyles.length].bg} ${
                       cardStyles[index % cardStyles.length].text
-                    } border-4 border-black p-8 cursor-pointer shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 h-full flex flex-col`}
+                    } border-4 border-[#1A1A2E] p-8 cursor-pointer shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:shadow-[12px_12px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 h-full flex flex-col`}
                   >
                     <h3 className="text-2xl font-black uppercase mb-4 flex-grow">
                       {presale.saleTokenName || "Unnamed Project"}
@@ -278,52 +283,51 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Call to Action Section */}
-        <section className="bg-black text-white border-4 border-black p-8 sm:p-12 md:p-16 text-center mb-16 shadow-[8px_8px_0px_0px_#7DF9FF]">
+        {/* ── CTA ── */}
+        <section className="bg-[#1B2838] text-white border-4 border-[#1A1A2E] p-8 sm:p-12 md:p-16 text-center mb-16 shadow-[8px_8px_0px_0px_#FF6B35]">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-6 tracking-tight">
-            Ready to Launch?
+            Ready to Build?
           </h2>
           <p className="text-lg sm:text-xl md:text-2xl mb-10 max-w-2xl mx-auto px-4">
-            Got the next big idea? Launch your project on ReactPad and get the
-            funding you need to make it a reality.
+            Got the next big idea? Launch your project on Tezforge and get the tools, funding, and community you need to make it a reality.
           </p>
           <a
             href="/dashboard/create"
-            className="inline-block bg-[#FF00F5] text-black font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-black uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.5)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+            className="inline-block bg-[#FF6B35] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-4 border-white uppercase tracking-wider shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.5)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
           >
             CREATE A PROJECT
           </a>
         </section>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-black text-white border-t-4 border-black">
+      {/* ── Footer ── */}
+      <footer className="bg-[#1B2838] text-white border-t-4 border-[#1A1A2E]">
         <div className="container mx-auto px-6 py-8 max-w-7xl flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-bold uppercase tracking-wider text-center md:text-left">
-            &copy; {new Date().getFullYear()} ReactPad
+            &copy; {new Date().getFullYear()} Tezforge
           </p>
           <div className="flex gap-6">
             <a
-              href="https://x.com/reactpad"
+              href="https://x.com/tezforge"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#7DF9FF] transition-colors"
+              className="hover:text-[#FF6B35] transition-colors"
             >
               <XSocialIcon size={24} />
             </a>
             <a
-              href="https://t.me/reactpad"
+              href="https://t.me/tezforge"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#7DF9FF] transition-colors"
+              className="hover:text-[#FF6B35] transition-colors"
             >
               <TelegramIcon size={24} />
             </a>
             <a
-              href="https://reactpad.gitbook.io/"
+              href="https://docs.tezforge.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#7DF9FF] transition-colors"
+              className="hover:text-[#FF6B35] transition-colors"
             >
               <BookOpen size={24} />
             </a>

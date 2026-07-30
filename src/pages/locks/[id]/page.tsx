@@ -72,7 +72,7 @@ function LockProgressBar({ lockDate, unlockDate }: { lockDate: bigint; unlockDat
             </div>
             <Progress 
                 value={progress} 
-                className={`h-4 border-2 border-black ${isExpired ? 'bg-green-200' : 'bg-gray-200'}`}
+                className={`h-4 border-2 border-[#1A1A2E] ${isExpired ? 'bg-green-200' : 'bg-gray-200'}`}
             />
             <div className="text-center">
                 {isExpired ? (
@@ -169,7 +169,7 @@ export default function LockDetailPage() {
     if (isLoadingLock) {
         return (
             <div className="container mx-auto px-4 py-8 sm:py-12">
-                <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] max-w-2xl mx-auto">
+                <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] max-w-2xl mx-auto">
                     <CardContent className="p-8 sm:p-12 text-center">
                         <Lock className="w-12 h-12 sm:w-16 sm:h-16 mx-auto animate-pulse text-gray-400" />
                         <p className="text-base sm:text-lg font-bold mt-4">Loading Lock #{id}...</p>
@@ -182,13 +182,13 @@ export default function LockDetailPage() {
     if (lockError || !lock) {
         return (
             <div className="container mx-auto px-4 py-8 sm:py-12">
-                <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] max-w-2xl mx-auto">
+                <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] max-w-2xl mx-auto">
                     <CardContent className="p-8 sm:p-12 text-center space-y-4">
                         <XCircle className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-red-500" />
                         <p className="text-lg sm:text-xl font-black">Lock Not Found</p>
                         <p className="text-gray-600 text-sm sm:text-base">Lock #{id} does not exist or has not been created yet.</p>
                         <Link to="/dashboard/user">
-                            <Button className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
+                            <Button className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
                                 <ArrowLeft className="w-4 h-4 mr-2" />
                                 Back to Dashboard
                             </Button>
@@ -200,11 +200,11 @@ export default function LockDetailPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-6 sm:py-8 text-black">
+        <div className="container mx-auto px-4 py-6 sm:py-8 text-[#1A1A2E]">
             {/* Back Link */}
             <Link 
                 to="/dashboard/user"
-                className="inline-flex items-center gap-2 text-gray-600 hover:text-black mb-4 sm:mb-6 font-bold text-sm sm:text-base"
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A2E] mb-4 sm:mb-6 font-bold text-sm sm:text-base"
             >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
@@ -212,10 +212,10 @@ export default function LockDetailPage() {
 
             {/* Header */}
             <div className="mb-6 sm:mb-8">
-                <div className={`border-4 border-black p-4 sm:p-6 shadow-[4px_4px_0_rgba(0,0,0,1)] ${
+                <div className={`border-4 border-[#1A1A2E] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] ${
                     lockStatus === 'withdrawn' ? 'bg-gray-300' :
                     lockStatus === 'unlockable' ? 'bg-[#90EE90]' :
-                    'bg-[#FFFB8F]'
+                    'bg-[#F1C40F]'
                 }`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
@@ -225,10 +225,10 @@ export default function LockDetailPage() {
                                 <span className="break-all">{lock.name || `Token Lock #${id}`}</span>
                             </h1>
                         </div>
-                        <div className={`px-3 py-1.5 sm:px-4 sm:py-2 border-4 border-black font-black uppercase text-xs sm:text-sm self-start sm:self-auto ${
+                        <div className={`px-3 py-1.5 sm:px-4 sm:py-2 border-4 border-[#1A1A2E] font-black uppercase text-xs sm:text-sm self-start sm:self-auto ${
                             lockStatus === 'withdrawn' ? 'bg-gray-500 text-white' :
                             lockStatus === 'unlockable' ? 'bg-green-600 text-white' :
-                            'bg-yellow-500 text-black'
+                            'bg-yellow-500 text-[#1A1A2E]'
                         }`}>
                             {lockStatus === 'withdrawn' ? '✓ Withdrawn' :
                              lockStatus === 'unlockable' ? 'Unlockable' :
@@ -243,8 +243,8 @@ export default function LockDetailPage() {
 
             <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
                 {/* Token Info */}
-                <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-                    <CardHeader className="border-b-2 border-black bg-[#7DF9FF] p-3 sm:p-4">
+                <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+                    <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-3 sm:p-4">
                         <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-sm sm:text-base">
                             <Coins className="w-4 h-4 sm:w-5 sm:h-5" />
                             Locked Token
@@ -286,8 +286,8 @@ export default function LockDetailPage() {
                 </Card>
 
                 {/* Owner Info */}
-                <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-                    <CardHeader className="border-b-2 border-black bg-[#FFB6C1] p-3 sm:p-4">
+                <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+                    <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FFB6C1] p-3 sm:p-4">
                         <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-sm sm:text-base">
                             <User className="w-4 h-4 sm:w-5 sm:h-5" />
                             Lock Owner
@@ -322,8 +322,8 @@ export default function LockDetailPage() {
 
             {/* Progress Section */}
             {!lock.withdrawn && (
-                <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0 mt-4 sm:mt-6">
-                    <CardHeader className="border-b-2 border-black bg-white p-3 sm:p-4">
+                <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0 mt-4 sm:mt-6">
+                    <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-3 sm:p-4">
                         <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-sm sm:text-base">
                             <Timer className="w-4 h-4 sm:w-5 sm:h-5" />
                             Lock Progress
@@ -337,8 +337,8 @@ export default function LockDetailPage() {
 
             {/* Timeline - Only for withdrawn locks */}
             {lock.withdrawn && (
-                <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0 mt-4 sm:mt-6">
-                    <CardHeader className="border-b-2 border-black bg-white p-3 sm:p-4">
+                <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0 mt-4 sm:mt-6">
+                    <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-3 sm:p-4">
                         <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-sm sm:text-base">
                             <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
                             Timeline
@@ -351,7 +351,7 @@ export default function LockDetailPage() {
                             
                             {/* Lock Created */}
                             <div className="relative flex items-start gap-3 sm:gap-4 pb-6 sm:pb-8">
-                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#7DF9FF] border-2 sm:border-4 border-black flex items-center justify-center z-10 flex-shrink-0">
+                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#FF6B35] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center z-10 flex-shrink-0">
                                     <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
                                 </div>
                                 <div className="pt-0.5">
@@ -372,7 +372,7 @@ export default function LockDetailPage() {
 
                             {/* Unlock Date */}
                             <div className="relative flex items-start gap-3 sm:gap-4 pb-6 sm:pb-8">
-                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#90EE90] border-2 sm:border-4 border-black flex items-center justify-center z-10 flex-shrink-0">
+                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#90EE90] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center z-10 flex-shrink-0">
                                     <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                                 </div>
                                 <div className="pt-0.5">
@@ -393,7 +393,7 @@ export default function LockDetailPage() {
 
                             {/* Withdrawn */}
                             <div className="relative flex items-start gap-3 sm:gap-4">
-                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gray-400 border-2 sm:border-4 border-black flex items-center justify-center z-10 flex-shrink-0">
+                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gray-400 border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center z-10 flex-shrink-0">
                                     <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                 </div>
                                 <div className="pt-0.5">
@@ -409,10 +409,10 @@ export default function LockDetailPage() {
             )}
 
             {/* Verification Notice */}
-            <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0 mt-4 sm:mt-6 bg-[#FFF9F0]">
+            <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0 mt-4 sm:mt-6 bg-[#F7F3EE]">
                 <CardContent className="p-4 sm:p-6">
                     <div className="flex items-start gap-3 sm:gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#7DF9FF] border-2 sm:border-4 border-black flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FF6B35] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center flex-shrink-0">
                             <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                         <div>

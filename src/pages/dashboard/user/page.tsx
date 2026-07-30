@@ -9,7 +9,7 @@ import { useUserTokens } from "@/lib/hooks/useUserTokens";
 import { useWhitelistedCreator } from "@/lib/hooks/useWhitelistedCreator";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, FileText, Lock, Plus, X } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, FileText, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { Address } from "viem";
@@ -44,7 +44,7 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
   }
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 border-2 border-black bg-white shadow-[2px_2px_0_rgba(0,0,0,1)]">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
       <div className="flex-1 min-w-0">
         <h3 className="font-black text-lg uppercase">
           {name as string || 'Unknown Token'} ({symbol as string || 'N/A'})
@@ -52,18 +52,18 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
         <p className="text-xs text-gray-500 break-all font-mono">{tokenAddress}</p>
       </div>
       <div className="flex flex-wrap gap-2 flex-shrink-0">
-        <Button variant="outline" size="sm" asChild className="border-2 border-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_rgba(0,0,0,1)]">
+        <Button variant="outline" size="sm" asChild className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]">
           <Link to={`/dashboard/tools/token-locker?token=${tokenAddress}`}>
             Lock
           </Link>
         </Button>
-        <Button variant="outline" size="sm" asChild className="border-2 border-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_rgba(0,0,0,1)]">
+        <Button variant="outline" size="sm" asChild className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]">
           <Link to={`/dashboard/tools/airdrop?token=${tokenAddress}`}>
             Airdrop</Link>
         </Button>
         {!isLoadingWhitelist && (
           isWhitelisted ? (
-            <Button size="sm" asChild className="border-2 border-black bg-[#7DF9FF] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#6AD8E8]">
+            <Button size="sm" asChild className="border-2 border-[#1A1A2E] bg-[#FF6B35] text-white font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E55A2B]">
               <Link to={`/dashboard/create/presale?token=${tokenAddress}`}>
                 <FileText className="w-3 h-3 mr-1" /> Presale
               </Link>
@@ -72,7 +72,7 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
             <Button
               size="sm"
               onClick={onPresaleClick}
-              className="border-2 border-black bg-[#7DF9FF] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#6AD8E8]"
+              className="border-2 border-[#1A1A2E] bg-[#FF6B35] text-white font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E55A2B]"
             >
               <FileText className="w-3 h-3 mr-1" /> Presale
             </Button>
@@ -86,7 +86,6 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
 function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
   const { presales, isLoading } = useLaunchpadPresales('all', false);
 
-  // Find the presale in the list
   const presaleData = presales?.find(p => p.address.toLowerCase() === presaleAddress.toLowerCase());
 
   if (isLoading || !presaleData) {
@@ -104,16 +103,16 @@ function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'live': return 'bg-green-500';
-      case 'upcoming': return 'bg-yellow-500';
-      case 'finalized': return 'bg-blue-500';
+      case 'live': return 'bg-[#2ECC71]';
+      case 'upcoming': return 'bg-[#F1C40F]';
+      case 'finalized': return 'bg-[#00B4D8]';
       case 'cancelled': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
   };
 
   return (
-    <div className="p-4 border-2 border-black bg-white shadow-[2px_2px_0_rgba(0,0,0,1)]">
+    <div className="p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -127,7 +126,7 @@ function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
           <p className="text-xs text-gray-500 break-all font-mono">{presaleAddress}</p>
         </div>
         <div className="flex flex-wrap gap-2 flex-shrink-0">
-          <Button size="sm" asChild className="border-2 border-black bg-[#FFFB8F] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#EDE972]">
+          <Button size="sm" asChild className="border-2 border-[#1A1A2E] bg-[#F1C40F] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]">
             <Link to={`/dashboard/presales/manage/${presaleAddress}`}>
               Manage <ExternalLink className="ml-1 h-3 w-3" />
             </Link>
@@ -139,10 +138,10 @@ function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
           <div className="flex justify-between text-xs mb-1">
             <span className="font-bold">{progress}% Funded</span>
             <span className="text-gray-500">
-              {Math.round(Number(formatUnits(presaleData.totalRaised, 18))).toLocaleString()} / {Math.round(Number(formatUnits(presaleData.hardCap, 18))).toLocaleString()} REACT
+              {Math.round(Number(formatUnits(presaleData.totalRaised, 18))).toLocaleString()} / {Math.round(Number(formatUnits(presaleData.hardCap, 18))).toLocaleString()} XTZ
             </span>
           </div>
-          <Progress value={progress} className="h-2 border border-black" />
+          <Progress value={progress} className="h-2 border border-[#1A1A2E]" />
         </div>
       )}
     </div>
@@ -155,15 +154,13 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(Date.now());
-    }, 60000); // Update every minute instead of every second
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Safe bigint to string conversion
   const lockIdString = lock.id !== undefined && lock.id !== null ? String(lock.id) : '0';
   
-  // Safe number conversions with fallbacks
   let lockTimestamp = 0;
   let unlockTimestamp = 0;
   try {
@@ -178,7 +175,6 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
   const progress = totalDuration > 0 ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100)) : 0;
   const isExpired = unlockTimestamp > 0 && now >= unlockTimestamp;
 
-  // Safe distance calculation
   let timeRemaining = 'Ready';
   if (!isExpired && unlockTimestamp > 0) {
     try {
@@ -190,12 +186,12 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
   }
 
   return (
-    <div className="p-4 border-2 border-black bg-white shadow-[2px_2px_0_rgba(0,0,0,1)]">
+    <div className="p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="font-black text-sm uppercase">{lock.name || `Lock #${lockIdString}`}</span>
         </div>
-        <span className={`px-2 py-0.5 text-xs font-bold uppercase ${lock.withdrawn ? 'bg-gray-400 text-white' : isExpired ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black'}`}>
+        <span className={`px-2 py-0.5 text-xs font-bold uppercase ${lock.withdrawn ? 'bg-gray-400 text-white' : isExpired ? 'bg-[#2ECC71] text-white' : 'bg-[#F1C40F] text-black'}`}>
           {lock.withdrawn ? 'Withdrawn' : isExpired ? 'Unlockable' : 'Locked'}
         </span>
       </div>
@@ -204,11 +200,11 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
         <span className="text-xs text-gray-500">{timeRemaining}</span>
       </div>
       {!lock.withdrawn && (
-        <Progress value={progress} className={`h-1.5 border border-black ${isExpired ? 'bg-green-100' : 'bg-gray-100'}`} />
+        <Progress value={progress} className={`h-1.5 border border-[#1A1A2E] ${isExpired ? 'bg-green-100' : 'bg-gray-100'}`} />
       )}
       <div className="mt-3 flex justify-end">
         <Link to={`/locks/${lockIdString}`}>
-          <Button size="sm" variant="outline" className="border-2 border-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_rgba(0,0,0,1)]">
+          <Button size="sm" variant="outline" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]">
             View <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </Link>
@@ -229,7 +225,6 @@ export default function UserDashboardPage() {
   const [tokenPage, setTokenPage] = useState(0);
   const navigate = useNavigate();
 
-  // Pagination for tokens (newest first)
   const TOKENS_PER_PAGE = 3;
   const tokenList = [...((createdTokens as `0x${string}`[]) || [])].reverse();
   const totalTokenPages = Math.ceil(tokenList.length / TOKENS_PER_PAGE);
@@ -238,13 +233,11 @@ export default function UserDashboardPage() {
     (tokenPage + 1) * TOKENS_PER_PAGE
   );
 
-  // Filter presales owned by the user
   const myPresales = presales?.filter(
     (p) => address && p.owner?.toLowerCase() === address.toLowerCase()
   ) || [];
 
   const activeLocks = [...(userLocks?.filter(l => !l.withdrawn) || [])].reverse();
-
 
   useEffect(() => {
     if (isWhitelisted && isModalOpen) {
@@ -254,11 +247,11 @@ export default function UserDashboardPage() {
 
   if (!isConnected) {
     return (
-      <div className="container mx-auto px-4 py-12 text-black">
-        <div className="border-b-4 border-black bg-[#FFFB8F] p-4 sm:p-6 shadow-[4px_4px_0_rgba(0,0,0,1)] mb-8">
+      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
+        <div className="border-b-4 border-[#1A1A2E] bg-[#F1C40F] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider">Your Dashboard</h1>
         </div>
-        <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardContent className="py-12 text-center">
             <p className="text-lg text-gray-600 mb-4">
               Please connect your wallet to view your dashboard.
@@ -270,31 +263,30 @@ export default function UserDashboardPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 text-black">
+    <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <div className="border-b-4 border-black bg-[#FFFB8F] p-4 sm:p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <div className="border-b-3 border-[#1A1A2E] bg-[#F1C40F] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider">Your Dashboard</h1>
-              <p className="text-xs sm:text-sm font-mono mt-1 sm:mt-2 truncate">
-                {address?.slice(0, 6)}...{address?.slice(-4)}
-              </p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3">
+                Your Dashboard
+              </h1>
             </div>
           </div>
         </div>
       </div>
 
-      {/* My Created Tokens - Full Width */}
-      <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0 mt-2 mb-6">
-        <CardHeader className="border-b-2 border-black bg-[#ffffff] p-4">
+      {/* My Created Tokens */}
+      <Card className="border-2 border-[#1A1A2E] shadow-[3px_3px_0_rgba(26,26,46,1)] p-0 gap-0 mt-2 mb-6">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-black">
-              My Created Tokens
+            <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-[#1A1A2E]">
+              My Tokens
             </CardTitle>
             {tokenList.length > 0 && (
               <Link to="/dashboard/create/token">
-                <Button size="sm" className="border-2 border-black bg-white text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)]">
+                <Button size="sm" className="border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)]">
                   <Plus className="w-3 h-3 mr-1" /> New Token
                 </Button>
               </Link>
@@ -315,7 +307,6 @@ export default function UserDashboardPage() {
               {paginatedTokens.map((token) => (
                 <TokenInfo key={token} tokenAddress={token} onPresaleClick={() => setIsModalOpen(true)} />
               ))}
-              {/* Pagination Controls */}
               {totalTokenPages > 1 && (
                 <div className="flex items-center justify-between pt-4 border-t-2 border-gray-200">
                   <Button
@@ -323,7 +314,7 @@ export default function UserDashboardPage() {
                     size="sm"
                     onClick={() => setTokenPage(p => Math.max(0, p - 1))}
                     disabled={tokenPage === 0}
-                    className="border-2 border-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none"
+                    className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] disabled:opacity-50 disabled:shadow-none"
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" /> Prev
                   </Button>
@@ -335,7 +326,7 @@ export default function UserDashboardPage() {
                     size="sm"
                     onClick={() => setTokenPage(p => Math.min(totalTokenPages - 1, p + 1))}
                     disabled={tokenPage >= totalTokenPages - 1}
-                    className="border-2 border-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none"
+                    className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] disabled:opacity-50 disabled:shadow-none"
                   >
                     Next <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
@@ -346,8 +337,8 @@ export default function UserDashboardPage() {
             <div className="text-center py-12">
               <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">You have not created any tokens yet.</p>
               <Link to="/dashboard/create/token">
-                <Button className="border-4 border-black bg-[#22C55E] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#16A34A]">
-                  <Plus className="w-4 h-4 mr-1" /> Create Your First Token
+                <Button className="border-2 border-[#1A1A2E] bg-[#2ECC71] text-white font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-[#27AE60]">
+                  Create Your First Token
                 </Button>
               </Link>
             </div>
@@ -357,9 +348,9 @@ export default function UserDashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* My Presales */}
-        <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-          <CardHeader className="border-b-2 border-black bg-[#7DF9FF] p-4">
-            <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
+        <Card className="border-2 border-[#1A1A2E] shadow-[3px_3px_0_rgba(26,26,46,1)] p-0 gap-0">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-4">
+            <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-white">
               My Presales
             </CardTitle>
           </CardHeader>
@@ -378,7 +369,7 @@ export default function UserDashboardPage() {
                 ))}
                 {myPresales.length > 3 && (
                   <Link to="/dashboard/presales" className="block text-center">
-                    <Button variant="outline" size="sm" className="border-2 border-black font-bold text-xs uppercase">
+                    <Button variant="outline" size="sm" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase">
                       View All ({myPresales.length}) <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                   </Link>
@@ -388,24 +379,24 @@ export default function UserDashboardPage() {
               <div className="text-center py-8">
                 <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">No presales yet</p>
                 {isLoadingWhitelist ? (
-                  <Button disabled className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] opacity-70">
+                  <Button disabled className="border-2 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] opacity-70">
                     Checking Whitelist...
                   </Button>
                 ) : isWhitelisted ? (
                   <Link to="/dashboard/create/presale">
-                    <Button className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
+                    <Button className="border-2 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)]">
                       Create Presale
                     </Button>
                   </Link>
                 ) : (
                   <>
-                    <Button onClick={() => setIsModalOpen(true)} className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
+                    <Button onClick={() => setIsModalOpen(true)} className="border-2 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)]">
                       Create Presale
                     </Button>
                     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                       <DialogPortal>
                         <DialogOverlay className="bg-black/70 backdrop-blur-sm" />
-                        <DialogPrimitive.Content className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-4 border-black bg-white p-6 shadow-[8px_8px_0_rgba(0,0,0,1)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-none">
+                        <DialogPrimitive.Content className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-4 border-[#1A1A2E] bg-white p-6 shadow-[8px_8px_0_rgba(26,26,46,1)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-none">
                           <DialogHeader>
                             <DialogTitle className="font-black uppercase tracking-wider text-xl">Before You Continue</DialogTitle>
                             <DialogDescription className="text-gray-600">
@@ -413,13 +404,13 @@ export default function UserDashboardPage() {
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter className="gap-2">
-                            <Button variant="outline" onClick={() => setIsModalOpen(false)} className="border-2 border-black font-bold uppercase">
+                            <Button variant="outline" onClick={() => setIsModalOpen(false)} className="border-2 border-[#1A1A2E] font-bold uppercase">
                               Cancel
                             </Button>
                             <Button onClick={() => {
                               setIsModalOpen(false);
                               navigate("/dashboard/create/project");
-                            }} className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase shadow-[3px_3px_0_rgba(0,0,0,1)]">
+                            }} className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase shadow-[3px_3px_0_rgba(26,26,46,1)]">
                               Continue to Form
                             </Button>
                           </DialogFooter>
@@ -438,14 +429,14 @@ export default function UserDashboardPage() {
         </Card>
 
         {/* My Locks */}
-        <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-          <CardHeader className="border-b-2 border-black bg-[#FFFB8F] p-4">
+        <Card className="border-2 border-[#1A1A2E] shadow-[3px_3px_0_rgba(26,26,46,1)] p-0 gap-0">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#00B4D8] p-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
+              <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2 text-white">
                 My Token Locks
               </CardTitle>
               <Link to="/dashboard/tools/token-locker">
-                <Button size="sm" variant="outline" className="border-2 border-black font-bold text-xs uppercase">
+                <Button size="sm" variant="outline" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase bg-white">
                   Manage
                 </Button>
               </Link>
@@ -462,7 +453,6 @@ export default function UserDashboardPage() {
             ) : activeLocks.length > 0 ? (
               <div className="space-y-3">
                 {activeLocks.slice(0, 3).map((lock) => {
-                  // Safety check for lock data
                   if (!lock || lock.id === undefined) return null;
                   try {
                     return <LockPreviewCard key={lock.id.toString()} lock={lock} />;
@@ -473,7 +463,7 @@ export default function UserDashboardPage() {
                 })}
                 {activeLocks.length > 3 && (
                   <Link to="/dashboard/tools/token-locker" className="block text-center">
-                    <Button variant="outline" size="sm" className="border-2 border-black font-bold text-xs uppercase">
+                    <Button variant="outline" size="sm" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase">
                       View All ({activeLocks.length}) <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                   </Link>
@@ -483,8 +473,8 @@ export default function UserDashboardPage() {
               <div className="text-center py-8">
                 <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">No active locks</p>
                 <Link to="/dashboard/tools/token-locker">
-                  <Button className="border-4 border-black bg-[#FFFB8F] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#EDE972]">
-                    <Lock className="w-4 h-4 mr-1" /> Create Lock
+                  <Button className="border-2 border-[#1A1A2E] bg-[#00B4D8] text-white font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-[#0096B8]">
+                    Create Lock
                   </Button>
                 </Link>
               </div>

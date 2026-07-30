@@ -48,8 +48,8 @@ function WhitelistChecker() {
   }, [addressToCheck, refetch]);
 
   return (
-    <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-      <CardHeader className="border-b-2 border-black bg-white p-6">
+    <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+      <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-6">
         <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
           <Search className="w-5 h-5" />
           Check Whitelist Status
@@ -64,19 +64,19 @@ function WhitelistChecker() {
             placeholder="Address to check (0x...)"
             value={checkAddress}
             onChange={(e) => setCheckAddress(e.target.value)}
-            className="border-2 border-black font-mono"
+            className="border-2 border-[#1A1A2E] font-mono"
           />
           <Button
             onClick={handleCheck}
             disabled={!checkAddress}
-            className="border-4 border-black bg-white text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-gray-100 whitespace-nowrap"
+            className="border-4 border-[#1A1A2E] bg-white text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-gray-100 whitespace-nowrap"
           >
             Check
           </Button>
         </div>
         {addressToCheck && !isLoading && (
           <div
-            className={`p-4 border-2 border-black ${
+            className={`p-4 border-2 border-[#1A1A2E] ${
               isWhitelisted ? "bg-green-100" : "bg-red-100"
             }`}
           >
@@ -98,7 +98,7 @@ function WhitelistChecker() {
           </div>
         )}
         {isLoading && (
-          <div className="p-4 border-2 border-black bg-gray-100">
+          <div className="p-4 border-2 border-[#1A1A2E] bg-gray-100">
             <p className="text-gray-500">Checking...</p>
           </div>
         )}
@@ -179,8 +179,8 @@ function WhitelistManager() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {/* Add to Whitelist */}
-      <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-        <CardHeader className="border-b-2 border-black bg-[#90EE90] p-6">
+      <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#2ECC71] p-6">
           <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
             <UserPlus className="w-5 h-5" />
             Add to Whitelist
@@ -194,12 +194,12 @@ function WhitelistManager() {
             placeholder="Creator address (0x...)"
             value={addAddress}
             onChange={(e) => setAddAddress(e.target.value)}
-            className="border-2 border-black font-mono"
+            className="border-2 border-[#1A1A2E] font-mono"
           />
           <Button
             onClick={handleAdd}
             disabled={isAdding || !addAddress}
-            className="w-full border-4 border-black bg-[#90EE90] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#7ADF7A]"
+            className="w-full border-4 border-[#1A1A2E] bg-[#2ECC71] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#7ADF7A]"
           >
             {isAdding ? "Adding..." : "Add Creator"}
           </Button>
@@ -207,8 +207,8 @@ function WhitelistManager() {
       </Card>
 
       {/* Remove from Whitelist */}
-      <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-        <CardHeader className="border-b-2 border-black bg-[#FFB6C1] p-6">
+      <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FFB6C1] p-6">
           <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
             <UserMinus className="w-5 h-5" />
             Remove from Whitelist
@@ -223,12 +223,12 @@ function WhitelistManager() {
             placeholder="Creator address (0x...)"
             value={removeAddress}
             onChange={(e) => setRemoveAddress(e.target.value)}
-            className="border-2 border-black font-mono"
+            className="border-2 border-[#1A1A2E] font-mono"
           />
           <Button
             onClick={handleRemove}
             disabled={isRemoving || !removeAddress}
-            className="w-full border-4 border-black bg-[#FFB6C1] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#FFA0AB]"
+            className="w-full border-4 border-[#1A1A2E] bg-[#FFB6C1] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#FFA0AB]"
           >
             {isRemoving ? "Removing..." : "Remove Creator"}
           </Button>
@@ -242,8 +242,8 @@ function RecentWhitelistEvents() {
   // This could be expanded to fetch CreatorWhitelisted events from the factory
   // For now, show a placeholder
   return (
-    <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-      <CardHeader className="border-b-2 border-black bg-[#FFF9F0] p-6">
+    <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+      <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FFF9F0] p-6">
         <CardTitle className="font-black uppercase tracking-wider">
           Whitelist Information
         </CardTitle>
@@ -274,7 +274,7 @@ function RecentWhitelistEvents() {
             </ul>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-[#90EE90] text-black font-bold">
+            <Badge className="bg-[#2ECC71] text-[#1A1A2E] font-bold">
               Whitelisted
             </Badge>
             <span className="text-sm text-gray-600">
@@ -282,7 +282,7 @@ function RecentWhitelistEvents() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-[#FFB6C1] text-black font-bold">
+            <Badge className="bg-[#FFB6C1] text-[#1A1A2E] font-bold">
               Not Whitelisted
             </Badge>
             <span className="text-sm text-gray-600">
@@ -302,12 +302,12 @@ function AdminWhitelistContent() {
       <div className="mb-8">
         <Link
           to="/admin"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-black mb-4"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A2E] mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="font-bold">Back to Admin</span>
         </Link>
-        <div className="border-b-4 border-black bg-[#90EE90] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <div className="border-b-4 border-[#1A1A2E] bg-[#2ECC71] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <h1 className="text-4xl font-black uppercase tracking-wider">
             Whitelist Creators
           </h1>

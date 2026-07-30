@@ -23,17 +23,17 @@ export function NFTCard({ nftAddress }: { nftAddress: `0x${string}` }) {
     const [name, _symbol, maxSupply, totalMinted, mintPrice] = data || [];
 
     if (isLoading || !data) {
-        return <div className="border-4 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">Loading...</div>;
+        return <div className="border-4 border-[#1A1A2E] p-6 bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">Loading...</div>;
     }
 
     const progress = maxSupply?.result ? (Number(totalMinted?.result as bigint) / Number(maxSupply.result as bigint)) * 100 : 0;
 
     return (
         <Link to={`/nfts/${nftAddress}`} className="block h-full">
-            <div className="border-4 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 group cursor-pointer h-full flex flex-col">
+            <div className="border-4 border-[#1A1A2E] p-6 bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 group cursor-pointer h-full flex flex-col">
                 <div className="flex items-center space-x-4 mb-6">
-                    <div className="border-2 border-black rounded-full p-1 bg-white">
-                        <Avatar className="w-14 h-14 border-2 border-black rounded-full">
+                    <div className="border-2 border-[#1A1A2E] rounded-full p-1 bg-white">
+                        <Avatar className="w-14 h-14 border-2 border-[#1A1A2E] rounded-full">
                             <AvatarImage src="" alt={`${name?.result as string} logo`} />
                             <AvatarFallback className="text-lg font-black uppercase">
                                 {(name?.result as string)?.slice(0, 2)}
@@ -54,7 +54,7 @@ export function NFTCard({ nftAddress }: { nftAddress: `0x${string}` }) {
                         <span className="text-xs font-black uppercase tracking-wider">PROGRESS</span>
                         <span className="text-sm font-black">{progress.toFixed(2)}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 border-2 border-black h-4">
+                    <div className="w-full bg-gray-200 border-2 border-[#1A1A2E] h-4">
                         <div
                             className="bg-black h-full transition-all"
                             style={{ width: `${progress}%` }}
@@ -66,9 +66,9 @@ export function NFTCard({ nftAddress }: { nftAddress: `0x${string}` }) {
                     </div>
                 </div>
 
-                <div className="mt-auto pt-6 border-t-2 border-black">
-                    <p>Price: {formatEther(mintPrice?.result as bigint ?? BigInt(0))} REACT</p>
-                    <button className="w-full mt-4 bg-blue-400 text-white h-12 font-black uppercase text-sm tracking-wider border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+                <div className="mt-auto pt-6 border-t-2 border-[#1A1A2E]">
+                    <p>Price: {formatEther(mintPrice?.result as bigint ?? BigInt(0))} XTZ</p>
+                    <button className="w-full mt-4 bg-blue-400 text-white h-12 font-black uppercase text-sm tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
                         MINT
                     </button>
                 </div>

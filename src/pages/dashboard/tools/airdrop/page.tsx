@@ -97,7 +97,7 @@ export default function AirdropPage() {
     },
   });
 
-  // Native REACT balance
+  // Native XTZ balance
   const { data: reactBalance } = useBalance({
     address: address,
     query: {
@@ -170,7 +170,7 @@ export default function AirdropPage() {
 
   const displayDecimals = sendType === "erc20" ? tokenDecimals ?? 18 : 18;
   const displaySymbol =
-    sendType === "erc20" ? tokenSymbol ?? "tokens" : "REACT";
+    sendType === "erc20" ? tokenSymbol ?? "tokens" : "XTZ";
 
   // Allowance check for ERC-20
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
@@ -305,10 +305,10 @@ export default function AirdropPage() {
   }, [parsedRecipients, sendType, isValidTokenAddress]);
 
   return (
-    <div className="container mx-auto px-4 py-8 text-black">
+    <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-8">
-        <div className="border-4 border-black bg-[#90EE90] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <div className="border-4 border-[#1A1A2E] bg-[#90EE90] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3">
             <Send className="w-7 h-7 md:w-8 md:h-8" /> Airdrop
           </h1>
@@ -320,8 +320,8 @@ export default function AirdropPage() {
 
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Send Type Selection */}
-        <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-          <CardHeader className="border-b-2 border-black bg-[#7DF9FF] p-4">
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-4">
             <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
               <Coins className="w-5 h-5" />
               Select Token Type
@@ -332,15 +332,15 @@ export default function AirdropPage() {
               <button
                 type="button"
                 onClick={() => setSendType("erc20")}
-                className={`p-4 border-4 border-black text-left transition-all ${
+                className={`p-4 border-4 border-[#1A1A2E] text-left transition-all ${
                   sendType === "erc20"
-                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px]"
-                    : "bg-white shadow-[2px_2px_0_rgba(0,0,0,1)] hover:bg-gray-50"
+                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                    : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-black ${
+                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${
                       sendType === "erc20" ? "bg-black" : ""
                     }`}
                   />
@@ -358,21 +358,21 @@ export default function AirdropPage() {
                   setSendType("react");
                   setTokenAddress("");
                 }}
-                className={`p-4 border-4 border-black text-left transition-all ${
+                className={`p-4 border-4 border-[#1A1A2E] text-left transition-all ${
                   sendType === "react"
-                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px]"
-                    : "bg-white shadow-[2px_2px_0_rgba(0,0,0,1)] hover:bg-gray-50"
+                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                    : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-black ${
+                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${
                       sendType === "react" ? "bg-black" : ""
                     }`}
                   />
                   <div>
                     <p className="font-black uppercase text-sm sm:text-base">
-                      REACT
+                      XTZ
                     </p>
                     <p className="text-xs text-gray-600">Native currency</p>
                   </div>
@@ -384,8 +384,8 @@ export default function AirdropPage() {
 
         {/* Token Address (for ERC-20) */}
         {sendType === "erc20" && (
-          <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-            <CardHeader className="border-b-2 border-black bg-[#FFFB8F] p-4">
+          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+            <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#F1C40F] p-4">
               <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
                 <Wallet className="w-5 h-5" />
                 Token Details
@@ -404,11 +404,11 @@ export default function AirdropPage() {
                   placeholder="0x..."
                   value={tokenAddress}
                   onChange={(e) => setTokenAddress(e.target.value)}
-                  className="border-2 border-black font-mono"
+                  className="border-2 border-[#1A1A2E] font-mono"
                 />
               </div>
               {isValidTokenAddress && tokenSymbol && (
-                <div className="p-3 bg-gray-100 border-2 border-black">
+                <div className="p-3 bg-gray-100 border-2 border-[#1A1A2E]">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-500 text-xs uppercase font-bold">
@@ -435,21 +435,21 @@ export default function AirdropPage() {
           </Card>
         )}
 
-        {/* REACT Balance (for native) */}
+        {/* XTZ Balance (for native) */}
         {sendType === "react" && reactBalance && (
-          <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
+          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
             <CardContent className="p-4">
-              <div className="p-3 bg-gray-100 border-2 border-black">
+              <div className="p-3 bg-gray-100 border-2 border-[#1A1A2E]">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-gray-500 text-xs uppercase font-bold">
-                      Your REACT Balance
+                      Your XTZ Balance
                     </p>
                     <p className="font-black text-lg">
                       {Number(
                         formatUnits(reactBalance.value, 18)
                       ).toLocaleString()}{" "}
-                      REACT
+                      XTZ
                     </p>
                   </div>
                   <Coins className="w-8 h-8 text-[#7DF9FF]" />
@@ -460,8 +460,8 @@ export default function AirdropPage() {
         )}
 
         {/* Recipients */}
-        <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
-          <CardHeader className="border-b-2 border-black bg-[#FFB6C1] p-4">
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
+          <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FFB6C1] p-4">
             <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
               <Users className="w-5 h-5" />
               Recipients
@@ -480,7 +480,7 @@ export default function AirdropPage() {
                 placeholder={`0x1234...abcd,100\n0x5678...efgh,200\n0x9012...ijkl,50`}
                 value={recipientsData}
                 onChange={(e) => setRecipientsData(e.target.value)}
-                className="min-h-[200px] border-2 border-black font-mono text-sm"
+                className="min-h-[200px] border-2 border-[#1A1A2E] font-mono text-sm"
               />
               <p className="text-xs text-gray-500">
                 Enter one address and amount per line, separated by a comma.
@@ -509,9 +509,9 @@ export default function AirdropPage() {
 
             {/* Summary */}
             {parsedRecipients.recipients.length > 0 && (
-              <div className="p-4 bg-gray-100 border-2 border-black">
+              <div className="p-4 bg-gray-100 border-2 border-[#1A1A2E]">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-white border-2 border-black">
+                  <div className="text-center p-3 bg-white border-2 border-[#1A1A2E]">
                     <p className="text-xs text-gray-500 uppercase font-bold">
                       Recipients
                     </p>
@@ -519,7 +519,7 @@ export default function AirdropPage() {
                       {parsedRecipients.recipients.length}
                     </p>
                   </div>
-                  <div className="text-center p-3 bg-white border-2 border-black">
+                  <div className="text-center p-3 bg-white border-2 border-[#1A1A2E]">
                     <p className="text-xs text-gray-500 uppercase font-bold">
                       Total Amount
                     </p>
@@ -546,7 +546,7 @@ export default function AirdropPage() {
         </Card>
 
         {/* Action Buttons */}
-        <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0">
+        <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
           <CardContent className="p-4">
             {sendType === "erc20" && needsApproval && isFormValid ? (
               <div className="space-y-3">
@@ -556,7 +556,7 @@ export default function AirdropPage() {
                 <Button
                   onClick={handleApprove}
                   disabled={isApproving || isApproveConfirming || !isFormValid}
-                  className="w-full border-4 border-black bg-[#FFFB8F] text-black font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(0,0,0,1)] hover:bg-[#EDE972] hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all py-6 text-lg"
+                  className="w-full border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#EDE972] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all py-6 text-lg"
                 >
                   <Upload className="w-5 h-5 mr-2" />
                   {isApproving || isApproveConfirming
@@ -579,7 +579,7 @@ export default function AirdropPage() {
                     !isFormValid ||
                     !hasSufficientBalance
                   }
-                  className="w-full border-4 border-black bg-[#90EE90] text-black font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(0,0,0,1)] hover:bg-[#7DE07D] hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all py-6 text-lg"
+                  className="w-full border-4 border-[#1A1A2E] bg-[#90EE90] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#7DE07D] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all py-6 text-lg"
                 >
                   <Send className="w-5 h-5 mr-2" />
                   {isSending || isSendConfirming

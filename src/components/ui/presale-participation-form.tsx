@@ -359,10 +359,10 @@ export function PresaleParticipationForm({
             isClaimTokensConfirming ||
             isPresaleCancelled
           }
-          className={`w-full border-4 border-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] ${isPresaleCancelled
+          className={`w-full border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${isPresaleCancelled
               ? "hidden"
               : canClaimTokens
-                ? "bg-[#7DF9FF] text-black"
+                ? "bg-[#FF6B35] text-[#1A1A2E]"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
         >
@@ -387,8 +387,8 @@ export function PresaleParticipationForm({
             disabled={
               !canClaimRefund || isClaimRefundPending || isClaimRefundConfirming
             }
-            className={`w-full border-4 border-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] ${canClaimRefund
-                ? "bg-[#FFD1DC] text-black"
+            className={`w-full border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${canClaimRefund
+                ? "bg-[#FFD1DC] text-[#1A1A2E]"
                 : "bg-gray-300 text-gray-500"
               }`}
           >
@@ -420,11 +420,11 @@ export function PresaleParticipationForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 border-4 border-black bg-[#FFF9F0] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]"
+      className="space-y-4 border-4 border-[#1A1A2E] bg-[#F7F3EE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]"
     >
       {/* Whitelist Status */}
       {presaleData.requiresWhitelist && (
-        <div className="border-2 border-black bg-[#FFFB8F] p-3 text-sm font-semibold uppercase tracking-wide">
+        <div className="border-2 border-[#1A1A2E] bg-[#FFFB8F] p-3 text-sm font-semibold uppercase tracking-wide">
           {!account
             ? "Connect your wallet to check whitelist status."
             : isCheckingWhitelist
@@ -508,9 +508,9 @@ export function PresaleParticipationForm({
           !whitelistGateOpen ||
           (needsApproval ? false : !canContribute)
         }
-            className={`w-full border-4 border-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] ${isContributionDisabled
+            className={`w-full border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${isContributionDisabled
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#7DF9FF] text-black"
+                : "bg-[#FF6B35] text-[#1A1A2E]"
               }`}
       >
         {getButtonText()}
@@ -519,7 +519,7 @@ export function PresaleParticipationForm({
       )}
 
       {isContributionHidden && (
-        <div className="rounded border-2 border-black bg-gray-100 p-4 text-center">
+        <div className="rounded border-2 border-[#1A1A2E] bg-gray-100 p-4 text-center">
           <p className="font-black uppercase tracking-wider text-gray-500">
             {isPresaleCancelled
               ? "Presale Cancelled"

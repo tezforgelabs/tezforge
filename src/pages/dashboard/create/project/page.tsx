@@ -1,19 +1,25 @@
 "use client";
 
 export default function CreateProjectPage() {
-  // Tally form ID
   const TALLY_FORM_ID = "J9dvoY";
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F7F3EE]">
       <div className="container mx-auto px-6 py-10 max-w-5xl">
         {/* Header */}
-        <h1 className="text-6xl md:text-7xl font-black uppercase mb-6 tracking-tight">
-          CREATE<br />PROJECT
-        </h1>
+        <div className="mb-8">
+          <div className="border-4 border-[#1A1A2E] bg-[#1B2838] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-wider text-white">
+              Submit<br />Project
+            </h1>
+            <p className="text-sm text-gray-300 mt-2">
+              Submit your project for review and listing on the Tezforge launchpad.
+            </p>
+          </div>
+        </div>
 
         {/* Tally Embedded Form */}
-        <div className="w-full">
+        <div className="w-full border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <iframe
             src={`https://tally.so/embed/${TALLY_FORM_ID}?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1`}
             width="100%"

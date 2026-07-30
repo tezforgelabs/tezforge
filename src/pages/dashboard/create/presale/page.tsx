@@ -248,7 +248,7 @@ function CreatePresaleForm({
 
   return (
     <>
-      <div className="border-2 border-black bg-gray-50 p-4 sm:p-5 space-y-2">
+      <div className="border-2 border-[#1A1A2E] bg-gray-50 p-4 sm:p-5 space-y-2">
         <p className="text-xs font-black uppercase tracking-wider text-gray-800">
           Launchpad Custody & Fees
         </p>
@@ -281,7 +281,7 @@ function CreatePresaleForm({
           <Label htmlFor="paymentToken">Payment Token Address</Label>
           <Input
             id="paymentToken"
-            placeholder="0x... (leave blank for REACT)"
+            placeholder="0x... (leave blank for XTZ)"
             value={paymentToken}
             onChange={handleChange}
           />
@@ -334,7 +334,7 @@ function CreatePresaleForm({
               </p>
               <p>
                 {(Number(saleAmount) / Number(hardCap)).toFixed(2)} tokens per{" "}
-                {paymentToken ? "payment token" : "REACT"}
+                {paymentToken ? "payment token" : "XTZ"}
               </p>
             </div>
           )}
@@ -392,7 +392,7 @@ function CreatePresaleForm({
           onChange={handleChange}
         />
       </div>
-      <div className="border-2 border-black bg-white p-4 sm:p-5 space-y-3">
+      <div className="border-2 border-[#1A1A2E] bg-white p-4 sm:p-5 space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-wider text-gray-800">
@@ -417,7 +417,7 @@ function CreatePresaleForm({
                   handleToggleWhitelist(event.target.checked)
                 }
               />
-              <div className="h-7 w-12 rounded-full border-2 border-black bg-white shadow-[2px_2px_0_rgba(0,0,0,1)] transition-colors peer-checked:bg-black" />
+              <div className="h-7 w-12 rounded-full border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] transition-colors peer-checked:bg-[#1B2838]" />
               <div className="absolute left-1 top-1 h-5 w-5 rounded-full bg-black transition-transform peer-checked:translate-x-5 peer-checked:bg-white" />
             </label>
           </div>
@@ -580,10 +580,10 @@ export default function CreatePresalePage() {
 
   return (
     <div className="container mx-auto px-4 py-12 text-black">
-      <Card className="mx-auto max-w-3xl border-4 border-black pt-0 pb-6 shadow-[6px_6px_0_rgba(0,0,0,1)]">
-        <CardHeader className="border-b-2 border-black bg-white pt-4">
+      <Card className="mx-auto max-w-3xl border-4 border-[#1A1A2E] pt-0 pb-6 shadow-[6px_6px_0_rgba(26,26,46,1)]">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-white pt-4">
           <CardTitle className="text-2xl font-black uppercase tracking-wider text-center sm:text-left">
-            Create a new Presale
+            Create a Presale
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 sm:space-y-8">

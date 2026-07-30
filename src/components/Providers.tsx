@@ -1,38 +1,28 @@
-
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { useEffect, useState } from "react";
-import { WagmiProvider, useChainId } from "wagmi";
-import { useBlockchainStore } from "@/lib/store/blockchain-store";
-import { useLaunchpadPresaleStore } from "@/lib/store/launchpad-presale-store";
-import { config, reactiveMainnet } from "../config"
+import { useState } from "react";
+import { etherlink } from "viem/chains";
+import { WagmiProvider, http } from "wagmi";
 
-function ChainCacheReset() {
-  const chainId = useChainId();
-  const clearCache = useBlockchainStore((state) => state.clearCache);
-  const clearLaunchpadCache = useLaunchpadPresaleStore((state) => state.clearCache);
-
-  useEffect(() => {
-    clearCache();
-    clearLaunchpadCache();
-  }, [chainId, clearCache, clearLaunchpadCache]);
-
-  return null;
-}
+const config = getDefaultConfig({
+  appName: "Tezforge",
+  projectId: "9ef8a1835f8d9515949514f77259f972",
+  chains: [etherlink],
+  transports: {
+    [etherlink.id]: http(),
+  },
+});
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <WagmiProvider config={config}>
-        <ChainCacheReset />
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider initialChain={reactiveMainnet}>
-            {children}
-          </RainbowKitProvider>
+          <RainbowKitProvider>{children}</RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </ThemeProvider>

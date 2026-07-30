@@ -7,8 +7,9 @@ import {
 } from "@/lib/hooks/useLaunchpadPresales";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink, Rocket } from "lucide-react";
 import { Link } from "react-router-dom";
+
 function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
   const progress = presale.hardCap > 0n
     ? Math.round(Number((presale.totalRaised * 100n) / presale.hardCap))
@@ -17,11 +18,11 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "live":
-        return "bg-green-500";
+        return "bg-[#2ECC71]";
       case "upcoming":
-        return "bg-yellow-500";
+        return "bg-[#F1C40F]";
       case "finalized":
-        return "bg-blue-500";
+        return "bg-[#00B4D8]";
       case "cancelled":
         return "bg-red-500";
       default:
@@ -30,7 +31,7 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
   };
 
   return (
-    <div className="p-4 border-2 border-black bg-white shadow-[2px_2px_0_rgba(0,0,0,1)]">
+    <div className="p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -53,7 +54,7 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
           <Button
             size="sm"
             asChild
-            className="border-2 border-black bg-[#FFFB8F] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#EDE972]"
+            className="border-2 border-[#1A1A2E] bg-[#F1C40F] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]"
           >
             <Link to={`/dashboard/presales/manage/${presale.address}`}>
               Manage <ExternalLink className="ml-1 h-3 w-3" />
@@ -67,10 +68,10 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
             <span className="font-bold">{progress}% Funded</span>
             <span className="text-gray-500">
               {Math.round(Number(formatUnits(presale.totalRaised, 18))).toLocaleString()} /{" "}
-              {Math.round(Number(formatUnits(presale.hardCap, 18))).toLocaleString()} REACT
+              {Math.round(Number(formatUnits(presale.hardCap, 18))).toLocaleString()} XTZ
             </span>
           </div>
-          <Progress value={progress} className="h-2 border border-black" />
+          <Progress value={progress} className="h-2 border border-[#1A1A2E]" />
         </div>
       )}
     </div>
@@ -87,14 +88,14 @@ export default function PresalesListPage() {
 
   if (!isConnected) {
     return (
-      <div className="container mx-auto px-4 py-12 text-black">
-        <Card className="max-w-2xl mx-auto">
+      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
+        <Card className="max-w-2xl mx-auto border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardContent className="py-12 text-center">
             <p className="text-lg text-gray-600 mb-4">
               Please connect your wallet to view your presales.
             </p>
             <Link to="/dashboard/user">
-              <Button className="border-4 border-black bg-white text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
+              <Button className="border-4 border-[#1A1A2E] bg-white text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
                 Back to Dashboard
               </Button>
             </Link>
@@ -105,15 +106,15 @@ export default function PresalesListPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 text-black">
-      <Card className="mx-auto max-w-4xl border-4 border-black shadow-[6px_6px_0_rgba(0,0,0,1)]">
-        <CardHeader className="border-b-2 border-black bg-white">
+    <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
+      <Card className="mx-auto max-w-4xl border-4 border-[#1A1A2E] shadow-[6px_6px_0_rgba(26,26,46,1)]">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <CardTitle className="text-2xl font-black uppercase tracking-wider">
               My Presales
             </CardTitle>
             <Link to="/dashboard/create/presale">
-              <Button className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
+              <Button className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
                 Create Presale
               </Button>
             </Link>
@@ -140,7 +141,7 @@ export default function PresalesListPage() {
                 You do not have any presales yet.
               </p>
               <Link to="/dashboard/create/presale">
-                <Button className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]">
+                <Button className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
                   Create Your First Presale <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>

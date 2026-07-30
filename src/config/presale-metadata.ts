@@ -38,9 +38,9 @@ export const presaleMetadataMap: Record<string, PresaleMetadata> = {
   "0x843ae255dd8945022107eeb888f90c5ecadd96a2": {
     category: "infrastructure",
     socials: {
-      twitter: "https://x.com/reactpad",
-      telegram: "https://t.me/reactpad",
-      website: "https://reactpad.org/",
+      twitter: "https://x.com/tezforge",
+      telegram: "https://t.me/tezforge",
+      website: "https://tezforge.io/",
       discord: "",
     },
     logo: reactpadLogo,

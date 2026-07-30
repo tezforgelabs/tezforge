@@ -29,7 +29,7 @@ export default function ManagePresalePage() {
 
   if (!presaleAddress || !isAddress(presaleAddress)) {
     return (
-      <div className="container mx-auto px-4 py-12 text-black">
+      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
         <Card className="max-w-2xl mx-auto">
           <CardContent className="p-6">
             <p className="text-center text-red-600">Invalid presale address</p>
@@ -53,7 +53,7 @@ export default function ManagePresalePage() {
 
   if (isLoadingPresale) {
     return (
-      <div className="container mx-auto px-4 py-12 text-black">
+      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
         <Card className="max-w-2xl mx-auto">
           <CardContent className="p-6">
             <p className="text-center">Loading presale data...</p>
@@ -65,7 +65,7 @@ export default function ManagePresalePage() {
 
   if (!presale) {
     return (
-      <div className="container mx-auto px-4 py-12 text-black">
+      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
         <Card className="max-w-2xl mx-auto">
           <CardContent className="p-6">
             <p className="text-center text-red-600">
@@ -89,7 +89,7 @@ export default function ManagePresalePage() {
     presale.owner.toLowerCase() !== userAddress.toLowerCase()
   ) {
     return (
-      <div className="container mx-auto px-4 py-12 text-black">
+      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
         <Card className="max-w-2xl mx-auto">
           <CardContent className="p-6">
             <p className="text-center text-red-600">
@@ -110,7 +110,7 @@ export default function ManagePresalePage() {
   // Ensure we have required presale data before rendering
   if (!presale.saleToken || !presale.hardCap || !presale.rate) {
     return (
-      <div className="container mx-auto px-4 py-12 text-black">
+      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
         <Card className="max-w-2xl mx-auto">
           <CardContent className="p-6">
             <p className="text-center text-red-600">
@@ -129,9 +129,9 @@ export default function ManagePresalePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 text-black">
+    <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
       <Card className="max-w-2xl mx-auto p-0 gap-0">
-        <CardHeader className="border-b-4 border-black bg-[#FFFB8F] p-6">
+        <CardHeader className="border-b-4 border-[#1A1A2E] bg-[#F1C40F] p-6">
           <CardTitle className="text-3xl text-center font-black uppercase tracking-wider">
             Manage Your Presale
           </CardTitle>
@@ -244,7 +244,7 @@ function ManagePresaleView({
   const saleAmount = useMemo(() => {
     if (!presale?.hardCap || !presale?.rate) return 0n;
     try {
-      // Rate is stored as scaled by 100 (e.g., 20000 = 200 tokens per REACT)
+      // Rate is stored as scaled by 100 (e.g., 20000 = 200 tokens per XTZ)
       return (presale.hardCap * presale.rate) / 100n;
     } catch (error) {
       console.error("Error calculating sale amount:", error);
@@ -592,7 +592,7 @@ function ManagePresaleView({
         </p>
       </div>
 
-      <div className="border-4 border-black bg-[#FFF9F0] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)] space-y-4">
+      <div className="border-4 border-[#1A1A2E] bg-[#F7F3EE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-lg font-black uppercase tracking-wider">
             Step 1 · Deposit Sale Tokens
@@ -625,10 +625,10 @@ function ManagePresaleView({
               hasDeposited ||
               presaleHasEnded
             }
-            className={`border-4 border-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] ${
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
               hasSufficientAllowance || hasDeposited || presaleHasEnded
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-white text-black"
+                : "bg-white text-[#1A1A2E]"
             }`}
           >
             {approveBusy
@@ -650,11 +650,11 @@ function ManagePresaleView({
               hasDeposited ||
               presaleHasEnded
             }
-            className={`border-4 border-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] ${
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
               hasDeposited || presaleHasEnded
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : hasSufficientAllowance
-                ? "bg-[#7DF9FF] text-black ring-4 ring-yellow-400 ring-opacity-75"
+                ? "bg-[#FF6B35] text-[#1A1A2E] ring-4 ring-[#FF6B35] ring-opacity-50"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
@@ -685,7 +685,7 @@ function ManagePresaleView({
       </div>
 
       {presale.requiresWhitelist ? (
-        <div className="border-4 border-black bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)] space-y-6">
+        <div className="border-4 border-[#1A1A2E] bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] space-y-6">
           <div className="flex items-center justify-between">
             <p className="text-lg font-black uppercase tracking-wider">
               Step 2 · Curate Your Whitelist
@@ -709,7 +709,7 @@ function ManagePresaleView({
                   type="button"
                   onClick={handleAddSingleWhitelist}
                   disabled={whitelistBusy || !singleWhitelist}
-                  className="border-4 border-black bg-[#C4F1BE] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]"
+                  className="border-4 border-[#1A1A2E] bg-[#2ECC71] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
                 >
                   {whitelistBusy && activeWhitelistAction === "addOne"
                     ? "Adding..."
@@ -731,7 +731,7 @@ function ManagePresaleView({
                   type="button"
                   onClick={handleRemoveWhitelist}
                   disabled={whitelistBusy || !removeAddress}
-                  className="border-4 border-black bg-[#FFD1DC] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]"
+                  className="border-4 border-[#1A1A2E] bg-[#FFD1DC] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
                 >
                   {whitelistBusy && activeWhitelistAction === "remove"
                     ? "Removing..."
@@ -755,7 +755,7 @@ function ManagePresaleView({
               type="button"
               onClick={handleBulkWhitelist}
               disabled={whitelistBusy || !bulkWhitelist}
-              className="border-4 border-black bg-[#FFFB8F] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]"
+              className="border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
             >
               {whitelistBusy && activeWhitelistAction === "bulkAdd"
                 ? "Uploading..."
@@ -764,7 +764,7 @@ function ManagePresaleView({
           </div>
         </div>
       ) : (
-        <div className="border-4 border-black bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <div className="border-4 border-[#1A1A2E] bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <p className="text-lg font-black uppercase tracking-wider">
             Step 2 · Open Access
           </p>
@@ -775,7 +775,7 @@ function ManagePresaleView({
         </div>
       )}
 
-      <div className="border-4 border-black bg-white p-6 shadow-[4px_4px_0_rgba(0,0,0,1)] space-y-4">
+      <div className="border-4 border-[#1A1A2E] bg-white p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-lg font-black uppercase tracking-wider">
             Step 3 · Finalize & Withdraw
@@ -795,7 +795,7 @@ function ManagePresaleView({
             disabled={
               ownerActionBusy || presale.claimEnabled || presale.refundsEnabled
             }
-            className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]"
+            className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
           >
             {ownerActionBusy && activeOwnerAction === "finalize"
               ? "Finalizing..."
@@ -808,7 +808,7 @@ function ManagePresaleView({
           <Button
             onClick={handleCancel}
             disabled={ownerActionBusy}
-            className="border-4 border-black bg-[#FFD1DC] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]"
+            className="border-4 border-[#1A1A2E] bg-[#FFD1DC] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
           >
             {ownerActionBusy && activeOwnerAction === "cancel"
               ? "Cancelling..."
@@ -819,10 +819,10 @@ function ManagePresaleView({
           <Button
             onClick={handleWithdrawProceeds}
             disabled={ownerActionBusy || !presale.claimEnabled}
-            className={`border-4 border-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] ${
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
               !presale.claimEnabled
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#C4F1BE] text-black"
+                : "bg-[#2ECC71] text-[#1A1A2E]"
             }`}
           >
             {ownerActionBusy && activeOwnerAction === "withdrawProceeds"
@@ -832,10 +832,10 @@ function ManagePresaleView({
           <Button
             onClick={handleWithdrawTokens}
             disabled={ownerActionBusy || !presale.claimEnabled}
-            className={`border-4 border-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] ${
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
               !presale.claimEnabled
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#FFFB8F] text-black"
+                : "bg-[#F1C40F] text-[#1A1A2E]"
             }`}
           >
             {ownerActionBusy && activeOwnerAction === "withdrawTokens"

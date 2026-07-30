@@ -98,7 +98,7 @@ function LockProgressBar({
       </div>
       <Progress
         value={progress}
-        className={`h-3 border-2 border-black ${
+        className={`h-3 border-2 border-[#1A1A2E] ${
           isExpired ? "bg-green-200" : "bg-gray-200"
         }`}
       />
@@ -151,14 +151,14 @@ function LockCard({
     lock.id !== undefined && lock.id !== null ? String(lock.id) : "0";
 
   return (
-    <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] p-0 gap-0 overflow-hidden">
+    <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0 overflow-hidden">
       <CardHeader
-        className={`border-b-2 border-black p-4 ${
+        className={`border-b-2 border-[#1A1A2E] p-4 ${
           isWithdrawn
             ? "bg-gray-200"
             : isUnlocked
             ? "bg-[#90EE90]"
-            : "bg-[#FFFB8F]"
+            : "bg-[#F1C40F]"
         }`}
       >
         <div className="flex items-center justify-between">
@@ -170,7 +170,7 @@ function LockCard({
           </div>
           <Link
             to={`/locks/${lockIdString}`}
-            className="text-gray-600 hover:text-black transition-colors"
+            className="text-gray-600 hover:text-[#1A1A2E] transition-colors"
           >
             <Eye className="w-4 h-4" />
           </Link>
@@ -185,7 +185,7 @@ function LockCard({
               href={`${explorerUrl}/address/${lock.token}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-mono text-gray-500 hover:text-black flex items-center gap-1"
+              className="text-xs font-mono text-gray-500 hover:text-[#1A1A2E] flex items-center gap-1"
             >
               {lock.token.slice(0, 6)}...{lock.token.slice(-4)}
               <ExternalLink className="w-3 h-3" />
@@ -220,7 +220,7 @@ function LockCard({
               <Button
                 onClick={() => onUnlock(lock.id)}
                 disabled={unlockingId === lock.id}
-                className="col-span-2 border-4 border-black bg-[#90EE90] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#7ADF7A]"
+                className="col-span-2 border-4 border-[#1A1A2E] bg-[#90EE90] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#7ADF7A]"
               >
                 <Unlock className="w-4 h-4 mr-2" />
                 {unlockingId === lock.id ? "Withdrawing..." : "Withdraw"}
@@ -230,7 +230,7 @@ function LockCard({
                 <Button
                   onClick={() => onExtend(lock.id)}
                   variant="outline"
-                  className="border-2 border-black bg-white text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:bg-gray-100"
+                  className="border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-100"
                 >
                   <Timer className="w-4 h-4 mr-2" />
                   Extend
@@ -238,7 +238,7 @@ function LockCard({
                 <Button
                   onClick={() => onTransfer(lock.id)}
                   variant="outline"
-                  className="border-2 border-black bg-white text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(0,0,0,1)] hover:bg-gray-100"
+                  className="border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-100"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   Transfer
@@ -579,10 +579,10 @@ function CreateLockModal({
       onClick={onClose}
     >
       <Card
-        className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] max-w-2xl w-full p-0 gap-0"
+        className="border-4 border-[#1A1A2E] shadow-[8px_8px_0_rgba(26,26,46,1)] max-w-2xl w-full p-0 gap-0"
         onClick={(e) => e.stopPropagation()}
       >
-        <CardHeader className="border-b-2 border-black bg-[#7DF9FF] p-6">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FF6B35] p-6">
           <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
             <Plus className="w-5 h-5" />
             Create New Lock
@@ -601,7 +601,7 @@ function CreateLockModal({
               placeholder="0x..."
               value={tokenAddress}
               onChange={(e) => setTokenAddress(e.target.value)}
-              className="border-2 border-black font-mono"
+              className="border-2 border-[#1A1A2E] font-mono"
             />
             {tokenSymbol && (
               <p className="text-xs text-green-600 font-bold">
@@ -620,7 +620,7 @@ function CreateLockModal({
                 placeholder="1000"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="border-2 border-black"
+                className="border-2 border-[#1A1A2E]"
               />
             </div>
             <div className="space-y-2">
@@ -633,7 +633,7 @@ function CreateLockModal({
                 placeholder="30"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                className="border-2 border-black"
+                className="border-2 border-[#1A1A2E]"
               />
             </div>
           </div>
@@ -646,7 +646,7 @@ function CreateLockModal({
               placeholder="e.g. Team Tokens Vesting"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border-2 border-black"
+              className="border-2 border-[#1A1A2E]"
             />
           </div>
           <div className="space-y-2">
@@ -661,7 +661,7 @@ function CreateLockModal({
               placeholder="e.g. Monthly vesting for core contributors"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="border-2 border-black"
+              className="border-2 border-[#1A1A2E]"
             />
           </div>
 
@@ -669,7 +669,7 @@ function CreateLockModal({
             <Button
               onClick={handleApprove}
               disabled={!isFormValid || isApproving || isApproveConfirming}
-              className="w-full border-4 border-black bg-[#FFFB8F] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#EDE972]"
+              className="w-full border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#EDE972]"
             >
               {isApproving || isApproveConfirming
                 ? "Approving..."
@@ -679,7 +679,7 @@ function CreateLockModal({
             <Button
               onClick={handleLock}
               disabled={!isFormValid || isLocking || isLockConfirming}
-              className="w-full border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)] hover:bg-[#6AD8E8]"
+              className="w-full border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#6AD8E8]"
             >
               <Lock className="w-4 h-4 mr-2" />
               {isLocking || isLockConfirming ? "Locking..." : "Lock Tokens"}
@@ -756,10 +756,10 @@ function ExtendLockModal({
       onClick={onClose}
     >
       <Card
-        className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] max-w-md w-full mx-4 p-0 gap-0"
+        className="border-4 border-[#1A1A2E] shadow-[8px_8px_0_rgba(26,26,46,1)] max-w-md w-full mx-4 p-0 gap-0"
         onClick={(e) => e.stopPropagation()}
       >
-        <CardHeader className="border-b-2 border-black bg-[#FFFB8F] p-4">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#F1C40F] p-4">
           <CardTitle className="font-black uppercase tracking-wider">
             Extend Lock
           </CardTitle>
@@ -774,7 +774,7 @@ function ExtendLockModal({
               placeholder="30"
               value={additionalDays}
               onChange={(e) => setAdditionalDays(e.target.value)}
-              className="border-2 border-black"
+              className="border-2 border-[#1A1A2E]"
             />
           </div>
           <p className="text-xs text-gray-500">Maximum: 3650 days (10 years)</p>
@@ -782,14 +782,14 @@ function ExtendLockModal({
             <Button
               onClick={onClose}
               variant="outline"
-              className="flex-1 border-2 border-black"
+              className="flex-1 border-2 border-[#1A1A2E]"
             >
               Cancel
             </Button>
             <Button
               onClick={handleExtend}
               disabled={!additionalDays || isPending || isConfirming}
-              className="flex-1 border-4 border-black bg-[#FFFB8F] text-black font-black uppercase shadow-[3px_3px_0_rgba(0,0,0,1)]"
+              className="flex-1 border-4 border-[#1A1A2E] bg-[#F1C40F] text-[#1A1A2E] font-black uppercase shadow-[3px_3px_0_rgba(26,26,46,1)]"
             >
               {isPending || isConfirming ? "Extending..." : "Extend"}
             </Button>
@@ -852,10 +852,10 @@ function TransferLockModal({
       onClick={onClose}
     >
       <Card
-        className="border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,1)] max-w-md w-full mx-4 p-0 gap-0"
+        className="border-4 border-[#1A1A2E] shadow-[8px_8px_0_rgba(26,26,46,1)] max-w-md w-full mx-4 p-0 gap-0"
         onClick={(e) => e.stopPropagation()}
       >
-        <CardHeader className="border-b-2 border-black bg-[#FFB6C1] p-4">
+        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FFB6C1] p-4">
           <CardTitle className="font-black uppercase tracking-wider">
             Transfer Lock Ownership
           </CardTitle>
@@ -873,14 +873,14 @@ function TransferLockModal({
               placeholder="0x..."
               value={newOwner}
               onChange={(e) => setNewOwner(e.target.value)}
-              className="border-2 border-black font-mono"
+              className="border-2 border-[#1A1A2E] font-mono"
             />
           </div>
           <div className="flex gap-2">
             <Button
               onClick={onClose}
               variant="outline"
-              className="flex-1 border-2 border-black"
+              className="flex-1 border-2 border-[#1A1A2E]"
             >
               Cancel
             </Button>
@@ -889,7 +889,7 @@ function TransferLockModal({
               disabled={
                 !newOwner || newOwner.length !== 42 || isPending || isConfirming
               }
-              className="flex-1 border-4 border-black bg-[#FFB6C1] text-black font-black uppercase shadow-[3px_3px_0_rgba(0,0,0,1)]"
+              className="flex-1 border-4 border-[#1A1A2E] bg-[#FFB6C1] text-[#1A1A2E] font-black uppercase shadow-[3px_3px_0_rgba(26,26,46,1)]"
             >
               {isPending || isConfirming ? "Transferring..." : "Transfer"}
             </Button>
@@ -956,10 +956,10 @@ export default function TokenLockerPage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 text-black">
+    <div className="container mx-auto px-4 py-8 text-[#1A1A2E]">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <div className="border-b-4 border-black bg-[#7DF9FF] p-4 sm:p-6 shadow-[4px_4px_0_rgba(0,0,0,1)]">
+        <div className="border-b-4 border-[#1A1A2E] bg-[#FF6B35] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider flex items-center gap-3">
@@ -973,7 +973,7 @@ export default function TokenLockerPage() {
             {userLocks.length > 0 && (
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="border-4 border-black bg-[#FFFFFF] text-black font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(0,0,0,1)] hover:bg-gray-100 hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
+                className="border-4 border-[#1A1A2E] bg-[#FFFFFF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-gray-100 hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Lock
@@ -986,13 +986,13 @@ export default function TokenLockerPage() {
       {/* Content */}
       <div>
         {isLoadingLocks ? (
-          <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)]">
+          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <CardContent className="p-12 text-center">
               <p className="text-lg font-bold">Loading your locks...</p>
             </CardContent>
           </Card>
         ) : activeLocks.length === 0 ? (
-          <Card className="border-4 border-black shadow-[4px_4px_0_rgba(0,0,0,1)]">
+          <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <CardContent className="p-12 text-center space-y-4">
               <Lock className="w-16 h-16 mx-auto text-gray-400" />
               <p className="text-lg font-bold">No Active Locks</p>
@@ -1001,7 +1001,7 @@ export default function TokenLockerPage() {
               </p>
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="border-4 border-black bg-[#7DF9FF] text-black font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(0,0,0,1)]"
+                className="border-4 border-[#1A1A2E] bg-[#FF6B35] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Lock

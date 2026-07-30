@@ -7,6 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        tezforge: {
+          orange: '#FF6B35',
+          'orange-dark': '#E55A2B',
+          steel: '#1B2838',
+          'steel-light': '#2A3F54',
+          teal: '#00B4D8',
+          'teal-dark': '#0096B8',
+          cream: '#F7F3EE',
+          'cream-dark': '#EDE5DC',
+          ink: '#1A1A2E',
+          red: '#E74C3C',
+          green: '#2ECC71',
+          yellow: '#F1C40F',
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -52,6 +66,9 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)'
+      },
+      fontFamily: {
+        display: ['"Albert Sans"', 'sans-serif'],
       }
     }
   },
