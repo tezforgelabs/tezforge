@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { NFTFactoryContract } from "@/config";
+ import { NFTFactory } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -143,7 +143,7 @@ export default function CreateNftPage() {
 
         writeContract({
             address: nftFactory,
-            abi: NFTFactoryContract.abi,
+            abi: NFTFactory.abi,
             functionName,
             args: args as never
         });

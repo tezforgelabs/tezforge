@@ -1,138 +1,147 @@
-import { useMemo, useState, useEffect } from "react";
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { RouterContract, Weth9Contract } from "@/config";
-import { erc20Abi } from "@/config";
-import { formatUnits, parseUnits, maxUint256 } from "viem";
+import { RouterContract } from "@/config";
+import { Token, CurrencyAmount, Percent, TradeType } from "@uniswap/sdk-core";
+import { Pair, Route, Trade } from "@uniswap/v2-sdk";
+import { useCallback, useMemo } from "react";
+import { erc20Abi, maxUint256 } from "viem";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 
-export function useSwap({
-  fromToken,
-  toToken,
-  fromAmount,
-}: {
-  fromToken: { address: `0x${string}`; decimals: number; symbol: string } | undefined;
-  toToken: { address: `0x${string}`; decimals: number; symbol: string } | undefined;
-  fromAmount: string;
-}) {
+export interface SwapQuote {
+  trade: Trade<Token, Token, TradeType>;
+  executionPrice: string;
+  priceImpact: Percent;
+  minimumOutput: string;
+  route: string;
+}
+
+interface UseSwapOptions {
+  tokenIn: Token | null;
+  tokenOut: Token | null;
+  amountIn: string;
+  pairs: Pair[];
+  slippageTolerance: number; // e.g. 0.5 for 0.5%
+}
+
+export function useSwap({ tokenIn, tokenOut, amountIn, pairs, slippageTolerance }: UseSwapOptions) {
   const { address } = useAccount();
-  const { writeContractAsync, data: hash, isPending: isSwapLoading } = useWriteContract();
 
-  const [toAmount, setToAmount] = useState("");
+  // ── Find the best route (single-hop for now) ────────────────────────────
+  const trade = useMemo<Trade<Token, Token, TradeType> | null>(() => {
+    if (!tokenIn || !tokenOut || !amountIn || !pairs.length) return null;
 
-  const amountIn = useMemo(() => {
-    if (!fromAmount || !fromToken) return BigInt(0);
+    const parsedAmount = parseFloat(amountIn);
+    if (parsedAmount <= 0) return null;
+
+    const amount = CurrencyAmount.fromRawAmount(
+      tokenIn,
+      BigInt(Math.floor(parsedAmount * 10 ** tokenIn.decimals)).toString()
+    );
+
+    // Find a pair that contains both tokens
+    const relevantPair = pairs.find(
+      (p) =>
+        (p.token0.equals(tokenIn) && p.token1.equals(tokenOut)) ||
+        (p.token0.equals(tokenOut) && p.token1.equals(tokenIn))
+    );
+
+    if (!relevantPair) return null;
+
+    const route = new Route([relevantPair], tokenIn, tokenOut);
+
     try {
-      return parseUnits(fromAmount, fromToken.decimals);
-    } catch (e) {
-      console.error(e);
-      return BigInt(0);
+      const trade = new Trade(
+        route,
+        amount,
+        TradeType.EXACT_INPUT
+      );
+      return trade;
+    } catch {
+      return null;
     }
-  }, [fromAmount, fromToken]);
+  }, [tokenIn, tokenOut, amountIn, pairs]);
 
-  const { data: amountsOut } = useReadContract({
-    ...RouterContract,
-    functionName: "getAmountsOut",
-    args: fromToken && toToken ? [amountIn, [fromToken.address, toToken.address]] : undefined,
-    query: {
-      enabled: Boolean(amountIn > 0 && fromToken && toToken),
-    },
-  });
+  // ── Quote: minimum output after slippage ────────────────────────────────
+  const quote = useMemo<SwapQuote | null>(() => {
+    if (!trade) return null;
 
-  const amountsOutArr = amountsOut as readonly bigint[] | undefined;
+    const slippage = new Percent(Math.floor(slippageTolerance * 100), 10000);
+    const minimumOutput = trade.minimumAmountOut(slippage);
 
-  useEffect(() => {
-    if (amountsOutArr && toToken) {
-      const formattedAmount = formatUnits(amountsOutArr[1], toToken.decimals);
-      setToAmount(formattedAmount);
-    } else {
-      setToAmount("");
-    }
-  }, [amountsOutArr, toToken]);
+    return {
+      trade,
+      executionPrice: trade.executionPrice.toSignificant(8),
+      priceImpact: trade.priceImpact,
+      minimumOutput: minimumOutput.toSignificant(8),
+      route: trade.route.pairs.map((p) => `${p.token0.symbol}-${p.token1.symbol}`).join(" → "),
+    };
+  }, [trade, slippageTolerance]);
 
-  const { data: allowance, refetch } = useReadContract({
-    address: fromToken?.address,
+  // ── Approval: check if router is approved to spend tokenIn ─────────────
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+    address: tokenIn?.address as `0x${string}` | undefined,
     abi: erc20Abi,
     functionName: "allowance",
     args: address ? [address, RouterContract.address] : undefined,
     query: {
-      enabled: Boolean(address && fromToken && fromToken.address !== Weth9Contract.address),
+      enabled: Boolean(address && tokenIn),
     },
   });
 
-  const { isPending: isApproveLoading, writeContractAsync: approveAsync } = useWriteContract();
-
   const needsApproval = useMemo(() => {
-    if (!fromToken || fromToken.address === Weth9Contract.address || !allowance) return false;
-    return allowance < amountIn;
-  }, [allowance, amountIn, fromToken]);
+    if (!allowance || !tokenIn || !amountIn) return false;
+    const parsedAmount = parseFloat(amountIn);
+    if (parsedAmount <= 0) return false;
+    const requiredAmount = BigInt(Math.floor(parsedAmount * 10 ** tokenIn.decimals));
+    return (allowance as bigint) < requiredAmount;
+  }, [allowance, tokenIn, amountIn]);
 
-  const approve = async () => {
-    if (!fromToken) return;
-    await approveAsync({
-      address: fromToken.address,
+  // ── Write: approve ────────────────────────────────────────────────────
+  const { writeContract: writeApprove, isPending: isApproving } = useWriteContract();
+
+  const handleApprove = useCallback(() => {
+    if (!tokenIn) return;
+    writeApprove({
+      address: tokenIn.address as `0x${string}`,
       abi: erc20Abi,
       functionName: "approve",
       args: [RouterContract.address, maxUint256],
     });
-    refetch();
-  };
+  }, [tokenIn, writeApprove]);
 
-  const swap = async () => {
-    if (!fromToken || !toToken || !address || !amountsOutArr) return;
+  // ── Write: swap ────────────────────────────────────────────────────────
+  const { writeContract: writeSwap, isPending: isSwapping, data: swapHash, error: swapError } = useWriteContract();
 
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from now
+  const handleSwap = useCallback(() => {
+    if (!trade || !address) return;
 
-    let swapArgs;
-    let functionName: "swapExactETHForTokens" | "swapExactTokensForETH" | "swapExactTokensForTokens";
+    const slippage = new Percent(Math.floor(slippageTolerance * 100), 10000);
+    const minimumOutput = trade.minimumAmountOut(slippage);
+    const path = trade.route.pairs.map((p) => p.token0.address as `0x${string}`);
 
-    if (fromToken.address === Weth9Contract.address) {
-      functionName = "swapExactETHForTokens";
-      swapArgs = [
-        amountsOutArr[1],
-        [fromToken.address, toToken.address],
+    // Router.swapExactTokensForTokens(amountIn, amountOutMin, path, to, deadline)
+    writeSwap({
+      address: RouterContract.address,
+      abi: RouterContract.abi,
+      functionName: "swapExactTokensForTokens",
+      args: [
+        BigInt(trade.inputAmount.quotient.toString()),
+        BigInt(minimumOutput.quotient.toString()),
+        path,
         address,
-        deadline
-      ];
-    } else if (toToken.address === Weth9Contract.address) {
-      functionName = "swapExactTokensForETH";
-      swapArgs = [
-        amountIn,
-        amountsOutArr[1],
-        [fromToken.address, toToken.address],
-        address,
-        deadline
-      ];
-    } else {
-      functionName = "swapExactTokensForTokens";
-      swapArgs = [
-        amountIn,
-        amountsOutArr[1],
-        [fromToken.address, toToken.address],
-        address,
-        deadline
-      ];
-    }
-
-    await writeContractAsync({
-      ...RouterContract,
-      functionName,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      args: swapArgs as any,
-      value: fromToken.address === Weth9Contract.address ? amountIn : BigInt(0),
-    });
-  };
-
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
+        BigInt(Math.floor(Date.now() / 1000) + 60 * 20), // 20 min deadline
+      ],
+    } as const);
+  }, [trade, address, slippageTolerance, writeSwap]);
 
   return {
-    toAmount,
-    swap,
-    approve,
+    quote,
+    trade,
     needsApproval,
-    isLoading: isSwapLoading || isApproveLoading || isConfirming,
-    isSuccess: isConfirmed,
-    hash
-  };
+    isApproving,
+    isSwapping,
+    swapHash,
+    swapError,
+    handleApprove,
+    handleSwap,
+    refetchAllowance,
+  } as const;
 }

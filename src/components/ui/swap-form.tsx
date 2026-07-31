@@ -1,134 +1,187 @@
-"use client"
-
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ArrowDown } from 'lucide-react';
-import { useSwap } from '@/lib/hooks/useSwap';
-import { useAccount, useBalance } from 'wagmi';
-import { formatUnits } from 'viem';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useSwap } from "@/lib/hooks/useSwap";
+import { type Market } from "@/lib/hooks/useMarkets";
+import { Token, CurrencyAmount } from "@uniswap/sdk-core";
+import { Pair } from "@uniswap/v2-sdk";
+import { useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 
-type Token = {
-  address: `0x${string}`;
-  symbol: string;
-  decimals: number;
-};
+interface SwapFormProps {
+  market: Market;
+}
 
-type Market = {
-  id: string;
-  token0: Token;
-  token1: Token;
-  price: number;
-};
+export function SwapForm({ market }: SwapFormProps) {
+  const { address } = useAccount();
+  const [amountIn, setAmountIn] = useState("");
+  const [slippageTolerance] = useState(0.5);
 
-export function SwapForm({ market }: { market: Market }) {
-  const [fromToken, setFromToken] = useState(market.token0);
-  const [toToken, setToToken] = useState(market.token1);
-  const [fromAmount, setFromAmount] = useState('');
-  const [toAmount, setToAmount] = useState('');
+  // Build SDK Token instances from the market data
+  const tokenIn = useMemo(
+    () =>
+      new Token(
+        0,
+        market.token0.address,
+        market.token0.decimals,
+        market.token0.symbol,
+        market.token0.name
+      ),
+    [market]
+  );
 
-  const { address, isConnected } = useAccount();
-  const { openConnectModal } = useConnectModal();
-  const { data: fromBalance } = useBalance({ address, token: fromToken.address });
-  const { data: toBalance } = useBalance({ address, token: toToken.address });
+  const tokenOut = useMemo(
+    () =>
+      new Token(
+        0,
+        market.token1.address,
+        market.token1.decimals,
+        market.token1.symbol,
+        market.token1.name
+      ),
+    [market]
+  );
 
-  const { 
-    toAmount: quoteAmount, 
-    swap, 
-    approve, 
-    needsApproval, 
-    isLoading,
-    isSuccess
-  } = useSwap({ fromToken, toToken, fromAmount });
+  // Build a single Pair from the market reserves
+  const pairs = useMemo(() => {
+    const reserve0 = CurrencyAmount.fromRawAmount(
+      tokenIn,
+      market.reserves[0].toString()
+    );
+    const reserve1 = CurrencyAmount.fromRawAmount(
+      tokenOut,
+      market.reserves[1].toString()
+    );
+    return [new Pair(reserve0, reserve1)];
+  }, [tokenIn, tokenOut, market.reserves]);
 
-  const handleFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const amount = e.target.value;
-    setFromAmount(amount);
-    setToAmount(quoteAmount);
+  const {
+    quote,
+    needsApproval,
+    isApproving,
+    isSwapping,
+    swapHash,
+    swapError,
+    handleApprove,
+    handleSwap,
+  } = useSwap({
+    tokenIn,
+    tokenOut,
+    amountIn,
+    pairs,
+    slippageTolerance,
+  });
+
+  const handleMaxClick = () => {
+    // Placeholder — in production you'd fetch the user's balance
+    setAmountIn("1000");
   };
 
-  const handleFlip = () => {
-    setFromToken(toToken);
-    setToToken(fromToken);
-    setFromAmount(toAmount);
-    setToAmount(fromAmount);
-  }
-
-  const getButton = () => {
-    if (!isConnected) {
-      return <Button className="w-full" onClick={openConnectModal}>Connect Wallet</Button>;
-    }
-    if (needsApproval) {
-      return <Button className="w-full" onClick={approve} disabled={isLoading}>{isLoading ? 'Approving...' : `Approve ${fromToken.symbol}`}</Button>;
-    }
-    return <Button className="w-full" onClick={swap} disabled={isLoading || !fromAmount}>{isLoading ? 'Swapping...' : 'Swap'}</Button>;
-  }
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Swap Tokens</CardTitle>
+    <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+      <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
+        <CardTitle className="text-lg font-black uppercase tracking-wider">
+          Swap
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 pt-4">
+        {/* You Pay */}
         <div className="space-y-2">
-          <Label htmlFor="from-token">You Pay</Label>
-          <div className="relative">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-600">
+            You Pay
+          </label>
+          <div className="flex items-center gap-2">
             <Input
-              id="from-token"
               type="number"
               placeholder="0.0"
-              value={fromAmount}
-              onChange={handleFromAmountChange}
-              className="pr-20"
+              value={amountIn}
+              onChange={(e) => setAmountIn(e.target.value)}
+              className="flex-1"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <span className="font-bold text-sm">{fromToken.symbol}</span>
-            </div>
-          </div>
-          <p className="text-xs text-gray-500 text-right">Balance: {fromBalance ? `${parseFloat(formatUnits(fromBalance.value, fromBalance.decimals)).toFixed(4)} ${fromBalance.symbol}`: '0'}</p>
-        </div>
-
-        <div className="flex justify-center -my-3 z-10">
-            <Button variant="outline" size="icon" className="rounded-full bg-white" onClick={handleFlip}>
-                <ArrowDown className="h-4 w-4" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleMaxClick}
+              className="border-2 border-[#1A1A2E] text-xs font-bold uppercase"
+            >
+              Max
             </Button>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="to-token">You Receive</Label>
-          <div className="relative">
-            <Input
-              id="to-token"
-              type="number"
-              placeholder="0.0"
-              value={quoteAmount || toAmount}
-              readOnly
-              className="pr-20"
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <span className="font-bold text-sm">{toToken.symbol}</span>
-            </div>
           </div>
-          <p className="text-xs text-gray-500 text-right">Balance: {toBalance ? `${parseFloat(formatUnits(toBalance.value, toBalance.decimals)).toFixed(4)} ${toBalance.symbol}`: '0'}</p>
+          <p className="text-xs font-medium text-gray-500">
+            {market.token0.symbol}
+          </p>
         </div>
 
-        {getButton()}
-
-        {isSuccess && <p className="text-green-500 text-center">Swap successful!</p>}
-
-        <div className="text-xs text-gray-500 space-y-1">
-            <div className="flex justify-between">
-                <span>Price</span>
-                <span>1 {fromToken.symbol} = {market.price.toFixed(6)} {toToken.symbol}</span>
-            </div>
-            <div className="flex justify-between">
-                <span>Slippage Tolerance</span>
-                <span>0.5%</span>
-            </div>
+        {/* Arrow indicator */}
+        <div className="flex justify-center">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#1A1A2E] bg-white text-lg">
+            ↓
+          </div>
         </div>
+
+        {/* You Receive */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-600">
+            You Receive
+          </label>
+          <div className="rounded-lg border-2 border-gray-200 bg-gray-50 p-3">
+            <p className="text-xl font-bold">
+              {quote ? quote.minimumOutput : "0.0"}
+            </p>
+            <p className="text-xs font-medium text-gray-500">
+              {market.token1.symbol}
+            </p>
+          </div>
+          {quote && (
+            <div className="space-y-1 text-xs text-gray-500">
+              <p>Rate: 1 {market.token0.symbol} ≈ {quote.executionPrice} {market.token1.symbol}</p>
+              <p>Route: {quote.route}</p>
+              <p>Slippage: {slippageTolerance}%</p>
+            </div>
+          )}
+        </div>
+
+        {/* Error state */}
+        {swapError && (
+          <p className="text-xs text-red-500">
+            Swap failed: {swapError.message.slice(0, 80)}
+          </p>
+        )}
+
+        {/* Success state */}
+        {swapHash && (
+          <p className="text-xs text-green-600 break-all">
+            Tx: {swapHash.slice(0, 10)}...{swapHash.slice(-8)}
+          </p>
+        )}
+
+        {/* Action Button */}
+        {!address ? (
+          <Button
+            disabled
+            className="w-full py-6 text-base font-bold uppercase tracking-wide"
+          >
+            Connect Wallet
+          </Button>
+        ) : needsApproval ? (
+          <Button
+            onClick={handleApprove}
+            disabled={isApproving}
+            className="w-full py-6 text-base font-bold uppercase tracking-wide bg-yellow-500 hover:bg-yellow-600"
+          >
+            {isApproving ? "Approving..." : `Approve ${market.token0.symbol}`}
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSwap}
+            disabled={isSwapping || !amountIn || parseFloat(amountIn) <= 0}
+            className="w-full py-6 text-base font-bold uppercase tracking-wide"
+          >
+            {isSwapping
+              ? "Swapping..."
+              : `Swap ${market.token0.symbol} for ${market.token1.symbol}`}
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

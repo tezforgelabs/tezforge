@@ -2,7 +2,6 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SwapForm } from "@/components/ui/swap-form";
 import { useMarkets } from "@/lib/hooks/useMarkets";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -10,8 +9,8 @@ import {
   useLaunchpadPresale,
   type PresaleWithStatus,
 } from "@/lib/hooks/useLaunchpadPresales";
-import { Weth9Contract } from "@/config";
 import { PresaleParticipationForm } from "@/components/ui/presale-participation-form";
+import { SwapForm } from "@/components/ui/swap-form";
 import { formatUnits } from "viem";
 import { Badge } from "@/components/ui/badge";
 import { getPresaleMetadata } from "@/config/presale-metadata";
@@ -22,7 +21,7 @@ export default function ProjectDetailPage() {
     presale,
     isLoading: isLoadingPresale,
   } = useLaunchpadPresale(id as `0x${string}`);
-  const { markets, isLoading: isLoadingMarkets } = useMarkets();
+  const { markets } = useMarkets();
   const metadata = useMemo(
     () => (presale?.address ? getPresaleMetadata(presale.address) : id ? getPresaleMetadata(id) : undefined),
     [presale?.address, id]
@@ -39,7 +38,7 @@ export default function ProjectDetailPage() {
     };
   }, []);
 
-  if (isLoadingPresale || isLoadingMarkets) {
+  if (isLoadingPresale) {
     return <div className="text-center py-20">Loading project details...</div>;
   }
 
@@ -65,7 +64,7 @@ export default function ProjectDetailPage() {
   const renderMarketView = () => {
     const presaleTokens = [
       presale.saleToken.toLowerCase(),
-      (presale.paymentToken || Weth9Contract.address).toLowerCase(),
+      (presale.paymentToken).toLowerCase(),
     ];
 
     const market = markets.find((m) => {

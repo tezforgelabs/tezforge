@@ -4,29 +4,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { TokenLocker } from "@/config";
-import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import { useAllLocks } from "@/lib/hooks/useAllLocks";
+import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
-import { formatDistanceToNow, format } from "date-fns";
-import { useSearchParams, Link } from "react-router-dom";
+import { format, formatDistanceToNow } from "date-fns";
+import {
+  ExternalLink,
+  Eye,
+  Lock,
+  Plus,
+  Send,
+  Timer,
+  Unlock,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { erc20Abi, maxUint256, parseUnits, type Abi } from "viem";
 import {
   useAccount,
+  useChainId, useConfig,
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import {
-  Lock,
-  ExternalLink,
-  Plus,
-  Eye,
-  Timer,
-  Unlock,
-  Send,
-} from "lucide-react";
 
 interface LockData {
   id: bigint;
@@ -98,9 +99,8 @@ function LockProgressBar({
       </div>
       <Progress
         value={progress}
-        className={`h-3 border-2 border-[#1A1A2E] ${
-          isExpired ? "bg-green-200" : "bg-gray-200"
-        }`}
+        className={`h-3 border-2 border-[#1A1A2E] ${isExpired ? "bg-green-200" : "bg-gray-200"
+          }`}
       />
       <div className="text-center text-xs font-bold">
         {isExpired ? (
@@ -153,13 +153,12 @@ function LockCard({
   return (
     <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0 overflow-hidden">
       <CardHeader
-        className={`border-b-2 border-[#1A1A2E] p-4 ${
-          isWithdrawn
-            ? "bg-gray-200"
-            : isUnlocked
+        className={`border-b-2 border-[#1A1A2E] p-4 ${isWithdrawn
+          ? "bg-gray-200"
+          : isUnlocked
             ? "bg-[#90EE90]"
             : "bg-[#64FE3E]"
-        }`}
+          }`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -902,7 +901,13 @@ function TransferLockModal({
 
 export default function TokenLockerPage() {
   const { address } = useAccount();
-  const { explorerUrl, tokenLocker } = useChainContracts();
+  const chainId = useChainId();
+  const config = useConfig();
+
+  const explorerUrl =
+    config.chains.find(chain => chain.id === chainId)
+      ?.blockExplorers?.default.url;
+  const { tokenLocker } = useChainContracts();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [extendingLockId, setExtendingLockId] = useState<bigint | null>(null);
   const [transferringLockId, setTransferringLockId] = useState<bigint | null>(
@@ -1026,7 +1031,7 @@ export default function TokenLockerPage() {
                   onTransfer={setTransferringLockId}
                   unlockingId={unlockingId}
                   isOwner={isOwner}
-                  explorerUrl={explorerUrl}
+                  explorerUrl={explorerUrl as string}
                 />
               );
             })}
@@ -1055,7 +1060,7 @@ export default function TokenLockerPage() {
                     onTransfer={setTransferringLockId}
                     unlockingId={unlockingId}
                     isOwner={isOwner}
-                    explorerUrl={explorerUrl}
+                    explorerUrl={explorerUrl as string}
                   />
                 );
               })}

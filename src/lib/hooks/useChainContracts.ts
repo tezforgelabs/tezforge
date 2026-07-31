@@ -1,4 +1,4 @@
-import { getContractAddresses, getExplorerUrl } from "@/config";
+import { getContractAddresses } from "@/config";
 import { useChainId } from "wagmi";
 
 export function useChainContracts() {
@@ -7,7 +7,6 @@ export function useChainContracts() {
 
   return {
     chainId,
-    explorerUrl: getExplorerUrl(chainId),
     ...contractAddresses,
   };
 }

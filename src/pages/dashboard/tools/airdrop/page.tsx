@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -9,14 +8,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AirdropMultisenderContract } from "@/config";
+import { Textarea } from "@/components/ui/textarea";
+import { AirdropMultiSender } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import { useUserTokens } from "@/lib/hooks/useUserTokens";
+import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  Coins,
+  Plus,
+  Send,
+  Upload,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { erc20Abi, formatUnits, maxUint256, parseUnits } from "viem";
-import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
 import {
   useAccount,
   useBalance,
@@ -24,15 +33,6 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import {
-  Send,
-  Coins,
-  Upload,
-  CheckCircle2,
-  AlertCircle,
-  Plus,
-  ArrowRight,
-} from "lucide-react";
 
 function TokenSymbol({ address }: { address: `0x${string}` }) {
   const { data: symbol } = useReadContract({
@@ -257,7 +257,7 @@ export default function AirdropPage() {
     if (sendType === "react") {
       sendTokens({
         address: airdropMultisender,
-        abi: AirdropMultisenderContract.abi,
+        abi: AirdropMultiSender.abi,
         functionName: "sendETH",
         args: [parsedRecipients.recipients, parsedRecipients.amounts],
         value: totalAmount,
@@ -265,7 +265,7 @@ export default function AirdropPage() {
     } else {
       sendTokens({
         address: airdropMultisender,
-        abi: AirdropMultisenderContract.abi,
+        abi: AirdropMultiSender.abi,
         functionName: "sendERC20",
         args: [
           normalizedTokenAddress,
@@ -361,17 +361,15 @@ export default function AirdropPage() {
               <button
                 type="button"
                 onClick={() => setSendType("erc20")}
-                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
-                  sendType === "erc20"
-                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                    : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
-                }`}
+                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${sendType === "erc20"
+                  ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                  : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${
-                      sendType === "erc20" ? "bg-black" : ""
-                    }`}
+                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${sendType === "erc20" ? "bg-black" : ""
+                      }`}
                   />
                   <div>
                     <p className="font-black uppercase text-sm sm:text-base">
@@ -387,17 +385,15 @@ export default function AirdropPage() {
                   setSendType("react");
                   setTokenAddress("");
                 }}
-                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
-                  sendType === "react"
-                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                    : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
-                }`}
+                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${sendType === "react"
+                  ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                  : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${
-                      sendType === "react" ? "bg-black" : ""
-                    }`}
+                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${sendType === "react" ? "bg-black" : ""
+                      }`}
                   />
                   <div>
                     <p className="font-black uppercase text-sm sm:text-base">
@@ -473,11 +469,11 @@ export default function AirdropPage() {
                           <p className="font-black">
                             {tokenBalance !== undefined
                               ? `${Number(
-                                  formatUnits(
-                                    tokenBalance,
-                                    tokenDecimals ?? 18
-                                  )
-                                ).toLocaleString()} ${tokenSymbol}`
+                                formatUnits(
+                                  tokenBalance,
+                                  tokenDecimals ?? 18
+                                )
+                              ).toLocaleString()} ${tokenSymbol}`
                               : "Loading..."}
                           </p>
                         </div>
@@ -648,8 +644,8 @@ export default function AirdropPage() {
                 {sendType === "erc20" && !isValidTokenAddress
                   ? "Select a token you created"
                   : parsedRecipients.recipients.length === 0
-                  ? "Add valid recipients"
-                  : "Fix errors above to continue"}
+                    ? "Add valid recipients"
+                    : "Fix errors above to continue"}
               </p>
             )}
           </CardContent>

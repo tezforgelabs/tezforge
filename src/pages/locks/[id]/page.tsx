@@ -4,11 +4,11 @@ import { Progress } from "@/components/ui/progress";
 import { TokenLocker } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import { format, formatDistanceToNow } from "date-fns";
-import { useParams, Link } from "react-router-dom";
+import { ArrowLeft, Calendar, CheckCircle2, Clock, Coins, ExternalLink, Lock, Timer, User, XCircle } from "lucide-react";
 import { useMemo } from "react";
+import { Link, useParams } from "react-router-dom";
 import { erc20Abi, formatUnits, type Abi } from "viem";
-import { useReadContract } from "wagmi";
-import { Lock, Clock, ExternalLink, ArrowLeft, User, Coins, Calendar, Timer, CheckCircle2, XCircle } from "lucide-react";
+import { useChainId, useConfig, useReadContract } from "wagmi";
 
 interface LockInfo {
     token: `0x${string}`;
@@ -23,7 +23,7 @@ interface LockInfo {
 
 function LockProgressBar({ lockDate, unlockDate }: { lockDate: bigint; unlockDate: bigint }) {
     const now = Date.now();
-    
+
     // Safe number conversions
     let lockTimestamp = 0;
     let unlockTimestamp = 0;
@@ -33,13 +33,13 @@ function LockProgressBar({ lockDate, unlockDate }: { lockDate: bigint; unlockDat
     } catch (e) {
         console.error("Error converting timestamps:", e);
     }
-    
+
     const totalDuration = unlockTimestamp - lockTimestamp;
     const elapsed = now - lockTimestamp;
     const progress = totalDuration > 0 ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100)) : 0;
-    
+
     const isExpired = unlockTimestamp > 0 && now >= unlockTimestamp;
-    
+
     // Safe date formatting
     let lockDateStr = 'Unknown';
     let unlockDateStr = 'Unknown';
@@ -57,7 +57,7 @@ function LockProgressBar({ lockDate, unlockDate }: { lockDate: bigint; unlockDat
     } catch (e) {
         console.error("Error formatting dates:", e);
     }
-    
+
     return (
         <div className="space-y-3">
             <div className="flex flex-col sm:flex-row justify-between text-sm text-gray-600 gap-2">
@@ -70,8 +70,8 @@ function LockProgressBar({ lockDate, unlockDate }: { lockDate: bigint; unlockDat
                     <p className="font-medium">{unlockDateStr}</p>
                 </div>
             </div>
-            <Progress 
-                value={progress} 
+            <Progress
+                value={progress}
                 className={`h-4 border-2 border-[#1A1A2E] ${isExpired ? 'bg-green-200' : 'bg-gray-200'}`}
             />
             <div className="text-center">
@@ -92,8 +92,15 @@ function LockProgressBar({ lockDate, unlockDate }: { lockDate: bigint; unlockDat
 
 export default function LockDetailPage() {
     const { id } = useParams<{ id: string }>();
-    const { explorerUrl, tokenLocker } = useChainContracts();
-    
+    const { tokenLocker } = useChainContracts();
+
+    const chainId = useChainId();
+    const config = useConfig();
+
+    const explorerUrl =
+        config.chains.find(chain => chain.id === chainId)
+            ?.blockExplorers?.default.url;
+
     // Safe BigInt conversion
     let lockId: bigint | undefined = undefined;
     try {
@@ -202,7 +209,7 @@ export default function LockDetailPage() {
     return (
         <div className="container mx-auto px-4 py-6 sm:py-8 text-[#1A1A2E]">
             {/* Back Link */}
-            <Link 
+            <Link
                 to="/dashboard/user"
                 className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A2E] mb-4 sm:mb-6 font-bold text-sm sm:text-base"
             >
@@ -212,11 +219,10 @@ export default function LockDetailPage() {
 
             {/* Header */}
             <div className="mb-6 sm:mb-8">
-                <div className={`border-4 border-[#1A1A2E] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] ${
-                    lockStatus === 'withdrawn' ? 'bg-gray-300' :
+                <div className={`border-4 border-[#1A1A2E] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] ${lockStatus === 'withdrawn' ? 'bg-gray-300' :
                     lockStatus === 'unlockable' ? 'bg-[#90EE90]' :
-                    'bg-[#64FE3E]'
-                }`}>
+                        'bg-[#64FE3E]'
+                    }`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <p className="text-xs sm:text-sm uppercase font-bold text-gray-600">Lock #{id}</p>
@@ -225,14 +231,13 @@ export default function LockDetailPage() {
                                 <span className="break-all">{lock.name || `Token Lock #${id}`}</span>
                             </h1>
                         </div>
-                        <div className={`px-3 py-1.5 sm:px-4 sm:py-2 border-4 border-[#1A1A2E] font-black uppercase text-xs sm:text-sm self-start sm:self-auto ${
-                            lockStatus === 'withdrawn' ? 'bg-gray-500 text-white' :
+                        <div className={`px-3 py-1.5 sm:px-4 sm:py-2 border-4 border-[#1A1A2E] font-black uppercase text-xs sm:text-sm self-start sm:self-auto ${lockStatus === 'withdrawn' ? 'bg-gray-500 text-white' :
                             lockStatus === 'unlockable' ? 'bg-green-600 text-white' :
-                            'bg-yellow-500 text-[#1A1A2E]'
-                        }`}>
+                                'bg-yellow-500 text-[#1A1A2E]'
+                            }`}>
                             {lockStatus === 'withdrawn' ? '✓ Withdrawn' :
-                             lockStatus === 'unlockable' ? 'Unlockable' :
-                             'Locked'}
+                                lockStatus === 'unlockable' ? 'Unlockable' :
+                                    'Locked'}
                         </div>
                     </div>
                     {lock.description && (
@@ -262,7 +267,7 @@ export default function LockDetailPage() {
                         <div>
                             <p className="text-xs uppercase font-bold text-gray-500">Contract Address</p>
                             {lock.token ? (
-                                <a 
+                                <a
                                     href={`${explorerUrl}/address/${lock.token}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -297,7 +302,7 @@ export default function LockDetailPage() {
                         <div>
                             <p className="text-xs uppercase font-bold text-gray-500">Owner Address</p>
                             {lock.owner ? (
-                                <a 
+                                <a
                                     href={`${explorerUrl}/address/${lock.owner}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -348,7 +353,7 @@ export default function LockDetailPage() {
                         <div className="relative">
                             {/* Timeline line */}
                             <div className="absolute left-[14px] sm:left-4 top-0 bottom-0 w-0.5 sm:w-1 bg-black"></div>
-                            
+
                             {/* Lock Created */}
                             <div className="relative flex items-start gap-3 sm:gap-4 pb-6 sm:pb-8">
                                 <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#0F59FF] border-2 sm:border-4 border-[#1A1A2E] flex items-center justify-center z-10 flex-shrink-0">
@@ -419,7 +424,7 @@ export default function LockDetailPage() {
                             <p className="font-black uppercase text-base sm:text-lg">Verified On-Chain</p>
                             <p className="text-gray-600 mt-1 text-xs sm:text-sm">
                                 This lock is verified on the blockchain. All data is fetched directly from the smart contract at{' '}
-                                <a 
+                                <a
                                     href={`${explorerUrl}/address/${tokenLocker}`}
                                     target="_blank"
                                     rel="noopener noreferrer"

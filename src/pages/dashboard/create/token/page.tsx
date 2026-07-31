@@ -11,13 +11,15 @@ import {
 } from "@/components/ui/select";
 import { TokenFactory } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
+import { CheckCircle2, Coins, ExternalLink } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { decodeEventLog, parseUnits } from "viem";
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { Coins, ExternalLink, CheckCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
+
+import { useChainId, useConfig } from "wagmi";
 
 const TokenType = {
   Plain: 0,
@@ -31,8 +33,15 @@ type TokenType = typeof TokenType[keyof typeof TokenType];
 
 export default function CreateTokenPage() {
   const { address } = useAccount();
-  const { explorerUrl, tokenFactory } = useChainContracts();
+  const { tokenFactory } = useChainContracts();
   const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
+
+  const chainId = useChainId();
+  const config = useConfig();
+
+  const explorerUrl =
+  config.chains.find(chain => chain.id === chainId)
+    ?.blockExplorers?.default.url;
 
   const [tokenType, setTokenType] = useState<TokenType>(TokenType.Plain);
   const [name, setName] = useState("");

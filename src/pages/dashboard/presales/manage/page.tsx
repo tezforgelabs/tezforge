@@ -4,22 +4,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { LaunchpadPresaleContract } from "@/config";
-import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import {
   useLaunchpadPresale,
   type PresaleWithStatus,
 } from "@/lib/hooks/useLaunchpadPresales";
+import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { erc20Abi, formatUnits, isAddress, type Address } from "viem";
-import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
 import {
-  useAccount,
-  useReadContract,
+  useAccount, useChainId, useConfig, useReadContract,
   useReadContracts,
   useWaitForTransactionReceipt,
-  useWriteContract,
+  useWriteContract
 } from "wagmi";
 
 export default function ManagePresalePage() {
@@ -157,7 +155,11 @@ function ManagePresaleView({
   presale: PresaleWithStatus;
   refetchPresale: () => void;
 }) {
-  const { explorerUrl } = useChainContracts();
+  const chainId = useChainId();
+  const config = useConfig();
+  const explorerUrl =
+    config.chains.find(chain => chain.id === chainId)
+      ?.blockExplorers?.default.url;
   const [singleWhitelist, setSingleWhitelist] = useState("");
   const [bulkWhitelist, setBulkWhitelist] = useState("");
   const [removeAddress, setRemoveAddress] = useState("");
@@ -625,21 +627,20 @@ function ManagePresaleView({
               hasDeposited ||
               presaleHasEnded
             }
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              hasSufficientAllowance || hasDeposited || presaleHasEnded
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-white text-[#1A1A2E]"
-            }`}
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${hasSufficientAllowance || hasDeposited || presaleHasEnded
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-white text-[#1A1A2E]"
+              }`}
           >
             {approveBusy
               ? "Approving..."
               : presaleHasEnded
-              ? "Presale Ended"
-              : hasSufficientAllowance || hasDeposited
-              ? "✓ Approved"
-              : `Approve ${formatTokenDisplay(
-                  totalRequiredAmount
-                )} ${saleTokenSymbol}`}
+                ? "Presale Ended"
+                : hasSufficientAllowance || hasDeposited
+                  ? "✓ Approved"
+                  : `Approve ${formatTokenDisplay(
+                    totalRequiredAmount
+                  )} ${saleTokenSymbol}`}
           </Button>
           <Button
             onClick={handleDepositTokens}
@@ -650,21 +651,20 @@ function ManagePresaleView({
               hasDeposited ||
               presaleHasEnded
             }
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              hasDeposited || presaleHasEnded
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : hasSufficientAllowance
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${hasDeposited || presaleHasEnded
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : hasSufficientAllowance
                 ? "bg-[#0F59FF] text-[#1A1A2E] ring-4 ring-[#0F59FF] ring-opacity-50"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
+              }`}
           >
             {depositBusy
               ? "Depositing..."
               : presaleHasEnded
-              ? "Presale Ended"
-              : hasDeposited
-              ? "✓ Deposited"
-              : "Deposit & Cover Fee"}
+                ? "Presale Ended"
+                : hasDeposited
+                  ? "✓ Deposited"
+                  : "Deposit & Cover Fee"}
           </Button>
         </div>
         {(hasSufficientAllowance || hasDeposited) && (
@@ -800,10 +800,10 @@ function ManagePresaleView({
             {ownerActionBusy && activeOwnerAction === "finalize"
               ? "Finalizing..."
               : presale.claimEnabled
-              ? "Already Finalized"
-              : presale.refundsEnabled
-              ? "Cancelled"
-              : "Finalize Presale"}
+                ? "Already Finalized"
+                : presale.refundsEnabled
+                  ? "Cancelled"
+                  : "Finalize Presale"}
           </Button>
           <Button
             onClick={handleCancel}
@@ -819,11 +819,10 @@ function ManagePresaleView({
           <Button
             onClick={handleWithdrawProceeds}
             disabled={ownerActionBusy || !presale.claimEnabled}
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              !presale.claimEnabled
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#64FE3E] text-[#1A1A2E]"
-            }`}
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${!presale.claimEnabled
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#64FE3E] text-[#1A1A2E]"
+              }`}
           >
             {ownerActionBusy && activeOwnerAction === "withdrawProceeds"
               ? "Withdrawing..."
@@ -832,11 +831,10 @@ function ManagePresaleView({
           <Button
             onClick={handleWithdrawTokens}
             disabled={ownerActionBusy || !presale.claimEnabled}
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              !presale.claimEnabled
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#64FE3E] text-[#1A1A2E]"
-            }`}
+            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${!presale.claimEnabled
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#64FE3E] text-[#1A1A2E]"
+              }`}
           >
             {ownerActionBusy && activeOwnerAction === "withdrawTokens"
               ? "Withdrawing..."

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LaunchpadPresaleContract, PresaleFactory, config } from "@/config";
+import { LaunchpadPresaleContract, PresaleFactory } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 // LaunchpadService removed - data is now stored only on blockchain
 import { useBlockchainStore } from "@/lib/store/blockchain-store";
@@ -20,12 +20,13 @@ import {
 } from "viem";
 import {
   useAccount,
+  useConfig,
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
 import { readContract, readContracts } from "wagmi/actions";
-import { erc20Abi } from "@/config";
+import { erc20Abi } from "viem";
 
 interface PresaleFormData {
   saleToken: string;
@@ -51,10 +52,10 @@ function CreatePresaleForm({
   onPresaleCreated: (hash: `0x${string}`) => void;
 }) {
   const { address } = useAccount();
+  const config = useConfig();
   const { presaleFactory } = useChainContracts();
   const { writeContract, isPending, error } = useWriteContract();
   const [isChecking, setIsChecking] = useState(false);
-  // const router = useRouter();
 
   const router = useNavigate();
 
@@ -435,8 +436,8 @@ function CreatePresaleForm({
         {isChecking
           ? "Checking for existing presale..."
           : isPending
-          ? "Creating Presale..."
-          : "Create Presale"}
+            ? "Creating Presale..."
+            : "Create Presale"}
       </Button>
     </>
   );
