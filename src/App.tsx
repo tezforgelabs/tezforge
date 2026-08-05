@@ -14,6 +14,7 @@ import StakingPage from "./pages/dashboard/staking/page";
 import AirdropPage from "./pages/dashboard/tools/airdrop/page";
 import TokenLockerPage from "./pages/dashboard/tools/token-locker/page";
 import UserDashboardPage from "./pages/dashboard/user/page";
+import TokenDetailPage from "./pages/dashboard/user/tokens/[address]/page";
 import LockDetailPage from "./pages/locks/[id]/page";
 import NFTDetailPage from "./pages/nfts/[id]/page";
 import NFTsPage from "./pages/nfts/page";
@@ -40,6 +41,7 @@ function App() {
             <Route path="/dashboard/tools/airdrop" element={<AirdropPage />} />
             <Route path="/dashboard/tools/token-locker" element={<TokenLockerPage />} />
             <Route path="/dashboard/user" element={<UserDashboardPage />} />
+            <Route path="/dashboard/user/tokens/:address" element={<TokenDetailPage />} />
             <Route path="/nfts" element={<NFTsPage />} />
             <Route path="/nfts/:id" element={<NFTDetailPage />} />
             <Route path="/projects" element={<ProjectsPage />} />

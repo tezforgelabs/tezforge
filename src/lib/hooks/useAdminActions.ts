@@ -3,6 +3,23 @@ import { useChainContracts } from '@/lib/hooks/useChainContracts';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import type { Address } from 'viem';
 
+interface PresaleConfig {
+  startTime: bigint;
+  endTime: bigint;
+  rate: bigint;
+  softCap: bigint;
+  hardCap: bigint;
+  minContribution: bigint;
+  maxContribution: bigint;
+}
+
+interface AdminCreatePresaleParams {
+  saleToken: Address;
+  paymentToken: Address;
+  config: PresaleConfig;
+  owner: Address;
+}
+
 /**
  * Hook for factory owner to manage whitelisted creators
  */
@@ -72,6 +89,47 @@ export function useSetFeeRecipient() {
 
   return {
     setFeeRecipient,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    isError,
+    error,
+    reset,
+    isBusy: isPending || isConfirming,
+  };
+}
+
+/**
+ * Hook for factory owner to create a presale with minimal input.
+ * Skips the duplicate-token check that regular users go through.
+ */
+export function useAdminCreatePresale() {
+  const { presaleFactory } = useChainContracts();
+  const {
+    writeContract,
+    data: hash,
+    isPending,
+    isError,
+    error,
+    reset,
+  } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const createPresale = (params: AdminCreatePresaleParams) => {
+    writeContract({
+      address: presaleFactory,
+      abi: PresaleFactory.abi,
+      functionName: 'createPresale',
+      args: [params],
+    });
+  };
+
+  return {
+    createPresale,
     hash,
     isPending,
     isConfirming,

@@ -17,7 +17,6 @@ import {
   AlertCircle,
   ArrowRight,
   CheckCircle2,
-  Coins,
   Plus,
   Send,
   Upload,
@@ -410,11 +409,6 @@ export default function AirdropPage() {
         {/* Token Select (for ERC-20) */}
         {sendType === "erc20" && (
           <Card className="border-0 border-[#1A1A2E] shadow-[0px_0px_0_rgba(26,26,46,1)] p-0 gap-0">
-            <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#64FE3E] p-4">
-              <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
-                Token Details
-              </CardTitle>
-            </CardHeader>
             <CardContent className="p-4 space-y-4">
               {isUserTokensLoading ? (
                 <div className="p-6 text-center text-gray-500 font-bold">
@@ -503,7 +497,7 @@ export default function AirdropPage() {
                       XTZ
                     </p>
                   </div>
-                  <Coins className="w-8 h-8 text-[#0F59FF]" />
+                  <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785972882/tezos_gsjxsg.png" alt="Tezos" className="w-8 h-8" />
                 </div>
               </div>
             </CardContent>

@@ -2,11 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LaunchpadPresaleContract, PresaleFactory } from "@/config";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { LaunchpadPresaleContract, PresaleFactory, getContractAddresses } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 // LaunchpadService removed - data is now stored only on blockchain
 import { useBlockchainStore } from "@/lib/store/blockchain-store";
 import { useWhitelistedCreator } from "@/lib/hooks/useWhitelistedCreator";
+import { useUserTokens } from "@/lib/hooks/useUserTokens";
+import { useIsAdmin } from "@/lib/utils/admin";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -20,6 +29,7 @@ import {
 } from "viem";
 import {
   useAccount,
+  useChainId,
   useConfig,
   useReadContract,
   useWaitForTransactionReceipt,
@@ -27,6 +37,17 @@ import {
 } from "wagmi";
 import { readContract, readContracts } from "wagmi/actions";
 import { erc20Abi } from "viem";
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+function TokenSymbol({ address }: { address: `0x${string}` }) {
+  const { data: symbol } = useReadContract({
+    abi: erc20Abi,
+    address,
+    functionName: "symbol",
+  });
+  return <>{symbol ?? "..."}</>;
+}
 
 interface PresaleFormData {
   saleToken: string;
@@ -58,6 +79,28 @@ function CreatePresaleForm({
   const [isChecking, setIsChecking] = useState(false);
 
   const router = useNavigate();
+
+  const { tokens: userTokens, isLoading: isUserTokensLoading } =
+    useUserTokens();
+
+  const nativeUSDC = getContractAddresses(useChainId()).nativeUSDC;
+  const nativeUSDT = getContractAddresses(useChainId()).nativeUSDT;
+
+  // Auto-select sale token from URL if it matches a user-created token
+  useEffect(() => {
+    const urlToken = formData.saleToken;
+    if (
+      urlToken &&
+      userTokens.length > 0 &&
+      !isUserTokensLoading &&
+      !userTokens.some(
+        (t) => t.toLowerCase() === urlToken.toLowerCase()
+      )
+    ) {
+      // Token from URL is not in the user's created tokens — clear it
+      setFormData((prev) => ({ ...prev, saleToken: "" }));
+    }
+  }, [formData.saleToken, userTokens, isUserTokensLoading, setFormData]);
 
   const {
     saleToken,
@@ -260,7 +303,7 @@ function CreatePresaleForm({
           </li>
           <li>
             2% of the total token supply is routed to the launchpad
-            automatically, so approve a little extra before depositing.
+            automatically.
           </li>
           <li>
             3% of the native/payment tokens raised are collected when you
@@ -270,22 +313,55 @@ function CreatePresaleForm({
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="saleToken">Sale Token Address</Label>
-          <Input
-            id="saleToken"
-            placeholder="0x..."
-            value={saleToken}
-            onChange={handleChange}
-          />
+          <Label htmlFor="saleToken">Sale Token</Label>
+          <Select
+            value={saleToken || undefined}
+            onValueChange={(value) =>
+              setFormData({ ...formData, saleToken: value })
+            }
+          >
+            <SelectTrigger id="saleToken">
+              <SelectValue placeholder="Select your token..." />
+            </SelectTrigger>
+            <SelectContent>
+              {isUserTokensLoading && (
+                <div className="px-3 py-2 text-sm font-medium normal-case text-gray-500">
+                  Loading your tokens...
+                </div>
+              )}
+              {!isUserTokensLoading && userTokens.length === 0 && (
+                <div className="px-3 py-2 text-sm font-medium normal-case text-gray-500">
+                  No tokens created yet. Create one first.
+                </div>
+              )}
+              {userTokens.map((token) => (
+                <SelectItem key={token} value={token}>
+                  <TokenSymbol address={token} />
+                  <span className="ml-2 font-mono text-xs font-normal normal-case opacity-70">
+                    {token.slice(0, 6)}...{token.slice(-4)}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="paymentToken">Payment Token Address</Label>
-          <Input
-            id="paymentToken"
-            placeholder="0x... (leave blank for XTZ)"
-            value={paymentToken}
-            onChange={handleChange}
-          />
+          <Label htmlFor="paymentToken">Payment Token</Label>
+          <Select
+            value={paymentToken || undefined}
+            onValueChange={(value) =>
+              setFormData({ ...formData, paymentToken: value })
+            }
+          >
+            <SelectTrigger id="paymentToken">
+              <SelectValue placeholder="Select payment token..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ZERO_ADDRESS}>XTZ (Native)</SelectItem>
+              <SelectItem value={nativeUSDC}>USDC</SelectItem>
+              <SelectItem value={nativeUSDT}>USDT</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       {/* START / END TIME */}
@@ -335,7 +411,13 @@ function CreatePresaleForm({
               </p>
               <p>
                 {(Number(saleAmount) / Number(hardCap)).toFixed(2)} tokens per{" "}
-                {paymentToken ? "payment token" : "XTZ"}
+                {paymentToken === ZERO_ADDRESS || !paymentToken
+                  ? "XTZ"
+                  : paymentToken === nativeUSDC
+                    ? "USDC"
+                    : paymentToken === nativeUSDT
+                      ? "USDT"
+                      : "payment token"}
               </p>
             </div>
           )}
@@ -450,12 +532,13 @@ export default function CreatePresalePage() {
   const { setPresales } = useBlockchainStore();
   const { isWhitelisted, isLoading: isLoadingWhitelist } =
     useWhitelistedCreator(address as Address | undefined);
+  const { isAdmin } = useIsAdmin(address as Address | undefined);
   const [creationHash, setCreationHash] = useState<`0x${string}` | undefined>(
     undefined
   );
   const [formData, setFormData] = useState({
     saleToken: searchParams.get("token") ?? "",
-    paymentToken: "",
+    paymentToken: ZERO_ADDRESS,
     startTime: "",
     endTime: "",
     saleAmount: "",
@@ -469,11 +552,11 @@ export default function CreatePresalePage() {
 
   // Redirect to project submission if not whitelisted
   useEffect(() => {
-    if (!isLoadingWhitelist && address && isWhitelisted === false) {
+    if (!isLoadingWhitelist && address && isWhitelisted === false && !isAdmin) {
       toast.info("Please submit a project first before creating a presale.");
       navigate("/dashboard/create/project");
     }
-  }, [isLoadingWhitelist, isWhitelisted, address, navigate]);
+  }, [isLoadingWhitelist, isWhitelisted, isAdmin, address, navigate]);
 
   const {
     data: receipt,
@@ -575,7 +658,7 @@ export default function CreatePresalePage() {
   }
 
   // Don't render form if not whitelisted (redirect will happen)
-  if (isWhitelisted === false) {
+  if (isWhitelisted === false && !isAdmin) {
     return null;
   }
 

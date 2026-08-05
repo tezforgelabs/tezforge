@@ -4,11 +4,16 @@ import { useCountUp } from "@/lib/hooks/useCountUp";
 import { useLaunchpadPresales } from "@/lib/hooks/useLaunchpadPresales";
 import { useReactPriceUsd } from "@/lib/hooks/useReactPriceUsd";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { BookOpen, Menu, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const cardStyles = [
   { bg: "bg-[#0F59FF]", text: "text-white" },
@@ -63,8 +68,83 @@ export default function Home() {
     return totalRaised * reactPriceUsd;
   }, [reactPriceUsd, totalRaised]);
 
+  const pageRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      gsap.from(".stat-card", {
+        autoAlpha: 0,
+        y: 32,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.15,
+        immediateRender: true,
+        clearProps: "transform",
+        scrollTrigger: {
+          trigger: ".stats-section",
+          start: "top 85%",
+          toggleActions: "play none none none",
+        },
+      });
+
+      gsap.from(".how-card", {
+        autoAlpha: 0,
+        y: 32,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.15,
+        immediateRender: true,
+        clearProps: "transform",
+        scrollTrigger: {
+          trigger: ".how-section",
+          start: "top 85%",
+          toggleActions: "play none none none",
+        },
+      });
+
+      gsap.from(".featured-card", {
+        autoAlpha: 0,
+        y: 32,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.1,
+        immediateRender: true,
+        clearProps: "transform",
+        scrollTrigger: {
+          trigger: ".featured-section",
+          start: "top 85%",
+          toggleActions: "play none none none",
+        },
+      });
+
+      gsap.from(".cta-section", {
+        autoAlpha: 0,
+        y: 32,
+        duration: 0.8,
+        ease: "power3.out",
+        immediateRender: true,
+        scrollTrigger: {
+          trigger: ".cta-section",
+          start: "top 85%",
+          toggleActions: "play none none none",
+        },
+      });
+    },
+    { scope: pageRef },
+  );
+
+  // Recalculate ScrollTrigger positions after async presales data loads
+  useEffect(() => {
+    if (!isLoadingPresales && featuredPresales.length > 0) {
+      ScrollTrigger.refresh();
+    }
+  }, [isLoadingPresales, featuredPresales]);
+
   return (
-    <main className="min-h-screen bg-[#F7F3EE] text-[#1A1A2E]">
+    <main
+      ref={pageRef}
+      className="min-h-screen bg-[#F7F3EE] text-[#1A1A2E]"
+    >
       <div className="container mx-auto px-4 text-pretty sm:px-6 py-7 max-w-7xl">
         {/* ── Header ── */}
         <header className="mb-16">
@@ -177,8 +257,8 @@ export default function Home() {
         </section>
 
         {/* ── Stats ── */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 animate-fade-in-up animation-delay-200">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 stats-section">
+          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 stat-card">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Projects
             </p>
@@ -186,7 +266,7 @@ export default function Home() {
               {Math.floor(totalProjects).toLocaleString()}
             </p>
           </div>
-          <div className="bg-[#64FE3E] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 animate-fade-in-up animation-delay-400">
+          <div className="bg-[#64FE3E] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 stat-card">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Raised
             </p>
@@ -202,7 +282,7 @@ export default function Home() {
               {totalRaised < 0.01 ? "0" : totalRaised.toFixed(2)} XTZ
             </p>
           </div>
-          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 animate-fade-in-up animation-delay-600">
+          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 stat-card">
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Active Presales
             </p>
@@ -213,26 +293,26 @@ export default function Home() {
         </section>
 
         {/* ── How It Works ── */}
-        <section className="mb-32">
+        <section className="mb-32 how-section">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-balance text-center">
             HOW IT WORKS
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] how-card">
               <div className="text-6xl font-black mb-4 text-[#0F59FF]">1</div>
               <h3 className="text-2xl font-black uppercase mb-4">DISCOVER</h3>
               <p className="font-bold text-lg">
                 Browse projects building on Tezos.
               </p>
             </div>
-            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] how-card">
               <div className="text-6xl font-black mb-4 text-[#0F59FF]">2</div>
               <h3 className="text-2xl font-black uppercase mb-4">BACK</h3>
               <p className="font-bold text-lg">
                 Support projects you believe in.
               </p>
             </div>
-            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] how-card">
               <div className="text-6xl font-black mb-4 text-[#0F59FF]">3</div>
               <h3 className="text-2xl font-black uppercase mb-4">LAUNCH</h3>
               <p className="font-bold text-lg">
@@ -243,7 +323,7 @@ export default function Home() {
         </section>
 
         {/* ── Featured Launches ── */}
-        <section className="mb-32">
+        <section className="mb-32 featured-section">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-balance">
             FEATURED LAUNCHES
           </h2>
@@ -271,7 +351,7 @@ export default function Home() {
               featuredPresales.map((presale, index) => (
                 <Link to={`/projects/${presale.address}`} key={presale.address}>
                   <div
-                    className={`${cardStyles[index % cardStyles.length].bg} ${
+                    className={`featured-card ${cardStyles[index % cardStyles.length].bg} ${
                       cardStyles[index % cardStyles.length].text
                     } border-2 border-[#1A1A2E] p-8 cursor-pointer shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 h-full flex flex-col`}
                   >
@@ -289,7 +369,7 @@ export default function Home() {
         </section>
 
         {/* ── CTA ── */}
-        <section className="bg-[#1A1A2E] text-white border-2 border-[#1A1A2E] p-8 sm:p-12 md:p-16 text-center mb-16 shadow-[4px_4px_0px_0px_#0F59FF]">
+        <section className="bg-[#1A1A2E] text-white border-2 border-[#1A1A2E] p-8 sm:p-12 md:p-16 text-center mb-16 shadow-[4px_4px_0px_0px_#0F59FF] cta-section">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-6 tracking-tight text-balance">
             Ready to Build?
           </h2>

@@ -13,7 +13,8 @@ export const CONTRACT_ADDRESSES = {
   registry: "" as Address,
   resolver: "" as Address,
   registrar: "" as Address,
-  nativeUSDC: "" as Address,
+  nativeUSDC: "0x0000000000000000000000000000000000000001" as Address,
+  nativeUSDT: "0x0000000000000000000000000000000000000002" as Address,
   dexFactory: "" as Address,
   dexRouter: "" as Address,
   weth9: "" as Address

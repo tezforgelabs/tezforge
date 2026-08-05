@@ -7,6 +7,7 @@ import { useAllLocks } from "@/lib/hooks/useAllLocks";
 import { useLaunchpadPresales } from "@/lib/hooks/useLaunchpadPresales";
 import { useUserTokens } from "@/lib/hooks/useUserTokens";
 import { useWhitelistedCreator } from "@/lib/hooks/useWhitelistedCreator";
+import { useIsAdmin } from "@/lib/utils/admin";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, FileText, Plus, X } from "lucide-react";
@@ -31,6 +32,8 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
   const { isWhitelisted, isLoading: isLoadingWhitelist } = useWhitelistedCreator(
     address as Address | undefined
   );
+  const { isAdmin } = useIsAdmin(address as Address | undefined);
+  const canCreatePresale = isWhitelisted || isAdmin;
 
   const isLoading = isLoadingSymbol || isLoadingName;
 
@@ -46,10 +49,12 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
       <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-lg uppercase">
-          {name as string || 'Unknown Token'} ({symbol as string || 'N/A'})
-        </h3>
-        <p className="text-xs text-gray-500 break-all font-mono">{tokenAddress}</p>
+        <Link to={`/dashboard/user/tokens/${tokenAddress}`} className="hover:underline">
+          <h3 className="font-bold text-lg uppercase">
+            {name as string || 'Unknown Token'} ({symbol as string || 'N/A'})
+          </h3>
+          <p className="text-xs text-gray-500 break-all font-mono">{tokenAddress}</p>
+        </Link>
       </div>
       <div className="flex flex-wrap gap-2 flex-shrink-0">
         <Button variant="outline" size="sm" asChild className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]">
@@ -62,7 +67,7 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
             Airdrop</Link>
         </Button>
         {!isLoadingWhitelist && (
-          isWhitelisted ? (
+          canCreatePresale ? (
             <Button size="sm" asChild className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF]">
               <Link to={`/dashboard/create/presale?token=${tokenAddress}`}>
                 <FileText className="w-3 h-3 mr-1" /> Presale
@@ -221,6 +226,8 @@ export default function UserDashboardPage() {
   const { isWhitelisted, isLoading: isLoadingWhitelist } = useWhitelistedCreator(
     address as Address | undefined
   );
+  const { isAdmin } = useIsAdmin(address as Address | undefined);
+  const canCreatePresale = isWhitelisted || isAdmin;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tokenPage, setTokenPage] = useState(0);
   const navigate = useNavigate();
@@ -240,10 +247,10 @@ export default function UserDashboardPage() {
   const activeLocks = [...(userLocks?.filter(l => !l.withdrawn) || [])].reverse();
 
   useEffect(() => {
-    if (isWhitelisted && isModalOpen) {
+    if (canCreatePresale && isModalOpen) {
       setIsModalOpen(false);
     }
-  }, [isWhitelisted, isModalOpen]);
+  }, [canCreatePresale, isModalOpen]);
 
   if (!isConnected) {
     return (
@@ -382,7 +389,7 @@ export default function UserDashboardPage() {
                   <Button disabled className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-semibold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] opacity-70">
                     Checking Whitelist...
                   </Button>
-                ) : isWhitelisted ? (
+                ) : canCreatePresale ? (
                   <Link to="/dashboard/create/presale">
                     <Button className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-semibold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)]">
                       Create Presale

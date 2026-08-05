@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.7",
@@ -22,9 +23,11 @@
     "@uniswap/sdk-core": "^7.19.0",
     "@uniswap/v2-sdk": "^4.21.1",
     "@uniswap/v3-sdk": "^3.31.1",
+    "axios": "^1.19.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "gsap": "^3.15.0",
     "lucide-react": "^0.523.0",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",

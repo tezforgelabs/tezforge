@@ -20,6 +20,7 @@ import { decodeEventLog, parseUnits } from "viem";
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import { useChainId, useConfig } from "wagmi";
+import { useTokenVerification } from "@/lib/hooks/useTokenVerification";
 
 const TokenType = {
   Plain: 0,
@@ -53,6 +54,7 @@ export default function CreateTokenPage() {
   const [taxBps, setTaxBps] = useState("0");
 
   const [createdTokenAddress, setCreatedTokenAddress] = useState<string | null>(null);
+  const { verifyToken } = useTokenVerification();
 
   const processedHash = useRef<string | null>(null);
 
@@ -153,6 +155,12 @@ export default function CreateTokenPage() {
         setTaxWallet("");
         setTaxBps("0");
         reset();
+
+        // Fire-and-forget verification on Blockscout
+        verifyToken({
+          address: tokenAddress,
+          tokenType,
+        });
       } else {
         toast.error("Could not find TokenCreated event in transaction logs.");
       }
