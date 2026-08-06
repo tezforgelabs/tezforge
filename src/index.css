@@ -111,6 +111,24 @@ body {
   .animate-pulse-glow {
     animation: pulseGlow 2s ease-in-out infinite;
   }
+
+  /* Hide scrollbars but keep scroll functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Global scrollbar hiding */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 @keyframes fadeInUp {
