@@ -18,11 +18,11 @@ export interface UploadResult {
  */
 export async function uploadImage(
   file: File,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
 ): Promise<UploadResult> {
   if (!isPinataConfigured()) {
     throw new Error(
-      "Pinata is not configured. Set VITE_PINATA_JWT in your .env file."
+      "Pinata is not configured. Set VITE_PINATA_JWT in your .env file.",
     );
   }
 
@@ -34,7 +34,7 @@ export async function uploadImage(
     "pinataMetadata",
     JSON.stringify({
       name: `tezforge-nft-${Date.now()}`,
-    })
+    }),
   );
 
   const xhr = new XMLHttpRequest();
@@ -60,14 +60,18 @@ export async function uploadImage(
       } else {
         try {
           const err = JSON.parse(xhr.responseText);
-          reject(new Error(err.error?.message ?? err.message ?? "Upload failed"));
+          reject(
+            new Error(err.error?.message ?? err.message ?? "Upload failed"),
+          );
         } catch {
           reject(new Error(`Upload failed with status ${xhr.status}`));
         }
       }
     });
 
-    xhr.addEventListener("error", () => reject(new Error("Network error during upload")));
+    xhr.addEventListener("error", () =>
+      reject(new Error("Network error during upload")),
+    );
     xhr.addEventListener("abort", () => reject(new Error("Upload aborted")));
 
     xhr.open("POST", `${PINATA_API}/pinning/pinFileToIPFS`);
@@ -83,11 +87,11 @@ export async function uploadImage(
  * Returns the IPFS CID and a gateway URL.
  */
 export async function uploadMetadata(
-  metadata: Record<string, unknown>
+  metadata: Record<string, unknown>,
 ): Promise<UploadResult> {
   if (!isPinataConfigured()) {
     throw new Error(
-      "Pinata is not configured. Set VITE_PINATA_JWT in your .env file."
+      "Pinata is not configured. Set VITE_PINATA_JWT in your .env file.",
     );
   }
 
@@ -107,7 +111,9 @@ export async function uploadMetadata(
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message ?? err.message ?? "Metadata upload failed");
+    throw new Error(
+      err.error?.message ?? err.message ?? "Metadata upload failed",
+    );
   }
 
   const data = await response.json();

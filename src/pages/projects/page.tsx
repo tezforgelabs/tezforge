@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
@@ -14,15 +14,20 @@ const filterOptions: Array<{ label: string; value: LaunchpadPresaleFilter }> = [
 ];
 
 export default function ProjectsPage() {
-  const [activeFilter, setActiveFilter] = useState<LaunchpadPresaleFilter>("all");
+  const [activeFilter, setActiveFilter] =
+    useState<LaunchpadPresaleFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const { presales, isLoading } = useLaunchpadPresales(activeFilter);
 
-  const filteredPresales = presales.filter(presale => {
+  const filteredPresales = presales.filter((presale) => {
     if (!presale) return false;
     const matchesSearch =
-      presale.saleTokenName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      presale.saleTokenSymbol?.toLowerCase().includes(searchQuery.toLowerCase());
+      presale.saleTokenName
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      presale.saleTokenSymbol
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
 
@@ -49,14 +54,15 @@ export default function ProjectsPage() {
             />
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            {filterOptions.map(filter => (
+            {filterOptions.map((filter) => (
               <button
                 key={filter.value}
                 onClick={() => setActiveFilter(filter.value)}
-                className={`px-4 py-2 sm:px-6 sm:py-3 text-sm font-bold uppercase tracking-wider border-2 border-[#1A1A2E] transition-[transform,shadow,opacity,colors] ${activeFilter === filter.value
-                  ? "bg-[#1A1A2E] text-white"
-                  : "bg-white text-[#1A1A2E] hover:bg-[#1A1A2E] hover:text-white"
-                  }`}
+                className={`px-4 py-2 sm:px-6 sm:py-3 text-sm font-bold uppercase tracking-wider border-2 border-[#1A1A2E] transition-[transform,shadow,opacity,colors] ${
+                  activeFilter === filter.value
+                    ? "bg-[#1A1A2E] text-white"
+                    : "bg-white text-[#1A1A2E] hover:bg-[#1A1A2E] hover:text-white"
+                }`}
               >
                 {filter.label}
               </button>
@@ -65,10 +71,14 @@ export default function ProjectsPage() {
         </div>
 
         {isLoading ? (
-          <div className="text-center text-lg font-medium">Loading projects...</div>
+          <div className="text-center text-lg font-medium">
+            Loading projects...
+          </div>
         ) : filteredPresales.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-2xl font-bold uppercase mb-2">No Projects Found</p>
+            <p className="text-2xl font-bold uppercase mb-2">
+              No Projects Found
+            </p>
             <p className="text-gray-600">
               {searchQuery
                 ? "Try adjusting your search query"

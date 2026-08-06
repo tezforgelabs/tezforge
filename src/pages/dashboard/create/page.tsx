@@ -1,5 +1,14 @@
 import { useWhitelistedCreator } from "@/lib/hooks/useWhitelistedCreator";
-import { ArrowRight, Box, CircleDollarSign, Factory, ImageIcon, Lock, Send, Settings } from "lucide-react";
+import {
+  ArrowRight,
+  Box,
+  CircleDollarSign,
+  Factory,
+  ImageIcon,
+  Lock,
+  Send,
+  Settings,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Address } from "viem";
 import { useAccount } from "wagmi";
@@ -12,7 +21,9 @@ const getCreationOptions = (isWhitelisted: boolean | undefined) => [
     icon: CircleDollarSign,
   },
   {
-    to: isWhitelisted ? "/dashboard/create/presale" : "/dashboard/create/project",
+    to: isWhitelisted
+      ? "/dashboard/create/presale"
+      : "/dashboard/create/project",
     title: "Create a Presale",
     description: "Launch a token presale to raise funds from the community.",
     icon: Factory,
@@ -20,7 +31,8 @@ const getCreationOptions = (isWhitelisted: boolean | undefined) => [
   {
     to: "/dashboard/create/nft",
     title: "Create an NFT Collection",
-    description: "Deploy an NFT collection with configurable public or whitelist mints.",
+    description:
+      "Deploy an NFT collection with configurable public or whitelist mints.",
     icon: ImageIcon,
   },
   {
@@ -55,7 +67,7 @@ const toolOptions = [
 export default function CreateHubPage() {
   const { address } = useAccount();
   const { isWhitelisted } = useWhitelistedCreator(
-    address as Address | undefined
+    address as Address | undefined,
   );
   const creationOptions = getCreationOptions(isWhitelisted);
 
@@ -66,7 +78,9 @@ export default function CreateHubPage() {
         <div className="border-2 border-[#1A1A2E] bg-[#1A1A2E] p-6 shadow-[2px_2px_0_rgba(26,26,46,1)]">
           <div className="flex items-center gap-3">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white">Create</h1>
+              <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white">
+                Create
+              </h1>
             </div>
           </div>
         </div>
@@ -74,12 +88,20 @@ export default function CreateHubPage() {
 
       <div className="space-y-10">
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-wider mb-6">Assets</h2>
+          <h2 className="text-2xl font-black uppercase tracking-wider mb-6">
+            Assets
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {creationOptions.map((item) => (
-              <Link to={item.to} key={item.to} className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1A1A2E] hover:text-white transition-[transform,shadow,opacity,colors] group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[2px_2px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
+              <Link
+                to={item.to}
+                key={item.to}
+                className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1A1A2E] hover:text-white transition-[transform,shadow,opacity,colors] group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[2px_2px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+              >
                 <item.icon className="w-8 h-8 mb-4 text-[#0F59FF] group-hover:text-[#0F59FF]" />
-                <h3 className="font-black text-xl mb-2 uppercase tracking-wider">{item.title}</h3>
+                <h3 className="font-black text-xl mb-2 uppercase tracking-wider">
+                  {item.title}
+                </h3>
                 <p className="text-sm opacity-70 mb-4">{item.description}</p>
                 <div className="flex justify-end">
                   <ArrowRight className="w-6 h-6 transform transition-transform group-hover:translate-x-1" />
@@ -90,12 +112,20 @@ export default function CreateHubPage() {
         </div>
 
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-wider mb-6">Tools</h2>
+          <h2 className="text-2xl font-black uppercase tracking-wider mb-6">
+            Tools
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {toolOptions.map((item) => (
-              <Link to={item.to} key={item.to} className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1A1A2E] hover:text-white transition-[transform,shadow,opacity,colors] group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
+              <Link
+                to={item.to}
+                key={item.to}
+                className="border-2 border-[#1A1A2E] bg-white p-6 hover:bg-[#1A1A2E] hover:text-white transition-[transform,shadow,opacity,colors] group shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+              >
                 <item.icon className="w-8 h-8 mb-4 text-[#0F59FF] group-hover:text-[#0F59FF]" />
-                <h3 className="font-black text-xl mb-2 uppercase tracking-wider">{item.title}</h3>
+                <h3 className="font-black text-xl mb-2 uppercase tracking-wider">
+                  {item.title}
+                </h3>
                 <p className="text-sm opacity-70 mb-4">{item.description}</p>
                 <div className="flex justify-end">
                   <ArrowRight className="w-6 h-6 transform transition-transform group-hover:translate-x-1" />

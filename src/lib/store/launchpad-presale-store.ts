@@ -1,9 +1,11 @@
-import { type Address } from 'viem';
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { type Address } from "viem";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export type PresaleStatus = 'upcoming' | 'live' | 'ended' | 'finalized' | 'cancelled';
-export type PresaleCategory = 'defi' | 'ai' | 'gaming' | 'infrastructure' | 'meme' | 'other';
+export type PresaleStatus =
+  "upcoming" | "live" | "ended" | "finalized" | "cancelled";
+export type PresaleCategory =
+  "defi" | "ai" | "gaming" | "infrastructure" | "meme" | "other";
 
 export interface PresaleSocials {
   twitter?: string;
@@ -63,16 +65,25 @@ interface LaunchpadPresaleStore {
   };
 
   // Individual presale data cache
-  presales: Record<string, {
-    data: PresaleData;
-    metadata: CacheMetadata;
-  }>;
+  presales: Record<
+    string,
+    {
+      data: PresaleData;
+      metadata: CacheMetadata;
+    }
+  >;
 
   // User-specific data per presale
-  userPresaleData: Record<string, Record<string, {
-    data: UserPresaleData;
-    metadata: CacheMetadata;
-  }>>;
+  userPresaleData: Record<
+    string,
+    Record<
+      string,
+      {
+        data: UserPresaleData;
+        metadata: CacheMetadata;
+      }
+    >
+  >;
 
   // Actions for presale addresses
   setPresaleAddresses: (addresses: Address[]) => void;
@@ -88,10 +99,24 @@ interface LaunchpadPresaleStore {
   invalidatePresale: (address: Address) => void;
 
   // Actions for user presale data
-  setUserPresaleData: (userAddress: string, presaleAddress: Address, data: UserPresaleData) => void;
-  getUserPresaleData: (userAddress: string, presaleAddress: Address) => UserPresaleData | null;
-  isUserPresaleDataStale: (userAddress: string, presaleAddress: Address, maxAge?: number) => boolean;
-  invalidateUserPresaleData: (userAddress: string, presaleAddress: Address) => void;
+  setUserPresaleData: (
+    userAddress: string,
+    presaleAddress: Address,
+    data: UserPresaleData,
+  ) => void;
+  getUserPresaleData: (
+    userAddress: string,
+    presaleAddress: Address,
+  ) => UserPresaleData | null;
+  isUserPresaleDataStale: (
+    userAddress: string,
+    presaleAddress: Address,
+    maxAge?: number,
+  ) => boolean;
+  invalidateUserPresaleData: (
+    userAddress: string,
+    presaleAddress: Address,
+  ) => void;
 
   // Utility functions
   getPresaleStatus: (presale: PresaleData) => PresaleStatus;
@@ -161,9 +186,13 @@ export const useLaunchpadPresaleStore = create<LaunchpadPresaleStore>()(
           presales: {
             ...state.presales,
             [address.toLowerCase()]: {
-              data: state.presales[address.toLowerCase()]?.data || {} as PresaleData,
+              data:
+                state.presales[address.toLowerCase()]?.data ||
+                ({} as PresaleData),
               metadata: {
-                timestamp: state.presales[address.toLowerCase()]?.metadata.timestamp || 0,
+                timestamp:
+                  state.presales[address.toLowerCase()]?.metadata.timestamp ||
+                  0,
                 isLoading,
               },
             },
@@ -209,7 +238,11 @@ export const useLaunchpadPresaleStore = create<LaunchpadPresaleStore>()(
         return presaleCache ? presaleCache.data : null;
       },
 
-      isUserPresaleDataStale: (userAddress, presaleAddress, maxAge = DEFAULT_CACHE_TIME) => {
+      isUserPresaleDataStale: (
+        userAddress,
+        presaleAddress,
+        maxAge = DEFAULT_CACHE_TIME,
+      ) => {
         const userCache = get().userPresaleData[userAddress.toLowerCase()];
         if (!userCache) return true;
         const presaleCache = userCache[presaleAddress.toLowerCase()];
@@ -234,18 +267,21 @@ export const useLaunchpadPresaleStore = create<LaunchpadPresaleStore>()(
       getPresaleStatus: (presale) => {
         const now = BigInt(Math.floor(Date.now() / 1000));
 
-        if (presale.refundsEnabled) return 'cancelled';
-        if (presale.claimEnabled) return 'finalized';
-        if (now < presale.startTime) return 'upcoming';
-        if (now > presale.endTime) return 'ended';
-        return 'live';
+        if (presale.refundsEnabled) return "cancelled";
+        if (presale.claimEnabled) return "finalized";
+        if (now < presale.startTime) return "upcoming";
+        if (now > presale.endTime) return "ended";
+        return "live";
       },
 
       getPresalesByStatus: (status) => {
         const { presales, getPresaleStatus } = get();
         return Object.values(presales)
           .map((p) => p.data)
-          .filter((presale) => presale.address && getPresaleStatus(presale) === status);
+          .filter(
+            (presale) =>
+              presale.address && getPresaleStatus(presale) === status,
+          );
       },
 
       // Cache management
@@ -261,19 +297,20 @@ export const useLaunchpadPresaleStore = create<LaunchpadPresaleStore>()(
 
       clearUserCache: (userAddress) =>
         set((state) => {
-          const { [userAddress.toLowerCase()]: _, ...rest } = state.userPresaleData;
+          const { [userAddress.toLowerCase()]: _, ...rest } =
+            state.userPresaleData;
           return { userPresaleData: rest };
         }),
     }),
     {
-      name: 'launchpad-presale-storage',
+      name: "launchpad-presale-storage",
       // Custom storage to handle BigInt serialization
       storage: {
         getItem: (name) => {
           const str = localStorage.getItem(name);
           if (!str) return null;
           return JSON.parse(str, (_, value) => {
-            if (typeof value === 'string' && value.startsWith('__bigint__:')) {
+            if (typeof value === "string" && value.startsWith("__bigint__:")) {
               return BigInt(value.slice(11));
             }
             return value;
@@ -283,39 +320,50 @@ export const useLaunchpadPresaleStore = create<LaunchpadPresaleStore>()(
           localStorage.setItem(
             name,
             JSON.stringify(value, (_, val) => {
-              if (typeof val === 'bigint') {
+              if (typeof val === "bigint") {
                 return `__bigint__:${val.toString()}`;
               }
               return val;
-            })
+            }),
           );
         },
         removeItem: (name) => localStorage.removeItem(name),
       },
       // Only persist the data, not loading states
-      partialize: (state) => ({
-        presaleAddresses: {
-          ...state.presaleAddresses,
-          metadata: { ...state.presaleAddresses.metadata, isLoading: false },
-        },
-        presales: Object.fromEntries(
-          Object.entries(state.presales).map(([key, value]) => [
-            key,
-            { ...value, metadata: { ...value.metadata, isLoading: false } },
-          ])
-        ),
-        userPresaleData: Object.fromEntries(
-          Object.entries(state.userPresaleData).map(([userKey, userValue]) => [
-            userKey,
-            Object.fromEntries(
-              Object.entries(userValue).map(([presaleKey, presaleValue]) => [
-                presaleKey,
-                { ...presaleValue, metadata: { ...presaleValue.metadata, isLoading: false } },
-              ])
+      partialize: (state) =>
+        ({
+          presaleAddresses: {
+            ...state.presaleAddresses,
+            metadata: { ...state.presaleAddresses.metadata, isLoading: false },
+          },
+          presales: Object.fromEntries(
+            Object.entries(state.presales).map(([key, value]) => [
+              key,
+              { ...value, metadata: { ...value.metadata, isLoading: false } },
+            ]),
+          ),
+          userPresaleData: Object.fromEntries(
+            Object.entries(state.userPresaleData).map(
+              ([userKey, userValue]) => [
+                userKey,
+                Object.fromEntries(
+                  Object.entries(userValue).map(
+                    ([presaleKey, presaleValue]) => [
+                      presaleKey,
+                      {
+                        ...presaleValue,
+                        metadata: {
+                          ...presaleValue.metadata,
+                          isLoading: false,
+                        },
+                      },
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ])
-        ),
-      }) as LaunchpadPresaleStore,
-    }
-  )
+          ),
+        }) as LaunchpadPresaleStore,
+    },
+  ),
 );

@@ -6,7 +6,11 @@ import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { formatEther } from "viem";
-import { useReadContracts, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import {
+  useReadContracts,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 
 export default function NFTDetailPage() {
   const { id: nftAddress } = useParams<{ id: `0x${string}` }>();
@@ -18,12 +22,12 @@ export default function NFTDetailPage() {
 
   const { data, isLoading, refetch } = useReadContracts({
     contracts: [
-      { ...nftContract, functionName: 'name' },
-      { ...nftContract, functionName: 'symbol' },
-      { ...nftContract, functionName: 'maxSupply' },
-      { ...nftContract, functionName: 'totalMinted' },
-      { ...nftContract, functionName: 'mintPrice' },
-    ]
+      { ...nftContract, functionName: "name" },
+      { ...nftContract, functionName: "symbol" },
+      { ...nftContract, functionName: "maxSupply" },
+      { ...nftContract, functionName: "totalMinted" },
+      { ...nftContract, functionName: "mintPrice" },
+    ],
   });
 
   const [name, symbol, maxSupply, totalMinted, mintPrice] = data || [];
@@ -38,42 +42,69 @@ export default function NFTDetailPage() {
       ...nftContract,
       functionName: "mint",
       args: [parsedAmount],
-      value: (mintPrice?.result as bigint ?? BigInt(0)) * parsedAmount
+      value: ((mintPrice?.result as bigint) ?? BigInt(0)) * parsedAmount,
     });
-  }
+  };
 
-  const { isSuccess: isMintSuccess } = useWaitForTransactionReceipt({ hash: mintHash });
+  const { isSuccess: isMintSuccess } = useWaitForTransactionReceipt({
+    hash: mintHash,
+  });
 
   useEffect(() => {
     if (isMintSuccess) {
       toast.success("Mint successful!");
       refetch();
     }
-  }, [isMintSuccess, refetch])
+  }, [isMintSuccess, refetch]);
 
   if (isLoading || !data) {
-    return <div className="text-center py-20 text-[#1A1A2E]">Loading collection...</div>;
+    return (
+      <div className="text-center py-20 text-[#1A1A2E]">
+        Loading collection...
+      </div>
+    );
   }
 
-  const progress = maxSupply?.result ? (Number(totalMinted?.result as bigint) / Number(maxSupply.result as bigint)) * 100 : 0;
+  const progress = maxSupply?.result
+    ? (Number(totalMinted?.result as bigint) /
+        Number(maxSupply.result as bigint)) *
+      100
+    : 0;
 
   return (
     <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
       <section className="mb-12 text-right lg:text-left">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-2">{name?.result as string}</h1>
-        <p className="text-lg sm:text-xl text-gray-600">Mint your {symbol?.result as string} now!</p>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-2">
+          {name?.result as string}
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-600">
+          Mint your {symbol?.result as string} now!
+        </p>
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">
           <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
-              <CardTitle className="font-black uppercase tracking-wider">Mint</CardTitle>
+              <CardTitle className="font-black uppercase tracking-wider">
+                Mint
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 p-6">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                <Input type="number" placeholder="Amount" className="flex-grow border-2 border-[#1A1A2E]" value={mintAmount} onChange={e => setMintAmount(e.target.value)} />
-                <Button onClick={handleMint} className="w-full sm:w-auto border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF]">Mint</Button>
+                <Input
+                  type="number"
+                  placeholder="Amount"
+                  className="flex-grow border-2 border-[#1A1A2E]"
+                  value={mintAmount}
+                  onChange={(e) => setMintAmount(e.target.value)}
+                />
+                <Button
+                  onClick={handleMint}
+                  className="w-full sm:w-auto border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF]"
+                >
+                  Mint
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -82,20 +113,28 @@ export default function NFTDetailPage() {
         <div>
           <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
-              <CardTitle className="font-black uppercase tracking-wider">Details</CardTitle>
+              <CardTitle className="font-black uppercase tracking-wider">
+                Details
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 p-6">
               <div className="flex justify-between">
                 <span className="font-bold">Max Supply</span>
-                <span className="font-black">{maxSupply?.result?.toString()}</span>
+                <span className="font-black">
+                  {maxSupply?.result?.toString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="font-bold">Total Minted</span>
-                <span className="font-black">{totalMinted?.result?.toString()}</span>
+                <span className="font-black">
+                  {totalMinted?.result?.toString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="font-bold">Price</span>
-                <span className="font-black">{formatEther(mintPrice?.result as bigint ?? BigInt(0))} XTZ</span>
+                <span className="font-black">
+                  {formatEther((mintPrice?.result as bigint) ?? BigInt(0))} XTZ
+                </span>
               </div>
               <div className="w-full bg-gray-200 border-2 border-[#1A1A2E] h-4 mt-4">
                 <div

@@ -1,25 +1,31 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useChainContracts } from '@/lib/hooks/useChainContracts';
-import { usePublicClient, useReadContract, useReadContracts } from 'wagmi';
-import { erc20Abi, parseAbiItem, type Abi, type Address, type PublicClient } from 'viem';
-import { PresaleFactoryContract, LaunchpadPresaleContract } from '@/config';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { usePublicClient, useReadContract, useReadContracts } from "wagmi";
+import {
+  erc20Abi,
+  parseAbiItem,
+  type Abi,
+  type Address,
+  type PublicClient,
+} from "viem";
+import { PresaleFactoryContract, LaunchpadPresaleContract } from "@/config";
 import {
   useLaunchpadPresaleStore,
   type PresaleData,
-  type PresaleStatus
-} from '@/lib/store/launchpad-presale-store';
+  type PresaleStatus,
+} from "@/lib/store/launchpad-presale-store";
 
 const AUTO_REFRESH_INTERVAL = 10000;
 
 const PRESALE_CREATED_EVENT = parseAbiItem(
-  'event PresaleCreated(address indexed creator, address indexed presale, address indexed saleToken, address paymentToken, bool requiresWhitelist)'
+  "event PresaleCreated(address indexed creator, address indexed presale, address indexed saleToken, address paymentToken, bool requiresWhitelist)",
 );
 
 type WhitelistMap = Record<string, boolean>;
 
 async function fetchAllWhitelistFlags(
   client: PublicClient,
-  presaleFactoryAddress: Address
+  presaleFactoryAddress: Address,
 ): Promise<WhitelistMap> {
   const logs = await client.getLogs({
     address: presaleFactoryAddress,
@@ -29,7 +35,9 @@ async function fetchAllWhitelistFlags(
 
   const map: WhitelistMap = {};
   for (const log of logs) {
-    const presaleAddr = (log.args?.presale as Address | undefined)?.toLowerCase();
+    const presaleAddr = (
+      log.args?.presale as Address | undefined
+    )?.toLowerCase();
     if (presaleAddr) {
       map[presaleAddr] = Boolean(log.args?.requiresWhitelist);
     }
@@ -40,7 +48,7 @@ async function fetchAllWhitelistFlags(
 async function fetchWhitelistFlag(
   client: PublicClient,
   presaleFactoryAddress: Address,
-  presaleAddress: Address
+  presaleAddress: Address,
 ): Promise<boolean> {
   const logs = await client.getLogs({
     address: presaleFactoryAddress,
@@ -57,14 +65,18 @@ async function fetchWhitelistFlag(
 const presaleFactoryAbi = PresaleFactoryContract.abi as unknown as Abi;
 const launchpadPresaleAbi = LaunchpadPresaleContract.abi as unknown as Abi;
 
-export type LaunchpadPresaleFilter = 'all' | 'live' | 'upcoming' | 'ended' | 'finalized' | 'cancelled';
+export type LaunchpadPresaleFilter =
+  "all" | "live" | "upcoming" | "ended" | "finalized" | "cancelled";
 
 export interface PresaleWithStatus extends PresaleData {
   status: PresaleStatus;
   progress: number; // 0-100
 }
 
-export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', forceRefetch = false) {
+export function useLaunchpadPresales(
+  filter: LaunchpadPresaleFilter = "all",
+  forceRefetch = false,
+) {
   const {
     getPresaleAddresses,
     setPresaleAddresses,
@@ -87,10 +99,14 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
   const shouldFetchAddresses = Boolean(presaleFactory);
 
   // Fetch total number of presales
-  const { data: totalPresales, isLoading: isLoadingTotal, refetch: refetchTotal } = useReadContract({
+  const {
+    data: totalPresales,
+    isLoading: isLoadingTotal,
+    refetch: refetchTotal,
+  } = useReadContract({
     abi: presaleFactoryAbi,
     address: presaleFactory,
-    functionName: 'totalPresales',
+    functionName: "totalPresales",
     query: {
       enabled: shouldFetchAddresses,
       refetchInterval: shouldFetchAddresses ? AUTO_REFRESH_INTERVAL : false,
@@ -103,19 +119,28 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
   const addressQueries = useMemo(() => {
     if (!totalPresales || totalPresales === 0n) return [];
     const count = Number(totalPresales);
-    return Array.from({ length: count }, (_, i) => ({
-      abi: presaleFactoryAbi,
-      address: presaleFactory,
-      functionName: 'allPresales',
-      args: [BigInt(i)],
-    } as const));
+    return Array.from(
+      { length: count },
+      (_, i) =>
+        ({
+          abi: presaleFactoryAbi,
+          address: presaleFactory,
+          functionName: "allPresales",
+          args: [BigInt(i)],
+        }) as const,
+    );
   }, [presaleFactory, totalPresales]);
 
-  const { data: addressResults, isLoading: isLoadingAddresses, refetch: refetchAddresses } = useReadContracts({
+  const {
+    data: addressResults,
+    isLoading: isLoadingAddresses,
+    refetch: refetchAddresses,
+  } = useReadContracts({
     contracts: addressQueries,
     query: {
       enabled: addressQueries.length > 0,
-      refetchInterval: addressQueries.length > 0 ? AUTO_REFRESH_INTERVAL : false,
+      refetchInterval:
+        addressQueries.length > 0 ? AUTO_REFRESH_INTERVAL : false,
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
     },
@@ -144,12 +169,15 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
     let cancelled = false;
     (async () => {
       try {
-        const latest = await fetchAllWhitelistFlags(publicClient, presaleFactory);
+        const latest = await fetchAllWhitelistFlags(
+          publicClient,
+          presaleFactory,
+        );
         if (!cancelled) {
           setWhitelistMap((prev) => ({ ...prev, ...latest }));
         }
       } catch (error) {
-        console.error('Failed to read whitelist flags', error);
+        console.error("Failed to read whitelist flags", error);
       }
     })();
 
@@ -163,7 +191,8 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
     if (presaleAddresses.length > 0 && !isLoadingAddresses && addressResults) {
       // Only update if we have new data from the blockchain
       const currentCache = getPresaleAddresses();
-      const hasChanged = !currentCache ||
+      const hasChanged =
+        !currentCache ||
         currentCache.length !== presaleAddresses.length ||
         currentCache.some((addr, i) => addr !== presaleAddresses[i]);
 
@@ -190,36 +219,43 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
 
     return addressesToFetch.flatMap((addr) =>
       [
-        'saleToken',
-        'paymentToken',
-        'isPaymentETH',
-        'startTime',
-        'endTime',
-        'rate',
-        'softCap',
-        'hardCap',
-        'minContribution',
-        'maxContribution',
-        'totalRaised',
-        'committedTokens',
-        'totalTokensDeposited',
-        'claimEnabled',
-        'refundsEnabled',
-        'owner',
-      ]
-        .map((functionName) => ({
-          abi: launchpadPresaleAbi,
-          address: addr,
-          functionName,
-        } as const))
-      );
+        "saleToken",
+        "paymentToken",
+        "isPaymentETH",
+        "startTime",
+        "endTime",
+        "rate",
+        "softCap",
+        "hardCap",
+        "minContribution",
+        "maxContribution",
+        "totalRaised",
+        "committedTokens",
+        "totalTokensDeposited",
+        "claimEnabled",
+        "refundsEnabled",
+        "owner",
+      ].map(
+        (functionName) =>
+          ({
+            abi: launchpadPresaleAbi,
+            address: addr,
+            functionName,
+          }) as const,
+      ),
+    );
   }, [addressesToFetch]);
 
-  const { data: presaleDataResults, isLoading: isLoadingPresaleData, refetch: refetchPresaleData } = useReadContracts({
+  const {
+    data: presaleDataResults,
+    isLoading: isLoadingPresaleData,
+    refetch: refetchPresaleData,
+  } = useReadContracts({
     contracts: presaleDataQueries,
     query: {
       enabled: presaleDataQueries.length > 0,
-      refetchInterval: presaleDataQueries.length > 0 ? AUTO_REFRESH_INTERVAL : false,
+      refetchInterval:
+        presaleDataQueries.length > 0 ? AUTO_REFRESH_INTERVAL : false,
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
     },
@@ -252,7 +288,8 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
         maxContribution: presaleDataResults[baseIdx + 9]?.result as bigint,
         totalRaised: presaleDataResults[baseIdx + 10]?.result as bigint,
         committedTokens: presaleDataResults[baseIdx + 11]?.result as bigint,
-        totalTokensDeposited: presaleDataResults[baseIdx + 12]?.result as bigint,
+        totalTokensDeposited: presaleDataResults[baseIdx + 12]
+          ?.result as bigint,
         claimEnabled: presaleDataResults[baseIdx + 13]?.result as boolean,
         refundsEnabled: presaleDataResults[baseIdx + 14]?.result as boolean,
         owner: presaleDataResults[baseIdx + 15]?.result as Address,
@@ -269,7 +306,8 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
     const tokens = new Set<Address>();
     for (const presale of parsedPresales) {
       if (presale.saleToken) tokens.add(presale.saleToken);
-      if (presale.paymentToken && !presale.isPaymentETH) tokens.add(presale.paymentToken);
+      if (presale.paymentToken && !presale.isPaymentETH)
+        tokens.add(presale.paymentToken);
     }
     return Array.from(tokens);
   }, [parsedPresales]);
@@ -278,24 +316,29 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
   const tokenInfoQueries = useMemo(() => {
     if (uniqueTokenAddresses.length === 0) return [];
     return uniqueTokenAddresses.flatMap((addr) => [
-      { abi: erc20Abi, address: addr, functionName: 'symbol' } as const,
-      { abi: erc20Abi, address: addr, functionName: 'name' } as const,
-      { abi: erc20Abi, address: addr, functionName: 'decimals' } as const,
+      { abi: erc20Abi, address: addr, functionName: "symbol" } as const,
+      { abi: erc20Abi, address: addr, functionName: "name" } as const,
+      { abi: erc20Abi, address: addr, functionName: "decimals" } as const,
     ]);
   }, [uniqueTokenAddresses]);
 
-  const { data: tokenInfoResults, isLoading: isLoadingTokenInfo } = useReadContracts({
-    contracts: tokenInfoQueries,
-    query: {
-      enabled: tokenInfoQueries.length > 0,
-    },
-  });
+  const { data: tokenInfoResults, isLoading: isLoadingTokenInfo } =
+    useReadContracts({
+      contracts: tokenInfoQueries,
+      query: {
+        enabled: tokenInfoQueries.length > 0,
+      },
+    });
 
   // Build token info map
   const tokenInfoMap = useMemo(() => {
-    if (!tokenInfoResults || uniqueTokenAddresses.length === 0) return new Map();
+    if (!tokenInfoResults || uniqueTokenAddresses.length === 0)
+      return new Map();
 
-    const map = new Map<string, { symbol: string; name: string; decimals: number }>();
+    const map = new Map<
+      string,
+      { symbol: string; name: string; decimals: number }
+    >();
     for (let i = 0; i < uniqueTokenAddresses.length; i++) {
       const addr = uniqueTokenAddresses[i];
       const symbol = tokenInfoResults[i * 3]?.result as string;
@@ -308,23 +351,34 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
 
   // Update cache with complete presale data
   useEffect(() => {
-    if (parsedPresales.length > 0 && !isLoadingPresaleData && !isLoadingTokenInfo) {
+    if (
+      parsedPresales.length > 0 &&
+      !isLoadingPresaleData &&
+      !isLoadingTokenInfo
+    ) {
       for (const presale of parsedPresales) {
         const saleTokenInfo = presale.saleToken
           ? tokenInfoMap.get(presale.saleToken.toLowerCase())
           : undefined;
-        const paymentTokenInfo = presale.paymentToken && !presale.isPaymentETH
-          ? tokenInfoMap.get(presale.paymentToken.toLowerCase())
-          : undefined;
+        const paymentTokenInfo =
+          presale.paymentToken && !presale.isPaymentETH
+            ? tokenInfoMap.get(presale.paymentToken.toLowerCase())
+            : undefined;
 
         setPresale(presale.address, {
           ...presale,
           saleTokenSymbol: saleTokenInfo?.symbol,
           saleTokenName: saleTokenInfo?.name,
           saleTokenDecimals: saleTokenInfo?.decimals,
-          paymentTokenSymbol: presale.isPaymentETH ? 'XTZ' : paymentTokenInfo?.symbol,
-          paymentTokenName: presale.isPaymentETH ? 'Reactive' : paymentTokenInfo?.name,
-          paymentTokenDecimals: presale.isPaymentETH ? 18 : paymentTokenInfo?.decimals,
+          paymentTokenSymbol: presale.isPaymentETH
+            ? "XTZ"
+            : paymentTokenInfo?.symbol,
+          paymentTokenName: presale.isPaymentETH
+            ? "Reactive"
+            : paymentTokenInfo?.name,
+          paymentTokenDecimals: presale.isPaymentETH
+            ? 18
+            : paymentTokenInfo?.decimals,
         });
       }
     }
@@ -333,28 +387,33 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
 
   // Get all presales with status and progress
   const allPresales = useMemo((): PresaleWithStatus[] => {
-    return presaleAddresses.map((addr) => {
-      const cached = getPresale(addr);
-      if (!cached) return null;
+    return presaleAddresses
+      .map((addr) => {
+        const cached = getPresale(addr);
+        if (!cached) return null;
 
-      const status = getPresaleStatus(cached);
-      const progress = cached.hardCap && cached.hardCap > 0n
-        ? Number((cached.totalRaised * 100n) / cached.hardCap)
-        : 0;
+        const status = getPresaleStatus(cached);
+        const progress =
+          cached.hardCap && cached.hardCap > 0n
+            ? Number((cached.totalRaised * 100n) / cached.hardCap)
+            : 0;
 
-      return {
-        ...cached,
-        status,
-        progress: Math.min(progress, 100),
-      };
-    }).filter((p): p is PresaleWithStatus => p !== null);
+        return {
+          ...cached,
+          status,
+          progress: Math.min(progress, 100),
+        };
+      })
+      .filter((p): p is PresaleWithStatus => p !== null);
   }, [presaleAddresses, getPresale, getPresaleStatus, presaleCache]);
 
   // Filter presales by status
   const filteredPresales = useMemo(() => {
-    if (filter === 'all') return allPresales;
-    if (filter === 'ended') {
-      return allPresales.filter((p) => p.status === 'ended' || p.claimEnabled || p.refundsEnabled);
+    if (filter === "all") return allPresales;
+    if (filter === "ended") {
+      return allPresales.filter(
+        (p) => p.status === "ended" || p.claimEnabled || p.refundsEnabled,
+      );
     }
     return allPresales.filter((p) => p.status === filter);
   }, [allPresales, filter]);
@@ -364,9 +423,18 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
     await refetchTotal();
     await refetchAddresses();
     await refetchPresaleData();
-  }, [refetchAddresses, refetchPresaleData, refetchTotal, setPresaleAddressesLoading]);
+  }, [
+    refetchAddresses,
+    refetchPresaleData,
+    refetchTotal,
+    setPresaleAddressesLoading,
+  ]);
 
-  const isLoading = isLoadingTotal || isLoadingAddresses || isLoadingPresaleData || isLoadingTokenInfo;
+  const isLoading =
+    isLoadingTotal ||
+    isLoadingAddresses ||
+    isLoadingPresaleData ||
+    isLoadingTokenInfo;
 
   useEffect(() => {
     if (forceRefetch) {
@@ -384,17 +452,19 @@ export function useLaunchpadPresales(filter: LaunchpadPresaleFilter = 'all', for
 }
 
 // Hook to get a single presale by address
-export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRefetch = false) {
-  const {
-    getPresale,
-    setPresale,
-    getPresaleStatus,
-  } = useLaunchpadPresaleStore();
+export function useLaunchpadPresale(
+  presaleAddress: Address | undefined,
+  forceRefetch = false,
+) {
+  const { getPresale, setPresale, getPresaleStatus } =
+    useLaunchpadPresaleStore();
 
   const publicClient = usePublicClient();
   const { presaleFactory } = useChainContracts();
   const cachedPresale = presaleAddress ? getPresale(presaleAddress) : null;
-  const [requiresWhitelist, setRequiresWhitelist] = useState<boolean | undefined>(cachedPresale?.requiresWhitelist);
+  const [requiresWhitelist, setRequiresWhitelist] = useState<
+    boolean | undefined
+  >(cachedPresale?.requiresWhitelist);
 
   const shouldFetch = Boolean(presaleAddress);
 
@@ -411,12 +481,16 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
     let cancelled = false;
     (async () => {
       try {
-        const flag = await fetchWhitelistFlag(publicClient, presaleFactory, presaleAddress);
+        const flag = await fetchWhitelistFlag(
+          publicClient,
+          presaleFactory,
+          presaleAddress,
+        );
         if (!cancelled) {
           setRequiresWhitelist(flag);
         }
       } catch (error) {
-        console.error('Failed to fetch whitelist flag', error);
+        console.error("Failed to fetch whitelist flag", error);
         if (!cancelled) {
           setRequiresWhitelist(false);
         }
@@ -432,30 +506,99 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
   const presaleDataQueries = useMemo(() => {
     if (!presaleAddress || !shouldFetch) return [];
     return [
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'saleToken' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'paymentToken' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'isPaymentETH' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'startTime' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'endTime' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'rate' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'softCap' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'hardCap' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'minContribution' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'maxContribution' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'totalRaised' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'committedTokens' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'totalTokensDeposited' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'claimEnabled' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'refundsEnabled' },
-      { abi: launchpadPresaleAbi, address: presaleAddress, functionName: 'owner' },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "saleToken",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "paymentToken",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "isPaymentETH",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "startTime",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "endTime",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "rate",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "softCap",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "hardCap",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "minContribution",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "maxContribution",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "totalRaised",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "committedTokens",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "totalTokensDeposited",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "claimEnabled",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "refundsEnabled",
+      },
+      {
+        abi: launchpadPresaleAbi,
+        address: presaleAddress,
+        functionName: "owner",
+      },
     ];
   }, [presaleAddress, shouldFetch]);
 
-  const { data: presaleDataResults, isLoading: isLoadingPresaleData, refetch: refetchPresale } = useReadContracts({
+  const {
+    data: presaleDataResults,
+    isLoading: isLoadingPresaleData,
+    refetch: refetchPresale,
+  } = useReadContracts({
     contracts: presaleDataQueries,
     query: {
       enabled: presaleDataQueries.length > 0,
-      refetchInterval: presaleDataQueries.length > 0 ? AUTO_REFRESH_INTERVAL : false,
+      refetchInterval:
+        presaleDataQueries.length > 0 ? AUTO_REFRESH_INTERVAL : false,
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
     },
@@ -475,30 +618,62 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
     }
 
     // Check if we got valid results (not errors)
-    const hasValidResults = presaleDataResults.every(r => r.status === 'success');
+    const hasValidResults = presaleDataResults.every(
+      (r) => r.status === "success",
+    );
     if (!hasValidResults) {
       return cachedPresale;
     }
 
     return {
       address: presaleAddress,
-      saleToken: (presaleDataResults[0]?.result ?? cachedPresale?.saleToken) as Address,
-      paymentToken: (presaleDataResults[1]?.result ?? cachedPresale?.paymentToken) as Address,
-      isPaymentETH: (presaleDataResults[2]?.result ?? cachedPresale?.isPaymentETH ?? false) as boolean,
-      requiresWhitelist: requiresWhitelist ?? cachedPresale?.requiresWhitelist ?? false,
-      startTime: (presaleDataResults[3]?.result ?? cachedPresale?.startTime ?? 0n) as bigint,
-      endTime: (presaleDataResults[4]?.result ?? cachedPresale?.endTime ?? 0n) as bigint,
-      rate: (presaleDataResults[5]?.result ?? cachedPresale?.rate ?? 0n) as bigint,
-      softCap: (presaleDataResults[6]?.result ?? cachedPresale?.softCap ?? 0n) as bigint,
-      hardCap: (presaleDataResults[7]?.result ?? cachedPresale?.hardCap ?? 0n) as bigint,
-      minContribution: (presaleDataResults[8]?.result ?? cachedPresale?.minContribution ?? 0n) as bigint,
-      maxContribution: (presaleDataResults[9]?.result ?? cachedPresale?.maxContribution ?? 0n) as bigint,
-      totalRaised: (presaleDataResults[10]?.result ?? cachedPresale?.totalRaised ?? 0n) as bigint,
-      committedTokens: (presaleDataResults[11]?.result ?? cachedPresale?.committedTokens ?? 0n) as bigint,
-      totalTokensDeposited: (presaleDataResults[12]?.result ?? cachedPresale?.totalTokensDeposited ?? 0n) as bigint,
-      claimEnabled: (presaleDataResults[13]?.result ?? cachedPresale?.claimEnabled ?? false) as boolean,
-      refundsEnabled: (presaleDataResults[14]?.result ?? cachedPresale?.refundsEnabled ?? false) as boolean,
-      owner: (presaleDataResults[15]?.result ?? cachedPresale?.owner) as Address,
+      saleToken: (presaleDataResults[0]?.result ??
+        cachedPresale?.saleToken) as Address,
+      paymentToken: (presaleDataResults[1]?.result ??
+        cachedPresale?.paymentToken) as Address,
+      isPaymentETH: (presaleDataResults[2]?.result ??
+        cachedPresale?.isPaymentETH ??
+        false) as boolean,
+      requiresWhitelist:
+        requiresWhitelist ?? cachedPresale?.requiresWhitelist ?? false,
+      startTime: (presaleDataResults[3]?.result ??
+        cachedPresale?.startTime ??
+        0n) as bigint,
+      endTime: (presaleDataResults[4]?.result ??
+        cachedPresale?.endTime ??
+        0n) as bigint,
+      rate: (presaleDataResults[5]?.result ??
+        cachedPresale?.rate ??
+        0n) as bigint,
+      softCap: (presaleDataResults[6]?.result ??
+        cachedPresale?.softCap ??
+        0n) as bigint,
+      hardCap: (presaleDataResults[7]?.result ??
+        cachedPresale?.hardCap ??
+        0n) as bigint,
+      minContribution: (presaleDataResults[8]?.result ??
+        cachedPresale?.minContribution ??
+        0n) as bigint,
+      maxContribution: (presaleDataResults[9]?.result ??
+        cachedPresale?.maxContribution ??
+        0n) as bigint,
+      totalRaised: (presaleDataResults[10]?.result ??
+        cachedPresale?.totalRaised ??
+        0n) as bigint,
+      committedTokens: (presaleDataResults[11]?.result ??
+        cachedPresale?.committedTokens ??
+        0n) as bigint,
+      totalTokensDeposited: (presaleDataResults[12]?.result ??
+        cachedPresale?.totalTokensDeposited ??
+        0n) as bigint,
+      claimEnabled: (presaleDataResults[13]?.result ??
+        cachedPresale?.claimEnabled ??
+        false) as boolean,
+      refundsEnabled: (presaleDataResults[14]?.result ??
+        cachedPresale?.refundsEnabled ??
+        false) as boolean,
+      owner: (presaleDataResults[15]?.result ??
+        cachedPresale?.owner) as Address,
     };
   }, [presaleAddress, presaleDataResults, cachedPresale, requiresWhitelist]);
 
@@ -507,24 +682,26 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
     if (!presaleData) return [];
     const addrs: Address[] = [];
     if (presaleData.saleToken) addrs.push(presaleData.saleToken);
-    if (presaleData.paymentToken && !presaleData.isPaymentETH) addrs.push(presaleData.paymentToken);
+    if (presaleData.paymentToken && !presaleData.isPaymentETH)
+      addrs.push(presaleData.paymentToken);
     return addrs;
   }, [presaleData]);
 
   const tokenInfoQueries = useMemo(() => {
     return tokenAddresses.flatMap((addr) => [
-      { abi: erc20Abi, address: addr, functionName: 'symbol' } as const,
-      { abi: erc20Abi, address: addr, functionName: 'name' } as const,
-      { abi: erc20Abi, address: addr, functionName: 'decimals' } as const,
+      { abi: erc20Abi, address: addr, functionName: "symbol" } as const,
+      { abi: erc20Abi, address: addr, functionName: "name" } as const,
+      { abi: erc20Abi, address: addr, functionName: "decimals" } as const,
     ]);
   }, [tokenAddresses]);
 
-  const { data: tokenInfoResults, isLoading: isLoadingTokenInfo } = useReadContracts({
-    contracts: tokenInfoQueries,
-    query: {
-      enabled: tokenInfoQueries.length > 0,
-    },
-  });
+  const { data: tokenInfoResults, isLoading: isLoadingTokenInfo } =
+    useReadContracts({
+      contracts: tokenInfoQueries,
+      query: {
+        enabled: tokenInfoQueries.length > 0,
+      },
+    });
 
   // Build complete presale with token info
   const completePresale = useMemo((): PresaleWithStatus | null => {
@@ -533,36 +710,45 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
     // Start with cached token info as fallback
     let saleTokenSymbol: string | undefined = cachedPresale?.saleTokenSymbol;
     let saleTokenName: string | undefined = cachedPresale?.saleTokenName;
-    let saleTokenDecimals: number | undefined = cachedPresale?.saleTokenDecimals;
-    let paymentTokenSymbol: string | undefined = cachedPresale?.paymentTokenSymbol;
+    let saleTokenDecimals: number | undefined =
+      cachedPresale?.saleTokenDecimals;
+    let paymentTokenSymbol: string | undefined =
+      cachedPresale?.paymentTokenSymbol;
     let paymentTokenName: string | undefined = cachedPresale?.paymentTokenName;
-    let paymentTokenDecimals: number | undefined = cachedPresale?.paymentTokenDecimals;
+    let paymentTokenDecimals: number | undefined =
+      cachedPresale?.paymentTokenDecimals;
 
     // Override with fresh data if available
     if (tokenInfoResults && tokenAddresses.length > 0) {
       // Sale token is always first
-      saleTokenSymbol = tokenInfoResults[0]?.result as string ?? saleTokenSymbol;
-      saleTokenName = tokenInfoResults[1]?.result as string ?? saleTokenName;
-      saleTokenDecimals = tokenInfoResults[2]?.result as number ?? saleTokenDecimals;
+      saleTokenSymbol =
+        (tokenInfoResults[0]?.result as string) ?? saleTokenSymbol;
+      saleTokenName = (tokenInfoResults[1]?.result as string) ?? saleTokenName;
+      saleTokenDecimals =
+        (tokenInfoResults[2]?.result as number) ?? saleTokenDecimals;
 
       if (tokenAddresses.length > 1) {
-        paymentTokenSymbol = tokenInfoResults[3]?.result as string ?? paymentTokenSymbol;
-        paymentTokenName = tokenInfoResults[4]?.result as string ?? paymentTokenName;
-        paymentTokenDecimals = tokenInfoResults[5]?.result as number ?? paymentTokenDecimals;
+        paymentTokenSymbol =
+          (tokenInfoResults[3]?.result as string) ?? paymentTokenSymbol;
+        paymentTokenName =
+          (tokenInfoResults[4]?.result as string) ?? paymentTokenName;
+        paymentTokenDecimals =
+          (tokenInfoResults[5]?.result as number) ?? paymentTokenDecimals;
       }
     }
 
     // Set XTZ values if payment is XTZ
     if (presaleData.isPaymentETH) {
-      paymentTokenSymbol = 'XTZ';
-      paymentTokenName = 'Reactive';
+      paymentTokenSymbol = "XTZ";
+      paymentTokenName = "Reactive";
       paymentTokenDecimals = 18;
     }
 
     const status = getPresaleStatus(presaleData);
-    const progress = presaleData.hardCap && presaleData.hardCap > 0n
-      ? Number((presaleData.totalRaised * 100n) / presaleData.hardCap)
-      : 0;
+    const progress =
+      presaleData.hardCap && presaleData.hardCap > 0n
+        ? Number((presaleData.totalRaised * 100n) / presaleData.hardCap)
+        : 0;
 
     return {
       ...presaleData,
@@ -575,10 +761,18 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
       status,
       progress: Math.min(progress, 100),
     };
-  }, [presaleData, tokenInfoResults, tokenAddresses, getPresaleStatus, cachedPresale]);
+  }, [
+    presaleData,
+    tokenInfoResults,
+    tokenAddresses,
+    getPresaleStatus,
+    cachedPresale,
+  ]);
 
   // Track last update to prevent unnecessary cache writes
-  const lastUpdateRef = useRef<{ address: string; timestamp: number } | null>(null);
+  const lastUpdateRef = useRef<{ address: string; timestamp: number } | null>(
+    null,
+  );
 
   // Update cache when loading completes with fresh data
   useEffect(() => {
@@ -591,9 +785,10 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
 
     // Debounce updates - only update if address changed or 1 second has passed
     const lastUpdate = lastUpdateRef.current;
-    const shouldUpdate = !lastUpdate ||
+    const shouldUpdate =
+      !lastUpdate ||
       lastUpdate.address !== addressKey ||
-      (now - lastUpdate.timestamp) > 1000;
+      now - lastUpdate.timestamp > 1000;
 
     if (shouldUpdate) {
       setPresale(completePresale.address, completePresale);
@@ -611,7 +806,7 @@ export function useLaunchpadPresale(presaleAddress: Address | undefined, forceRe
 // Hook to get user's contribution data for a presale
 export function useUserPresaleContribution(
   presaleAddress: Address | undefined,
-  userAddress: Address | undefined
+  userAddress: Address | undefined,
 ) {
   const {
     getUserPresaleData,
@@ -620,7 +815,9 @@ export function useUserPresaleContribution(
     invalidateUserPresaleData,
   } = useLaunchpadPresaleStore();
 
-  const shouldFetch = presaleAddress && userAddress &&
+  const shouldFetch =
+    presaleAddress &&
+    userAddress &&
     isUserPresaleDataStale(userAddress, presaleAddress);
 
   const userDataQueries = useMemo(() => {
@@ -629,19 +826,23 @@ export function useUserPresaleContribution(
       {
         abi: launchpadPresaleAbi,
         address: presaleAddress,
-        functionName: 'contributions',
-        args: [userAddress]
+        functionName: "contributions",
+        args: [userAddress],
       },
       {
         abi: launchpadPresaleAbi,
         address: presaleAddress,
-        functionName: 'purchasedTokens',
-        args: [userAddress]
+        functionName: "purchasedTokens",
+        args: [userAddress],
       },
     ];
   }, [presaleAddress, userAddress, shouldFetch]);
 
-  const { data: userDataResults, isLoading, refetch } = useReadContracts({
+  const {
+    data: userDataResults,
+    isLoading,
+    refetch,
+  } = useReadContracts({
     contracts: userDataQueries,
     query: {
       enabled: userDataQueries.length > 0,
@@ -655,12 +856,18 @@ export function useUserPresaleContribution(
 
     if (userDataResults && userDataResults.length >= 2) {
       // Check if results are valid
-      const hasValidResults = userDataResults.every(r => r.status === 'success');
+      const hasValidResults = userDataResults.every(
+        (r) => r.status === "success",
+      );
       if (hasValidResults) {
-      return {
-          contribution: (userDataResults[0]?.result ?? cachedData?.contribution ?? 0n) as bigint,
-          purchasedTokens: (userDataResults[1]?.result ?? cachedData?.purchasedTokens ?? 0n) as bigint,
-      };
+        return {
+          contribution: (userDataResults[0]?.result ??
+            cachedData?.contribution ??
+            0n) as bigint,
+          purchasedTokens: (userDataResults[1]?.result ??
+            cachedData?.purchasedTokens ??
+            0n) as bigint,
+        };
       }
     }
 

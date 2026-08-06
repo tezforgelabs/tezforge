@@ -23,7 +23,8 @@ import { toast } from "sonner";
 import { erc20Abi, maxUint256, parseUnits, type Abi } from "viem";
 import {
   useAccount,
-  useChainId, useConfig,
+  useChainId,
+  useConfig,
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -99,8 +100,9 @@ function LockProgressBar({
       </div>
       <Progress
         value={progress}
-        className={`h-3 border-2 border-[#1A1A2E] ${isExpired ? "bg-green-200" : "bg-gray-200"
-          }`}
+        className={`h-3 border-2 border-[#1A1A2E] ${
+          isExpired ? "bg-green-200" : "bg-gray-200"
+        }`}
       />
       <div className="text-center text-xs font-bold">
         {isExpired ? (
@@ -153,12 +155,13 @@ function LockCard({
   return (
     <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0 overflow-hidden">
       <CardHeader
-        className={`border-b-2 border-[#1A1A2E] p-4 ${isWithdrawn
-          ? "bg-gray-200"
-          : isUnlocked
-            ? "bg-[#90EE90]"
-            : "bg-[#64FE3E]"
-          }`}
+        className={`border-b-2 border-[#1A1A2E] p-4 ${
+          isWithdrawn
+            ? "bg-gray-200"
+            : isUnlocked
+              ? "bg-[#90EE90]"
+              : "bg-[#64FE3E]"
+        }`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -904,14 +907,13 @@ export default function TokenLockerPage() {
   const chainId = useChainId();
   const config = useConfig();
 
-  const explorerUrl =
-    config.chains.find(chain => chain.id === chainId)
-      ?.blockExplorers?.default.url;
+  const explorerUrl = config.chains.find((chain) => chain.id === chainId)
+    ?.blockExplorers?.default.url;
   const { tokenLocker } = useChainContracts();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [extendingLockId, setExtendingLockId] = useState<bigint | null>(null);
   const [transferringLockId, setTransferringLockId] = useState<bigint | null>(
-    null
+    null,
   );
   const [unlockingId, setUnlockingId] = useState<bigint | null>(null);
 
@@ -953,11 +955,11 @@ export default function TokenLockerPage() {
 
   const activeLocks = useMemo(
     () => userLocks.filter((l) => !l.withdrawn),
-    [userLocks]
+    [userLocks],
   );
   const withdrawnLocks = useMemo(
     () => userLocks.filter((l) => l.withdrawn),
-    [userLocks]
+    [userLocks],
   );
 
   return (

@@ -21,7 +21,13 @@ interface UseSwapOptions {
   slippageTolerance: number; // e.g. 0.5 for 0.5%
 }
 
-export function useSwap({ tokenIn, tokenOut, amountIn, pairs, slippageTolerance }: UseSwapOptions) {
+export function useSwap({
+  tokenIn,
+  tokenOut,
+  amountIn,
+  pairs,
+  slippageTolerance,
+}: UseSwapOptions) {
   const { address } = useAccount();
 
   // ── Find the best route (single-hop for now) ────────────────────────────
@@ -33,14 +39,14 @@ export function useSwap({ tokenIn, tokenOut, amountIn, pairs, slippageTolerance 
 
     const amount = CurrencyAmount.fromRawAmount(
       tokenIn,
-      BigInt(Math.floor(parsedAmount * 10 ** tokenIn.decimals)).toString()
+      BigInt(Math.floor(parsedAmount * 10 ** tokenIn.decimals)).toString(),
     );
 
     // Find a pair that contains both tokens
     const relevantPair = pairs.find(
       (p) =>
         (p.token0.equals(tokenIn) && p.token1.equals(tokenOut)) ||
-        (p.token0.equals(tokenOut) && p.token1.equals(tokenIn))
+        (p.token0.equals(tokenOut) && p.token1.equals(tokenIn)),
     );
 
     if (!relevantPair) return null;
@@ -48,11 +54,7 @@ export function useSwap({ tokenIn, tokenOut, amountIn, pairs, slippageTolerance 
     const route = new Route([relevantPair], tokenIn, tokenOut);
 
     try {
-      const trade = new Trade(
-        route,
-        amount,
-        TradeType.EXACT_INPUT
-      );
+      const trade = new Trade(route, amount, TradeType.EXACT_INPUT);
       return trade;
     } catch {
       return null;
@@ -71,7 +73,9 @@ export function useSwap({ tokenIn, tokenOut, amountIn, pairs, slippageTolerance 
       executionPrice: trade.executionPrice.toSignificant(8),
       priceImpact: trade.priceImpact,
       minimumOutput: minimumOutput.toSignificant(8),
-      route: trade.route.pairs.map((p) => `${p.token0.symbol}-${p.token1.symbol}`).join(" → "),
+      route: trade.route.pairs
+        .map((p) => `${p.token0.symbol}-${p.token1.symbol}`)
+        .join(" → "),
     };
   }, [trade, slippageTolerance]);
 
@@ -90,12 +94,15 @@ export function useSwap({ tokenIn, tokenOut, amountIn, pairs, slippageTolerance 
     if (!allowance || !tokenIn || !amountIn) return false;
     const parsedAmount = parseFloat(amountIn);
     if (parsedAmount <= 0) return false;
-    const requiredAmount = BigInt(Math.floor(parsedAmount * 10 ** tokenIn.decimals));
+    const requiredAmount = BigInt(
+      Math.floor(parsedAmount * 10 ** tokenIn.decimals),
+    );
     return (allowance as bigint) < requiredAmount;
   }, [allowance, tokenIn, amountIn]);
 
   // ── Write: approve ────────────────────────────────────────────────────
-  const { writeContract: writeApprove, isPending: isApproving } = useWriteContract();
+  const { writeContract: writeApprove, isPending: isApproving } =
+    useWriteContract();
 
   const handleApprove = useCallback(() => {
     if (!tokenIn) return;
@@ -108,14 +115,21 @@ export function useSwap({ tokenIn, tokenOut, amountIn, pairs, slippageTolerance 
   }, [tokenIn, writeApprove]);
 
   // ── Write: swap ────────────────────────────────────────────────────────
-  const { writeContract: writeSwap, isPending: isSwapping, data: swapHash, error: swapError } = useWriteContract();
+  const {
+    writeContract: writeSwap,
+    isPending: isSwapping,
+    data: swapHash,
+    error: swapError,
+  } = useWriteContract();
 
   const handleSwap = useCallback(() => {
     if (!trade || !address) return;
 
     const slippage = new Percent(Math.floor(slippageTolerance * 100), 10000);
     const minimumOutput = trade.minimumAmountOut(slippage);
-    const path = trade.route.pairs.map((p) => p.token0.address as `0x${string}`);
+    const path = trade.route.pairs.map(
+      (p) => p.token0.address as `0x${string}`,
+    );
 
     // Router.swapExactTokensForTokens(amountIn, amountOutMin, path, to, deadline)
     writeSwap({

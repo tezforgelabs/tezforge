@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
-import { TokenFactory } from '../../config';
-import { useChainContracts } from '@/lib/hooks/useChainContracts';
-import { useBlockchainStore } from '@/lib/store/blockchain-store';
+import { useEffect } from "react";
+import { useAccount, useReadContract } from "wagmi";
+import { TokenFactory } from "../../config";
+import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { useBlockchainStore } from "@/lib/store/blockchain-store";
 
 const AUTO_REFRESH_INTERVAL = 10000;
 
@@ -10,19 +10,20 @@ export function useUserTokens(forceRefetch = false) {
   const { address } = useAccount();
   const { tokenFactory } = useChainContracts();
 
-  const {
-    getUserTokens,
-    setUserTokens,
-    setUserTokensLoading,
-  } = useBlockchainStore();
+  const { getUserTokens, setUserTokens, setUserTokensLoading } =
+    useBlockchainStore();
 
   const cachedTokens = address ? getUserTokens(address) : null;
   const shouldFetch = Boolean(address);
 
-  const { data: tokens, isLoading, refetch } = useReadContract({
+  const {
+    data: tokens,
+    isLoading,
+    refetch,
+  } = useReadContract({
     abi: TokenFactory.abi,
     address: tokenFactory,
-    functionName: 'tokensCreatedBy',
+    functionName: "tokensCreatedBy",
     args: [address as `0x${string}`],
     query: {
       enabled: shouldFetch,

@@ -3,12 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getStakingContractAddress, StakingContract } from "@/config";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import {
-  BarChart3,
-  Gift,
-  Loader2,
-  Wallet
-} from "lucide-react";
+import { BarChart3, Gift, Loader2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -54,7 +49,8 @@ export default function StakingPage() {
   const animatedPendingRewardsRef = useRef(0);
 
   const [animatedPendingRewards, setAnimatedPendingRewards] = useState(0);
-  const [isPendingRewardsAnimating, setIsPendingRewardsAnimating] = useState(false);
+  const [isPendingRewardsAnimating, setIsPendingRewardsAnimating] =
+    useState(false);
 
   // Read staking token address
   const { data: stakingTokenAddress } = useReadContract({
@@ -101,13 +97,14 @@ export default function StakingPage() {
   });
 
   // Read user's wallet balance of staking token
-  const { data: walletBalance, refetch: refetchWalletBalance } = useReadContract({
-    abi: erc20Abi,
-    address: stakingTokenAddress as Address,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    query: { enabled: !!address && !!stakingTokenAddress },
-  });
+  const { data: walletBalance, refetch: refetchWalletBalance } =
+    useReadContract({
+      abi: erc20Abi,
+      address: stakingTokenAddress as Address,
+      functionName: "balanceOf",
+      args: address ? [address] : undefined,
+      query: { enabled: !!address && !!stakingTokenAddress },
+    });
 
   // Read allowance
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
@@ -119,13 +116,14 @@ export default function StakingPage() {
   });
 
   // Read user's staked balance
-  const { data: stakedBalance, refetch: refetchStakedBalance } = useReadContract({
-    address: stakingContractAddress,
-    abi: StakingContract.abi as Abi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    query: { enabled: !!address },
-  });
+  const { data: stakedBalance, refetch: refetchStakedBalance } =
+    useReadContract({
+      address: stakingContractAddress,
+      abi: StakingContract.abi as Abi,
+      functionName: "balanceOf",
+      args: address ? [address] : undefined,
+      query: { enabled: !!address },
+    });
 
   // Read total amount staked in contract
   const { data: totalStaked, refetch: refetchTotalStaked } = useReadContract({
@@ -139,17 +137,18 @@ export default function StakingPage() {
   });
 
   // Read pending rewards
-  const { data: pendingRewards, refetch: refetchPendingRewards } = useReadContract({
-    address: stakingContractAddress,
-    abi: StakingContract.abi as Abi,
-    functionName: "pendingRewards",
-    args: address ? [address] : undefined,
-    query: {
-      enabled: !!address,
-      refetchInterval: 5000,
-      refetchIntervalInBackground: true,
-    },
-  });
+  const { data: pendingRewards, refetch: refetchPendingRewards } =
+    useReadContract({
+      address: stakingContractAddress,
+      abi: StakingContract.abi as Abi,
+      functionName: "pendingRewards",
+      args: address ? [address] : undefined,
+      query: {
+        enabled: !!address,
+        refetchInterval: 5000,
+        refetchIntervalInBackground: true,
+      },
+    });
 
   // Transaction receipts
   const { isSuccess: isStakingSuccess, isError: isStakingError } =
@@ -168,30 +167,46 @@ export default function StakingPage() {
   const formattedWalletBalance = useMemo(() => {
     if (walletBalance === undefined || walletBalance === null) return "0";
     try {
-      return Number(formatUnits(walletBalance as bigint, decimals)).toLocaleString(undefined, { maximumFractionDigits: 6 });
-    } catch { return "0"; }
+      return Number(
+        formatUnits(walletBalance as bigint, decimals),
+      ).toLocaleString(undefined, { maximumFractionDigits: 6 });
+    } catch {
+      return "0";
+    }
   }, [walletBalance, decimals]);
 
   const formattedStakedBalance = useMemo(() => {
     if (stakedBalance === undefined || stakedBalance === null) return "0";
     try {
-      return Number(formatUnits(stakedBalance as bigint, decimals)).toLocaleString(undefined, { maximumFractionDigits: 6 });
-    } catch { return "0"; }
+      return Number(
+        formatUnits(stakedBalance as bigint, decimals),
+      ).toLocaleString(undefined, { maximumFractionDigits: 6 });
+    } catch {
+      return "0";
+    }
   }, [stakedBalance, decimals]);
 
   const formattedTotalStaked = useMemo(() => {
     if (totalStaked === undefined || totalStaked === null) return "0";
     try {
-      return Number(formatUnits(totalStaked as bigint, decimals)).toLocaleString(undefined, { maximumFractionDigits: 6 });
-    } catch { return "0"; }
+      return Number(
+        formatUnits(totalStaked as bigint, decimals),
+      ).toLocaleString(undefined, { maximumFractionDigits: 6 });
+    } catch {
+      return "0";
+    }
   }, [totalStaked, decimals]);
 
   const pendingRewardsValue = useMemo(() => {
     if (pendingRewards === undefined || pendingRewards === null) return 0;
     try {
-      const value = Number(formatUnits(pendingRewards as bigint, rewardDecimals));
+      const value = Number(
+        formatUnits(pendingRewards as bigint, rewardDecimals),
+      );
       return Number.isFinite(value) ? value : 0;
-    } catch { return 0; }
+    } catch {
+      return 0;
+    }
   }, [pendingRewards, rewardDecimals]);
 
   useEffect(() => {
@@ -247,17 +262,23 @@ export default function StakingPage() {
   }, [pendingRewardsValue]);
 
   const formattedPendingRewards = useMemo(
-    () => animatedPendingRewards.toLocaleString(undefined, { maximumFractionDigits: 6 }),
-    [animatedPendingRewards]
+    () =>
+      animatedPendingRewards.toLocaleString(undefined, {
+        maximumFractionDigits: 6,
+      }),
+    [animatedPendingRewards],
   );
 
   // Check if approval is needed
   const needsApproval = useMemo(() => {
-    if (!stakeAmount || allowance === undefined || allowance === null) return false;
+    if (!stakeAmount || allowance === undefined || allowance === null)
+      return false;
     try {
       const amount = parseUnits(stakeAmount, decimals);
       return (allowance as bigint) < amount;
-    } catch { return false; }
+    } catch {
+      return false;
+    }
   }, [stakeAmount, allowance, decimals]);
 
   // Has claimable rewards
@@ -268,24 +289,34 @@ export default function StakingPage() {
 
   // Insufficient balance checks
   const hasInsufficientStakeBalance = useMemo(() => {
-    if (!stakeAmount || walletBalance === undefined || walletBalance === null) return false;
+    if (!stakeAmount || walletBalance === undefined || walletBalance === null)
+      return false;
     try {
       const amount = parseUnits(stakeAmount, decimals);
       return amount > (walletBalance as bigint);
-    } catch { return false; }
+    } catch {
+      return false;
+    }
   }, [stakeAmount, walletBalance, decimals]);
 
   const hasInsufficientUnstakeBalance = useMemo(() => {
-    if (!unstakeAmount || stakedBalance === undefined || stakedBalance === null) return false;
+    if (!unstakeAmount || stakedBalance === undefined || stakedBalance === null)
+      return false;
     try {
       const amount = parseUnits(unstakeAmount, decimals);
       return amount > (stakedBalance as bigint);
-    } catch { return false; }
+    } catch {
+      return false;
+    }
   }, [unstakeAmount, stakedBalance, decimals]);
 
   // Handle staking success/error
   useEffect(() => {
-    if (isStakingSuccess && stakingHash && processedStakingHash.current !== stakingHash) {
+    if (
+      isStakingSuccess &&
+      stakingHash &&
+      processedStakingHash.current !== stakingHash
+    ) {
       processedStakingHash.current = stakingHash;
       setIsStaking(false);
       setStakingHash(undefined);
@@ -296,10 +327,21 @@ export default function StakingPage() {
       refetchPendingRewards();
       toast.success("Staking successful!");
     }
-  }, [isStakingSuccess, stakingHash, refetchWalletBalance, refetchStakedBalance, refetchTotalStaked, refetchPendingRewards]);
+  }, [
+    isStakingSuccess,
+    stakingHash,
+    refetchWalletBalance,
+    refetchStakedBalance,
+    refetchTotalStaked,
+    refetchPendingRewards,
+  ]);
 
   useEffect(() => {
-    if (isStakingError && stakingHash && processedStakingHash.current !== stakingHash) {
+    if (
+      isStakingError &&
+      stakingHash &&
+      processedStakingHash.current !== stakingHash
+    ) {
       processedStakingHash.current = stakingHash;
       setIsStaking(false);
       setStakingHash(undefined);
@@ -309,7 +351,11 @@ export default function StakingPage() {
 
   // Handle unstaking success/error
   useEffect(() => {
-    if (isUnstakingSuccess && unstakingHash && processedUnstakingHash.current !== unstakingHash) {
+    if (
+      isUnstakingSuccess &&
+      unstakingHash &&
+      processedUnstakingHash.current !== unstakingHash
+    ) {
       processedUnstakingHash.current = unstakingHash;
       setIsUnstaking(false);
       setUnstakingHash(undefined);
@@ -320,10 +366,21 @@ export default function StakingPage() {
       refetchPendingRewards();
       toast.success("Withdrawal successful!");
     }
-  }, [isUnstakingSuccess, unstakingHash, refetchWalletBalance, refetchStakedBalance, refetchTotalStaked, refetchPendingRewards]);
+  }, [
+    isUnstakingSuccess,
+    unstakingHash,
+    refetchWalletBalance,
+    refetchStakedBalance,
+    refetchTotalStaked,
+    refetchPendingRewards,
+  ]);
 
   useEffect(() => {
-    if (isUnstakingError && unstakingHash && processedUnstakingHash.current !== unstakingHash) {
+    if (
+      isUnstakingError &&
+      unstakingHash &&
+      processedUnstakingHash.current !== unstakingHash
+    ) {
       processedUnstakingHash.current = unstakingHash;
       setIsUnstaking(false);
       setUnstakingHash(undefined);
@@ -333,7 +390,11 @@ export default function StakingPage() {
 
   // Handle claim success/error
   useEffect(() => {
-    if (isClaimSuccess && claimHash && processedClaimHash.current !== claimHash) {
+    if (
+      isClaimSuccess &&
+      claimHash &&
+      processedClaimHash.current !== claimHash
+    ) {
       processedClaimHash.current = claimHash;
       setIsClaiming(false);
       setClaimHash(undefined);
@@ -408,7 +469,8 @@ export default function StakingPage() {
     } catch (err: unknown) {
       setIsApproving(false);
       setIsStaking(false);
-      const message = (err as { shortMessage?: string })?.shortMessage || "Staking failed";
+      const message =
+        (err as { shortMessage?: string })?.shortMessage || "Staking failed";
       toast.error(message);
     }
   };
@@ -431,7 +493,8 @@ export default function StakingPage() {
       toast.info("Withdrawing tokens...");
     } catch (err: unknown) {
       setIsUnstaking(false);
-      const message = (err as { shortMessage?: string })?.shortMessage || "Withdrawal failed";
+      const message =
+        (err as { shortMessage?: string })?.shortMessage || "Withdrawal failed";
       toast.error(message);
     }
   };
@@ -453,7 +516,8 @@ export default function StakingPage() {
       toast.info("Claiming rewards...");
     } catch (err: unknown) {
       setIsClaiming(false);
-      const message = (err as { shortMessage?: string })?.shortMessage || "Claim failed";
+      const message =
+        (err as { shortMessage?: string })?.shortMessage || "Claim failed";
       toast.error(message);
     }
   };
@@ -474,21 +538,24 @@ export default function StakingPage() {
     <div className="container mx-auto px-4 py-6 sm:py-8 text-[#1A1A2E]">
       {/* Header Banner */}
       <div className="mb-6 sm:mb-8">
-          <div className="border-b-4 border-[#1A1A2E] bg-[#0F59FF] p-4 sm:p-6 shadow-[3px_3px_0_rgba(26,26,46,1)] mb-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider flex items-center gap-3 flex-wrap">
-              Staking
-            </h1>
+        <div className="border-b-4 border-[#1A1A2E] bg-[#0F59FF] p-4 sm:p-6 shadow-[3px_3px_0_rgba(26,26,46,1)] mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider flex items-center gap-3 flex-wrap">
+            Staking
+          </h1>
         </div>
       </div>
-
 
       {!isConnected ? (
         <Card className="border-2 border-[#1A1A2E] shadow-[2px_2px_0_rgba(26,26,46,1)] max-w-2xl mx-auto">
           <CardContent className="p-8 sm:p-12 text-center space-y-6">
             <Wallet className="w-16 h-16 mx-auto text-gray-400" />
             <div>
-              <h2 className="text-2xl font-bold uppercase mb-2">Connect Your Wallet</h2>
-              <p className="text-gray-600">Connect your wallet to start staking and earning rewards.</p>
+              <h2 className="text-2xl font-bold uppercase mb-2">
+                Connect Your Wallet
+              </h2>
+              <p className="text-gray-600">
+                Connect your wallet to start staking and earning rewards.
+              </p>
             </div>
             <Button
               onClick={openConnectModal}
@@ -511,26 +578,43 @@ export default function StakingPage() {
               </CardHeader>
               <CardContent className="p-4 sm:p-6 space-y-4">
                 <div className="p-4 border border-gray-200 bg-white">
-                  <p className="text-xs uppercase font-bold text-gray-500">Wallet Balance</p>
-                  <p className="text-2xl font-medium text-gray-900">{formattedWalletBalance}</p>
-                  <p className="text-sm text-gray-500">{stakingTokenSymbol || "Tokens"}</p>
+                  <p className="text-xs uppercase font-bold text-gray-500">
+                    Wallet Balance
+                  </p>
+                  <p className="text-2xl font-medium text-gray-900">
+                    {formattedWalletBalance}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {stakingTokenSymbol || "Tokens"}
+                  </p>
                 </div>
                 <div className="p-4 border border-gray-200 bg-white">
-                  <p className="text-xs uppercase font-bold text-gray-500">Staked Balance</p>
-                  <p className="text-2xl font-medium text-gray-900">{formattedStakedBalance}</p>
-                  <p className="text-sm text-gray-500">{stakingTokenSymbol || "Tokens"}</p>
+                  <p className="text-xs uppercase font-bold text-gray-500">
+                    Staked Balance
+                  </p>
+                  <p className="text-2xl font-medium text-gray-900">
+                    {formattedStakedBalance}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {stakingTokenSymbol || "Tokens"}
+                  </p>
                 </div>
                 <div className="p-4 border border-gray-200 bg-white">
-                  <p className="text-xs uppercase font-bold text-gray-500">Pending Rewards</p>
+                  <p className="text-xs uppercase font-bold text-gray-500">
+                    Pending Rewards
+                  </p>
                   <p
-                    className={`text-2xl font-medium transition-[transform,opacity] duration-200 ${isPendingRewardsAnimating
-                      ? "text-emerald-700 scale-[1.03] animate-pulse"
-                      : "text-gray-900 scale-100"
-                      }`}
+                    className={`text-2xl font-medium transition-[transform,opacity] duration-200 ${
+                      isPendingRewardsAnimating
+                        ? "text-emerald-700 scale-[1.03] animate-pulse"
+                        : "text-gray-900 scale-100"
+                    }`}
                   >
                     {formattedPendingRewards}
                   </p>
-                  <p className="text-sm text-gray-500">{rewardsTokenSymbol || "Tokens"}</p>
+                  <p className="text-sm text-gray-500">
+                    {rewardsTokenSymbol || "Tokens"}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -567,9 +651,15 @@ export default function StakingPage() {
               <CardContent className="p-4 sm:p-6 bg-white">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs uppercase font-bold text-gray-500">Total tTOKEN Staked</p>
-                    <p className="text-3xl sm:text-4xl font-semibold text-gray-900">{formattedTotalStaked}</p>
-                    <p className="text-sm text-gray-500">{stakingTokenSymbol || "Tokens"}</p>
+                    <p className="text-xs uppercase font-bold text-gray-500">
+                      Total tTOKEN Staked
+                    </p>
+                    <p className="text-3xl sm:text-4xl font-semibold text-gray-900">
+                      {formattedTotalStaked}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {stakingTokenSymbol || "Tokens"}
+                    </p>
                   </div>
                   <BarChart3 className="w-7 h-7 text-gray-400 shrink-0" />
                 </div>
@@ -581,19 +671,21 @@ export default function StakingPage() {
                 <div className="flex">
                   <button
                     onClick={() => setActiveTab("stake")}
-                    className={`flex-1 py-4 font-bold uppercase tracking-wider text-sm transition-colors ${activeTab === "stake"
-                      ? "bg-[#0F59FF] text-[#1A1A2E]"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
+                    className={`flex-1 py-4 font-bold uppercase tracking-wider text-sm transition-colors ${
+                      activeTab === "stake"
+                        ? "bg-[#0F59FF] text-[#1A1A2E]"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
                   >
                     Stake
                   </button>
                   <button
                     onClick={() => setActiveTab("unstake")}
-                    className={`flex-1 py-4 font-bold uppercase tracking-wider text-sm transition-colors border-l-2 border-[#1A1A2E] ${activeTab === "unstake"
-                      ? "bg-[#0F59FF] text-[#1A1A2E]"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
+                    className={`flex-1 py-4 font-bold uppercase tracking-wider text-sm transition-colors border-l-2 border-[#1A1A2E] ${
+                      activeTab === "unstake"
+                        ? "bg-[#0F59FF] text-[#1A1A2E]"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
                   >
                     Unstake
                   </button>
@@ -604,10 +696,14 @@ export default function StakingPage() {
                   <div className="space-y-4">
                     <div>
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-sm font-bold uppercase">Amount to Stake</label>
+                        <label className="text-sm font-bold uppercase">
+                          Amount to Stake
+                        </label>
                         <div className="flex items-center gap-2 text-sm">
                           <span className="text-gray-500">Balance:</span>
-                          <span className="font-bold">{formattedWalletBalance}</span>
+                          <span className="font-bold">
+                            {formattedWalletBalance}
+                          </span>
                           <button
                             onClick={handleMaxStake}
                             className="text-gray-900 font-bold hover:underline"
@@ -624,18 +720,30 @@ export default function StakingPage() {
                           placeholder="0.0"
                           className="flex-1 text-xl font-bold border-0 shadow-none focus-visible:ring-0 p-0"
                         />
-                        <span className="font-bold text-gray-600">{stakingTokenSymbol || "TOKEN"}</span>
+                        <span className="font-bold text-gray-600">
+                          {stakingTokenSymbol || "TOKEN"}
+                        </span>
                       </div>
                       {hasInsufficientStakeBalance && (
-                        <p className="text-red-500 text-sm mt-2 font-bold">Insufficient balance</p>
+                        <p className="text-red-500 text-sm mt-2 font-bold">
+                          Insufficient balance
+                        </p>
                       )}
                     </div>
 
                     <Button
                       onClick={handleStake}
-                      disabled={isApproving || isStaking || !stakeAmount || hasInsufficientStakeBalance}
-                      className={`w-full py-6 text-[#1A1A2E] font-bold uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] disabled:opacity-50 ${needsApproval ? "bg-[#FFFB8F] hover:bg-[#FFF570]" : "bg-[#0F59FF] hover:bg-[#5DD5F5]"
-                        }`}
+                      disabled={
+                        isApproving ||
+                        isStaking ||
+                        !stakeAmount ||
+                        hasInsufficientStakeBalance
+                      }
+                      className={`w-full py-6 text-[#1A1A2E] font-bold uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] disabled:opacity-50 ${
+                        needsApproval
+                          ? "bg-[#FFFB8F] hover:bg-[#FFF570]"
+                          : "bg-[#0F59FF] hover:bg-[#5DD5F5]"
+                      }`}
                     >
                       {isApproving ? (
                         <>
@@ -663,10 +771,14 @@ export default function StakingPage() {
                   <div className="space-y-4">
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <label className="text-sm font-bold uppercase">Amount to Unstake</label>
+                        <label className="text-sm font-bold uppercase">
+                          Amount to Unstake
+                        </label>
                         <div className="flex items-center gap-2 text-sm">
                           <span className="text-gray-500">Staked:</span>
-                          <span className="font-bold">{formattedStakedBalance}</span>
+                          <span className="font-bold">
+                            {formattedStakedBalance}
+                          </span>
                           <button
                             onClick={handleMaxUnstake}
                             className="text-gray-900 font-bold hover:underline"
@@ -683,16 +795,24 @@ export default function StakingPage() {
                           placeholder="0.0"
                           className="flex-1 text-xl font-bold border-0 shadow-none focus-visible:ring-0 p-0"
                         />
-                        <span className="font-bold text-gray-600">{stakingTokenSymbol || "TOKEN"}</span>
+                        <span className="font-bold text-gray-600">
+                          {stakingTokenSymbol || "TOKEN"}
+                        </span>
                       </div>
                       {hasInsufficientUnstakeBalance && (
-                        <p className="text-red-500 text-sm mt-2 font-bold">Insufficient staked balance</p>
+                        <p className="text-red-500 text-sm mt-2 font-bold">
+                          Insufficient staked balance
+                        </p>
                       )}
                     </div>
 
                     <Button
                       onClick={handleUnstake}
-                      disabled={isUnstaking || !unstakeAmount || hasInsufficientUnstakeBalance}
+                      disabled={
+                        isUnstaking ||
+                        !unstakeAmount ||
+                        hasInsufficientUnstakeBalance
+                      }
                       className="w-full py-6 bg-[#0F59FF] text-[#1A1A2E] font-bold uppercase tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] hover:bg-[#5DD5F5] hover:shadow-[6px_6px_0_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] disabled:opacity-50"
                     >
                       {isUnstaking ? (

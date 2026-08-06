@@ -17,10 +17,13 @@ export const CONTRACT_ADDRESSES = {
   nativeUSDT: "0x0000000000000000000000000000000000000002" as Address,
   dexFactory: "" as Address,
   dexRouter: "" as Address,
-  weth9: "" as Address
+  weth9: "" as Address,
 };
 
-const CHAIN_CONFIGS: Record<number, { explorerUrl: string; contractAddresses: typeof CONTRACT_ADDRESSES }> = {
+const CHAIN_CONFIGS: Record<
+  number,
+  { explorerUrl: string; contractAddresses: typeof CONTRACT_ADDRESSES }
+> = {
   [etherlink.id]: {
     explorerUrl: "https://explorer.etherlink.com",
     contractAddresses: CONTRACT_ADDRESSES,
@@ -32,22 +35,42 @@ export function getContractAddresses(chainId: number) {
 }
 
 export function getStakingContractAddress(chainId: number): Address {
-  return CHAIN_CONFIGS[chainId]?.contractAddresses.staking ?? CONTRACT_ADDRESSES.staking;
+  return (
+    CHAIN_CONFIGS[chainId]?.contractAddresses.staking ??
+    CONTRACT_ADDRESSES.staking
+  );
 }
 
 // ── Uniswap V2 Factory ABI ──────────────────────────────────────────────────
 const UNISWAP_V2_FACTORY_ABI = [
   {
-    inputs: [{ internalType: "address", name: "_feeToSetter", type: "address" }],
+    inputs: [
+      { internalType: "address", name: "_feeToSetter", type: "address" },
+    ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: "address", name: "token0", type: "address" },
-      { indexed: true, internalType: "address", name: "token1", type: "address" },
-      { indexed: false, internalType: "address", name: "pair", type: "address" },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "token0",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "token1",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "pair",
+        type: "address",
+      },
       { indexed: false, internalType: "uint256", name: "", type: "uint256" },
     ],
     name: "PairCreated",
@@ -190,7 +213,9 @@ const UNISWAP_V2_ROUTER_ABI = [
       { internalType: "uint256", name: "deadline", type: "uint256" },
     ],
     name: "swapExactTokensForTokens",
-    outputs: [{ internalType: "uint256[]", name: "amounts", type: "uint256[]" }],
+    outputs: [
+      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -203,7 +228,9 @@ const UNISWAP_V2_ROUTER_ABI = [
       { internalType: "uint256", name: "deadline", type: "uint256" },
     ],
     name: "swapTokensForExactTokens",
-    outputs: [{ internalType: "uint256[]", name: "amounts", type: "uint256[]" }],
+    outputs: [
+      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -215,7 +242,9 @@ const UNISWAP_V2_ROUTER_ABI = [
       { internalType: "uint256", name: "deadline", type: "uint256" },
     ],
     name: "swapExactETHForTokens",
-    outputs: [{ internalType: "uint256[]", name: "amounts", type: "uint256[]" }],
+    outputs: [
+      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+    ],
     stateMutability: "payable",
     type: "function",
   },
@@ -228,7 +257,9 @@ const UNISWAP_V2_ROUTER_ABI = [
       { internalType: "uint256", name: "deadline", type: "uint256" },
     ],
     name: "swapETHForExactTokens",
-    outputs: [{ internalType: "uint256[]", name: "amounts", type: "uint256[]" }],
+    outputs: [
+      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+    ],
     stateMutability: "payable",
     type: "function",
   },
@@ -240,7 +271,9 @@ const UNISWAP_V2_ROUTER_ABI = [
       { internalType: "uint256", name: "deadline", type: "uint256" },
     ],
     name: "swapExactTokensForETH",
-    outputs: [{ internalType: "uint256[]", name: "amounts", type: "uint256[]" }],
+    outputs: [
+      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -253,7 +286,9 @@ const UNISWAP_V2_ROUTER_ABI = [
       { internalType: "uint256", name: "deadline", type: "uint256" },
     ],
     name: "swapTokensForExactETH",
-    outputs: [{ internalType: "uint256[]", name: "amounts", type: "uint256[]" }],
+    outputs: [
+      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -456,7 +491,9 @@ const WETH9_ABI = [
 // ── Exported contract objects ──────────────────────────────────────────────
 
 export const FactoryContract = {
-  address: CONTRACT_ADDRESSES.dexFactory || ("0x0000000000000000000000000000000000000000" as Address),
+  address:
+    CONTRACT_ADDRESSES.dexFactory ||
+    ("0x0000000000000000000000000000000000000000" as Address),
   abi: UNISWAP_V2_FACTORY_ABI,
 } as const;
 
@@ -466,11 +503,15 @@ export const PairContract = {
 } as const;
 
 export const RouterContract = {
-  address: CONTRACT_ADDRESSES.dexRouter || ("0x0000000000000000000000000000000000000000" as Address),
+  address:
+    CONTRACT_ADDRESSES.dexRouter ||
+    ("0x0000000000000000000000000000000000000000" as Address),
   abi: UNISWAP_V2_ROUTER_ABI,
 } as const;
 
 export const Weth9Contract = {
-  address: CONTRACT_ADDRESSES.weth9 || ("0x0000000000000000000000000000000000000000" as Address),
+  address:
+    CONTRACT_ADDRESSES.weth9 ||
+    ("0x0000000000000000000000000000000000000000" as Address),
   abi: WETH9_ABI,
 } as const;

@@ -17,14 +17,18 @@ import { getPresaleMetadata } from "@/config/presale-metadata";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const {
-    presale,
-    isLoading: isLoadingPresale,
-  } = useLaunchpadPresale(id as `0x${string}`);
+  const { presale, isLoading: isLoadingPresale } = useLaunchpadPresale(
+    id as `0x${string}`,
+  );
   const { markets } = useMarkets();
   const metadata = useMemo(
-    () => (presale?.address ? getPresaleMetadata(presale.address) : id ? getPresaleMetadata(id) : undefined),
-    [presale?.address, id]
+    () =>
+      presale?.address
+        ? getPresaleMetadata(presale.address)
+        : id
+          ? getPresaleMetadata(id)
+          : undefined,
+    [presale?.address, id],
   );
 
   const [nowMs, setNowMs] = useState<number | null>(null);
@@ -59,12 +63,15 @@ export default function ProjectDetailPage() {
     presaleEndMs !== null && nowMs !== null ? presaleEndMs < nowMs : false;
 
   const showPresaleView =
-    presaleIsActive || isPresaleFinalized || isPresaleCancelled || presaleHasEnded;
+    presaleIsActive ||
+    isPresaleFinalized ||
+    isPresaleCancelled ||
+    presaleHasEnded;
 
   const renderMarketView = () => {
     const presaleTokens = [
       presale.saleToken.toLowerCase(),
-      (presale.paymentToken).toLowerCase(),
+      presale.paymentToken.toLowerCase(),
     ];
 
     const market = markets.find((m) => {
@@ -116,7 +123,9 @@ export default function ProjectDetailPage() {
       <div className="lg:col-span-2 space-y-8">
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
-            <CardTitle className="font-black uppercase tracking-wider">Presale Progress</CardTitle>
+            <CardTitle className="font-black uppercase tracking-wider">
+              Presale Progress
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -135,10 +144,14 @@ export default function ProjectDetailPage() {
                 <div>
                   <p className="font-bold">Total Raised</p>
                   <p>
-                    {Math.round(Number(formatUnits(
-                      presale.totalRaised,
-                      presale.paymentTokenDecimals || 18
-                    ))).toLocaleString()}{" "}
+                    {Math.round(
+                      Number(
+                        formatUnits(
+                          presale.totalRaised,
+                          presale.paymentTokenDecimals || 18,
+                        ),
+                      ),
+                    ).toLocaleString()}{" "}
                     {presale.paymentTokenSymbol}
                   </p>
                 </div>
@@ -147,7 +160,7 @@ export default function ProjectDetailPage() {
                   <p>
                     {formatUnits(
                       presale.hardCap,
-                      presale.paymentTokenDecimals || 18
+                      presale.paymentTokenDecimals || 18,
                     )}{" "}
                     {presale.paymentTokenSymbol}
                   </p>
@@ -158,22 +171,25 @@ export default function ProjectDetailPage() {
         </Card>
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
-            <CardTitle className="font-black uppercase tracking-wider">Sale Details</CardTitle>
+            <CardTitle className="font-black uppercase tracking-wider">
+              Sale Details
+            </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-bold">Status</p>
               <Badge
-                className={`capitalize ${presale.status === "live"
-                  ? "bg-[#64FE3E] text-white"
-                  : presale.status === "finalized"
-                    ? "bg-[#0F59FF] text-white"
-                    : presale.status === "cancelled"
-                      ? "bg-red-500 text-white"
-                      : presale.status === "upcoming"
-                        ? "bg-[#64FE3E] text-black"
-                        : "bg-gray-500 text-white"
-                  }`}
+                className={`capitalize ${
+                  presale.status === "live"
+                    ? "bg-[#64FE3E] text-white"
+                    : presale.status === "finalized"
+                      ? "bg-[#0F59FF] text-white"
+                      : presale.status === "cancelled"
+                        ? "bg-red-500 text-white"
+                        : presale.status === "upcoming"
+                          ? "bg-[#64FE3E] text-black"
+                          : "bg-gray-500 text-white"
+                }`}
               >
                 {presale.claimEnabled
                   ? "Finalized - Claim Open"
@@ -194,22 +210,21 @@ export default function ProjectDetailPage() {
               <p>
                 {formatUnits(
                   presale.softCap,
-                  presale.paymentTokenDecimals || 18
+                  presale.paymentTokenDecimals || 18,
                 )}{" "}
                 {presale.paymentTokenSymbol}
               </p>
             </div>
             <div>
               <p className="font-bold">Sale Ends</p>
-              <p>
-                {new Date(Number(presale.endTime) * 1000).toLocaleString()}
-              </p>
+              <p>{new Date(Number(presale.endTime) * 1000).toLocaleString()}</p>
             </div>
             {presale.requiresWhitelist && (
               <div className="col-span-2 border-2 border-[#1A1A2E] bg-[#64FE3E] p-3">
                 <p className="font-bold uppercase text-xs">Participation</p>
                 <p className="text-sm text-gray-700">
-                  This sale is limited to wallets the project owner adds to the whitelist.
+                  This sale is limited to wallets the project owner adds to the
+                  whitelist.
                 </p>
               </div>
             )}
@@ -221,9 +236,12 @@ export default function ProjectDetailPage() {
         {presale.requiresWhitelist && (
           <Card className="border-4 border-[#1A1A2E] bg-[#64FE3E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
             <CardContent className="p-4">
-              <p className="font-black uppercase text-xs mb-1 text-[#1A1A2E]">Whitelist Required</p>
+              <p className="font-black uppercase text-xs mb-1 text-[#1A1A2E]">
+                Whitelist Required
+              </p>
               <p className="text-sm text-gray-700">
-                Connect your wallet below to check if you've been approved to join this sale.
+                Connect your wallet below to check if you've been approved to
+                join this sale.
               </p>
             </CardContent>
           </Card>

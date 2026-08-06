@@ -1,7 +1,10 @@
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { useChainId } from "wagmi";
-import { submitVerification, type VerificationPayload } from "@/lib/api/verification-client";
+import {
+  submitVerification,
+  type VerificationPayload,
+} from "@/lib/api/verification-client";
 import { tezosX } from "@/config/wagmi";
 
 /**
@@ -23,10 +26,7 @@ export function useTokenVerification() {
   const chainId = useChainId();
 
   const verifyToken = useCallback(
-    async (params: {
-      address: string;
-      tokenType: number;
-    }) => {
+    async (params: { address: string; tokenType: number }) => {
       // Only verify on Tezos X Previewnet
       if (chainId !== tezosX.id) {
         return;
@@ -34,7 +34,10 @@ export function useTokenVerification() {
 
       const contractType = TOKEN_TYPE_MAP[params.tokenType];
       if (!contractType) {
-        console.warn("Unknown token type, skipping verification:", params.tokenType);
+        console.warn(
+          "Unknown token type, skipping verification:",
+          params.tokenType,
+        );
         return;
       }
 
@@ -55,8 +58,7 @@ export function useTokenVerification() {
           toast.error(response.message ?? "Verification submission failed.");
         }
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Unknown error";
+        const message = err instanceof Error ? err.message : "Unknown error";
         toast.error(`Verification request failed: ${message}`);
       }
     },

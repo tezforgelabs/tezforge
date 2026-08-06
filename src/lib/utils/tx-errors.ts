@@ -25,7 +25,7 @@ const getErrorText = (error: unknown) => {
 
 export const getFriendlyTxErrorMessage = (
   error: unknown,
-  actionLabel = "Transaction"
+  actionLabel = "Transaction",
 ) => {
   const text = getErrorText(error);
   if (

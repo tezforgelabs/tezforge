@@ -1,4 +1,7 @@
-import type { PresaleCategory, PresaleSocials } from "@/lib/store/launchpad-presale-store";
+import type {
+  PresaleCategory,
+  PresaleSocials,
+} from "@/lib/store/launchpad-presale-store";
 import type { Address } from "viem";
 import reactpadLogo from "@/assets/RPAD-logo.png";
 import hidethegainLogo from "@/assets/Hidethegain.jpg";
@@ -47,7 +50,9 @@ export const presaleMetadataMap: Record<string, PresaleMetadata> = {
   },
 };
 
-export function getPresaleMetadata(address: Address | string): PresaleMetadata | undefined {
+export function getPresaleMetadata(
+  address: Address | string,
+): PresaleMetadata | undefined {
   const normalizedAddress = address.toLowerCase();
   return presaleMetadataMap[normalizedAddress];
 }

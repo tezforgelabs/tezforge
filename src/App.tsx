@@ -32,16 +32,34 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard/create" element={<CreateHubPage />} />
             <Route path="/dashboard/create/nft" element={<CreateNftPage />} />
-            <Route path="/dashboard/create/presale" element={<CreatePresalePage />} />
-            <Route path="/dashboard/create/project" element={<CreateProjectPage />} />
-            <Route path="/dashboard/create/token" element={<CreateTokenPage />} />
+            <Route
+              path="/dashboard/create/presale"
+              element={<CreatePresalePage />}
+            />
+            <Route
+              path="/dashboard/create/project"
+              element={<CreateProjectPage />}
+            />
+            <Route
+              path="/dashboard/create/token"
+              element={<CreateTokenPage />}
+            />
             <Route path="/dashboard/presales" element={<PresalesListPage />} />
-            <Route path="/dashboard/presales/manage/:address" element={<ManagePresalePage />} />
+            <Route
+              path="/dashboard/presales/manage/:address"
+              element={<ManagePresalePage />}
+            />
             <Route path="/dashboard/staking" element={<StakingPage />} />
             <Route path="/dashboard/tools/airdrop" element={<AirdropPage />} />
-            <Route path="/dashboard/tools/token-locker" element={<TokenLockerPage />} />
+            <Route
+              path="/dashboard/tools/token-locker"
+              element={<TokenLockerPage />}
+            />
             <Route path="/dashboard/user" element={<UserDashboardPage />} />
-            <Route path="/dashboard/user/tokens/:address" element={<TokenDetailPage />} />
+            <Route
+              path="/dashboard/user/tokens/:address"
+              element={<TokenDetailPage />}
+            />
             <Route path="/nfts" element={<NFTsPage />} />
             <Route path="/nfts/:id" element={<NFTDetailPage />} />
             <Route path="/projects" element={<ProjectsPage />} />

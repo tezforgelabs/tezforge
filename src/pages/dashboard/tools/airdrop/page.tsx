@@ -52,16 +52,17 @@ export default function AirdropPage() {
   const [tokenAddress, setTokenAddress] = useState(tokenFromUrl);
   const [recipientsData, setRecipientsData] = useState("");
   const [sendType, setSendType] = useState<"erc20" | "react">(
-    tokenFromUrl ? "erc20" : "react"
+    tokenFromUrl ? "erc20" : "react",
   );
 
-  const { tokens: userTokens, isLoading: isUserTokensLoading } = useUserTokens();
+  const { tokens: userTokens, isLoading: isUserTokensLoading } =
+    useUserTokens();
 
   // Auto-select token from URL if it matches a user-created token
   useEffect(() => {
     if (tokenFromUrl && userTokens.length > 0 && !isUserTokensLoading) {
       const matched = userTokens.find(
-        (t) => t.toLowerCase() === tokenFromUrl.toLowerCase()
+        (t) => t.toLowerCase() === tokenFromUrl.toLowerCase(),
       );
       if (matched) {
         setTokenAddress(matched);
@@ -95,9 +96,7 @@ export default function AirdropPage() {
     const trimmed = tokenAddress.trim();
     if (trimmed.length !== 42 || !trimmed.startsWith("0x")) return false;
     if (sendType === "erc20" && userTokens.length > 0) {
-      return userTokens.some(
-        (t) => t.toLowerCase() === trimmed.toLowerCase()
-      );
+      return userTokens.some((t) => t.toLowerCase() === trimmed.toLowerCase());
     }
     return true;
   }, [tokenAddress, userTokens, sendType]);
@@ -145,7 +144,7 @@ export default function AirdropPage() {
       return { recipients: [], amounts: [], errors: [] as string[] };
     }
 
-    const decimals = sendType === "erc20" ? tokenDecimals ?? 18 : 18;
+    const decimals = sendType === "erc20" ? (tokenDecimals ?? 18) : 18;
     const errors: string[] = [];
 
     const result = recipientsData.split("\n").reduce(
@@ -156,7 +155,7 @@ export default function AirdropPage() {
         const parts = trimmedLine.split(",");
         if (parts.length !== 2) {
           errors.push(
-            `Line ${index + 1}: Invalid format (expected: address,amount)`
+            `Line ${index + 1}: Invalid format (expected: address,amount)`,
           );
           return acc;
         }
@@ -182,13 +181,13 @@ export default function AirdropPage() {
           acc.amounts.push(amount);
         } catch (error) {
           errors.push(
-            `Line ${index + 1}: Could not parse amount "${amountStr}"`
+            `Line ${index + 1}: Could not parse amount "${amountStr}"`,
           );
         }
 
         return acc;
       },
-      { recipients: [] as `0x${string}`[], amounts: [] as bigint[], errors }
+      { recipients: [] as `0x${string}`[], amounts: [] as bigint[], errors },
     );
 
     result.errors = errors;
@@ -198,13 +197,13 @@ export default function AirdropPage() {
   const totalAmount = useMemo(() => {
     return parsedRecipients.amounts.reduce(
       (acc, curr) => acc + curr,
-      BigInt(0)
+      BigInt(0),
     );
   }, [parsedRecipients]);
 
-  const displayDecimals = sendType === "erc20" ? tokenDecimals ?? 18 : 18;
+  const displayDecimals = sendType === "erc20" ? (tokenDecimals ?? 18) : 18;
   const displaySymbol =
-    sendType === "erc20" ? tokenSymbol ?? "tokens" : "XTZ";
+    sendType === "erc20" ? (tokenSymbol ?? "tokens") : "XTZ";
 
   // Allowance check for ERC-20
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
@@ -360,15 +359,17 @@ export default function AirdropPage() {
               <button
                 type="button"
                 onClick={() => setSendType("erc20")}
-                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${sendType === "erc20"
-                  ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                  : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
-                  }`}
+                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
+                  sendType === "erc20"
+                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                    : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${sendType === "erc20" ? "bg-black" : ""
-                      }`}
+                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${
+                      sendType === "erc20" ? "bg-black" : ""
+                    }`}
                   />
                   <div>
                     <p className="font-black uppercase text-sm sm:text-base">
@@ -384,15 +385,17 @@ export default function AirdropPage() {
                   setSendType("react");
                   setTokenAddress("");
                 }}
-                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${sendType === "react"
-                  ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                  : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
-                  }`}
+                className={`p-4 border-2 border-[#1A1A2E] text-left transition-[transform,shadow,opacity,colors] ${
+                  sendType === "react"
+                    ? "bg-[#90EE90] shadow-[4px_4px_0_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                    : "bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-gray-50"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${sendType === "react" ? "bg-black" : ""
-                      }`}
+                    className={`w-4 h-4 flex-shrink-0 rounded-full border-2 border-[#1A1A2E] ${
+                      sendType === "react" ? "bg-black" : ""
+                    }`}
                   />
                   <div>
                     <p className="font-black uppercase text-sm sm:text-base">
@@ -463,11 +466,11 @@ export default function AirdropPage() {
                           <p className="font-black">
                             {tokenBalance !== undefined
                               ? `${Number(
-                                formatUnits(
-                                  tokenBalance,
-                                  tokenDecimals ?? 18
-                                )
-                              ).toLocaleString()} ${tokenSymbol}`
+                                  formatUnits(
+                                    tokenBalance,
+                                    tokenDecimals ?? 18,
+                                  ),
+                                ).toLocaleString()} ${tokenSymbol}`
                               : "Loading..."}
                           </p>
                         </div>
@@ -492,12 +495,16 @@ export default function AirdropPage() {
                     </p>
                     <p className="font-black text-lg">
                       {Number(
-                        formatUnits(reactBalance.value, 18)
+                        formatUnits(reactBalance.value, 18),
                       ).toLocaleString()}{" "}
                       XTZ
                     </p>
                   </div>
-                  <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785972882/tezos_gsjxsg.png" alt="Tezos" className="w-8 h-8" />
+                  <img
+                    src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785972882/tezos_gsjxsg.png"
+                    alt="Tezos"
+                    className="w-8 h-8"
+                  />
                 </div>
               </div>
             </CardContent>
@@ -569,7 +576,7 @@ export default function AirdropPage() {
                     </p>
                     <p className="text-2xl font-black">
                       {Number(
-                        formatUnits(totalAmount, displayDecimals)
+                        formatUnits(totalAmount, displayDecimals),
                       ).toLocaleString()}
                     </p>
                     <p className="text-xs font-bold text-gray-600">

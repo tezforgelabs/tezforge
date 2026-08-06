@@ -9,7 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LaunchpadPresaleContract, PresaleFactory, getContractAddresses } from "@/config";
+import {
+  LaunchpadPresaleContract,
+  PresaleFactory,
+  getContractAddresses,
+} from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 // LaunchpadService removed - data is now stored only on blockchain
 import { useBlockchainStore } from "@/lib/store/blockchain-store";
@@ -93,9 +97,7 @@ function CreatePresaleForm({
       urlToken &&
       userTokens.length > 0 &&
       !isUserTokensLoading &&
-      !userTokens.some(
-        (t) => t.toLowerCase() === urlToken.toLowerCase()
-      )
+      !userTokens.some((t) => t.toLowerCase() === urlToken.toLowerCase())
     ) {
       // Token from URL is not in the user's created tokens — clear it
       setFormData((prev) => ({ ...prev, saleToken: "" }));
@@ -193,7 +195,7 @@ function CreatePresaleForm({
           const existingPresale = results.find(
             (res) =>
               typeof res.result === "string" &&
-              res.result.toLowerCase() === saleToken.toLowerCase()
+              res.result.toLowerCase() === saleToken.toLowerCase(),
           );
 
           if (existingPresale) {
@@ -211,7 +213,7 @@ function CreatePresaleForm({
     } catch (e) {
       console.error("Error checking for existing presale:", e);
       toast.error(
-        "Could not verify if a presale already exists. Please try again."
+        "Could not verify if a presale already exists. Please try again.",
       );
       setIsChecking(false);
       return;
@@ -221,7 +223,7 @@ function CreatePresaleForm({
     // Validate required fields
     if (!saleAmount || !hardCap) {
       toast.error(
-        "Sale Amount and Hard Cap are required to calculate the rate."
+        "Sale Amount and Hard Cap are required to calculate the rate.",
       );
       return;
     }
@@ -243,7 +245,7 @@ function CreatePresaleForm({
 
     if (calculatedRate === 0n) {
       toast.error(
-        "Calculated rate is 0. Please check your Sale Amount and Hard Cap values."
+        "Calculated rate is 0. Please check your Sale Amount and Hard Cap values.",
       );
       return;
     }
@@ -278,7 +280,7 @@ function CreatePresaleForm({
       },
       {
         onSuccess: (hash) => onPresaleCreated(hash),
-      }
+      },
     );
   };
 
@@ -534,7 +536,7 @@ export default function CreatePresalePage() {
     useWhitelistedCreator(address as Address | undefined);
   const { isAdmin } = useIsAdmin(address as Address | undefined);
   const [creationHash, setCreationHash] = useState<`0x${string}` | undefined>(
-    undefined
+    undefined,
   );
   const [formData, setFormData] = useState({
     saleToken: searchParams.get("token") ?? "",
@@ -608,10 +610,10 @@ export default function CreatePresalePage() {
         "Presale created at address:",
         presaleAddress,
         "with tx:",
-        txHash
+        txHash,
       );
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -625,8 +627,8 @@ export default function CreatePresalePage() {
       toast.success(
         `Presale created successfully! Tx: ${creationHash.slice(
           0,
-          10
-        )}...${creationHash.slice(-8)}`
+          10,
+        )}...${creationHash.slice(-8)}`,
       );
       // Invalidate the presales cache to force refetch
       setPresales([]);

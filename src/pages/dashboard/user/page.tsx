@@ -1,7 +1,15 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { useAllLocks } from "@/lib/hooks/useAllLocks";
 import { useLaunchpadPresales } from "@/lib/hooks/useLaunchpadPresales";
@@ -10,28 +18,41 @@ import { useWhitelistedCreator } from "@/lib/hooks/useWhitelistedCreator";
 import { useIsAdmin } from "@/lib/utils/admin";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, FileText, Plus, X } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  FileText,
+  Plus,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { Address } from "viem";
 import { erc20Abi, formatUnits } from "viem";
 import { useAccount, useReadContract } from "wagmi";
 
-function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string}`; onPresaleClick: () => void }) {
+function TokenInfo({
+  tokenAddress,
+  onPresaleClick,
+}: {
+  tokenAddress: `0x${string}`;
+  onPresaleClick: () => void;
+}) {
   const { address } = useAccount();
   const { data: symbol, isLoading: isLoadingSymbol } = useReadContract({
     abi: erc20Abi,
     address: tokenAddress,
-    functionName: 'symbol'
-  })
+    functionName: "symbol",
+  });
   const { data: name, isLoading: isLoadingName } = useReadContract({
     abi: erc20Abi,
     address: tokenAddress,
-    functionName: 'name'
-  })
-  const { isWhitelisted, isLoading: isLoadingWhitelist } = useWhitelistedCreator(
-    address as Address | undefined
-  );
+    functionName: "name",
+  });
+  const { isWhitelisted, isLoading: isLoadingWhitelist } =
+    useWhitelistedCreator(address as Address | undefined);
   const { isAdmin } = useIsAdmin(address as Address | undefined);
   const canCreatePresale = isWhitelisted || isAdmin;
 
@@ -43,32 +64,53 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
         <div className="h-5 bg-gray-200 rounded w-1/3 mb-2"></div>
         <div className="h-4 bg-gray-200 rounded w-2/3"></div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
       <div className="flex-1 min-w-0">
-        <Link to={`/dashboard/user/tokens/${tokenAddress}`} className="hover:underline">
+        <Link
+          to={`/dashboard/user/tokens/${tokenAddress}`}
+          className="hover:underline"
+        >
           <h3 className="font-bold text-lg uppercase">
-            {name as string || 'Unknown Token'} ({symbol as string || 'N/A'})
+            {(name as string) || "Unknown Token"} ({(symbol as string) || "N/A"}
+            )
           </h3>
-          <p className="text-xs text-gray-500 break-all font-mono">{tokenAddress}</p>
+          <p className="text-xs text-gray-500 break-all font-mono">
+            {tokenAddress}
+          </p>
         </Link>
       </div>
       <div className="flex flex-wrap gap-2 flex-shrink-0">
-        <Button variant="outline" size="sm" asChild className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]">
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]"
+        >
           <Link to={`/dashboard/tools/token-locker?token=${tokenAddress}`}>
             Lock
           </Link>
         </Button>
-        <Button variant="outline" size="sm" asChild className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]">
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]"
+        >
           <Link to={`/dashboard/tools/airdrop?token=${tokenAddress}`}>
-            Airdrop</Link>
+            Airdrop
+          </Link>
         </Button>
-        {!isLoadingWhitelist && (
-          canCreatePresale ? (
-            <Button size="sm" asChild className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF]">
+        {!isLoadingWhitelist &&
+          (canCreatePresale ? (
+            <Button
+              size="sm"
+              asChild
+              className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF]"
+            >
               <Link to={`/dashboard/create/presale?token=${tokenAddress}`}>
                 <FileText className="w-3 h-3 mr-1" /> Presale
               </Link>
@@ -81,17 +123,18 @@ function TokenInfo({ tokenAddress, onPresaleClick }: { tokenAddress: `0x${string
             >
               <FileText className="w-3 h-3 mr-1" /> Presale
             </Button>
-          )
-        )}
+          ))}
       </div>
     </div>
-  )
+  );
 }
 
 function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
-  const { presales, isLoading } = useLaunchpadPresales('all', false);
+  const { presales, isLoading } = useLaunchpadPresales("all", false);
 
-  const presaleData = presales?.find(p => p.address.toLowerCase() === presaleAddress.toLowerCase());
+  const presaleData = presales?.find(
+    (p) => p.address.toLowerCase() === presaleAddress.toLowerCase(),
+  );
 
   if (isLoading || !presaleData) {
     return (
@@ -102,17 +145,25 @@ function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
     );
   }
 
-  const progress = presaleData.hardCap > 0n
-    ? Math.round(Number((presaleData.totalRaised * 100n) / presaleData.hardCap))
-    : 0;
+  const progress =
+    presaleData.hardCap > 0n
+      ? Math.round(
+          Number((presaleData.totalRaised * 100n) / presaleData.hardCap),
+        )
+      : 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'live': return 'bg-[#64FE3E]';
-      case 'upcoming': return 'bg-[#64FE3E]';
-      case 'finalized': return 'bg-[#0F59FF]';
-      case 'cancelled': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case "live":
+        return "bg-[#64FE3E]";
+      case "upcoming":
+        return "bg-[#64FE3E]";
+      case "finalized":
+        return "bg-[#0F59FF]";
+      case "cancelled":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
@@ -122,16 +173,24 @@ function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-bold text-lg uppercase">
-              {presaleData.saleTokenSymbol || 'Token'} Presale
+              {presaleData.saleTokenSymbol || "Token"} Presale
             </h3>
-            <span className={`px-2 py-0.5 text-xs font-bold uppercase text-white ${getStatusColor(presaleData.status)}`}>
+            <span
+              className={`px-2 py-0.5 text-xs font-bold uppercase text-white ${getStatusColor(presaleData.status)}`}
+            >
               {presaleData.status}
             </span>
           </div>
-          <p className="text-xs text-gray-500 break-all font-mono">{presaleAddress}</p>
+          <p className="text-xs text-gray-500 break-all font-mono">
+            {presaleAddress}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2 flex-shrink-0">
-          <Button size="sm" asChild className="border-2 border-[#1A1A2E] bg-[#64FE3E] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]">
+          <Button
+            size="sm"
+            asChild
+            className="border-2 border-[#1A1A2E] bg-[#64FE3E] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]"
+          >
             <Link to={`/dashboard/presales/manage/${presaleAddress}`}>
               Manage <ExternalLink className="ml-1 h-3 w-3" />
             </Link>
@@ -143,7 +202,14 @@ function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
           <div className="flex justify-between text-xs mb-1">
             <span className="font-bold">{progress}% Funded</span>
             <span className="text-gray-500">
-              {Math.round(Number(formatUnits(presaleData.totalRaised, 18))).toLocaleString()} / {Math.round(Number(formatUnits(presaleData.hardCap, 18))).toLocaleString()} XTZ
+              {Math.round(
+                Number(formatUnits(presaleData.totalRaised, 18)),
+              ).toLocaleString()}{" "}
+              /{" "}
+              {Math.round(
+                Number(formatUnits(presaleData.hardCap, 18)),
+              ).toLocaleString()}{" "}
+              XTZ
             </span>
           </div>
           <Progress value={progress} className="h-2 border border-[#1A1A2E]" />
@@ -153,7 +219,21 @@ function PresaleInfo({ presaleAddress }: { presaleAddress: Address }) {
   );
 }
 
-function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; amount: bigint; lockDate: bigint; unlockDate: bigint; withdrawn: boolean; name: string; tokenSymbol?: string; formattedAmount: string } }) {
+function LockPreviewCard({
+  lock,
+}: {
+  lock: {
+    id: bigint;
+    token: `0x${string}`;
+    amount: bigint;
+    lockDate: bigint;
+    unlockDate: bigint;
+    withdrawn: boolean;
+    name: string;
+    tokenSymbol?: string;
+    formattedAmount: string;
+  };
+}) {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -164,8 +244,9 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
     return () => clearInterval(interval);
   }, []);
 
-  const lockIdString = lock.id !== undefined && lock.id !== null ? String(lock.id) : '0';
-  
+  const lockIdString =
+    lock.id !== undefined && lock.id !== null ? String(lock.id) : "0";
+
   let lockTimestamp = 0;
   let unlockTimestamp = 0;
   try {
@@ -174,19 +255,24 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
   } catch (e) {
     console.error("Error converting lock timestamps:", e);
   }
-  
+
   const totalDuration = unlockTimestamp - lockTimestamp;
   const elapsed = now - lockTimestamp;
-  const progress = totalDuration > 0 ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100)) : 0;
+  const progress =
+    totalDuration > 0
+      ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100))
+      : 0;
   const isExpired = unlockTimestamp > 0 && now >= unlockTimestamp;
 
-  let timeRemaining = 'Ready';
+  let timeRemaining = "Ready";
   if (!isExpired && unlockTimestamp > 0) {
     try {
-      timeRemaining = formatDistanceToNow(new Date(unlockTimestamp), { addSuffix: true });
+      timeRemaining = formatDistanceToNow(new Date(unlockTimestamp), {
+        addSuffix: true,
+      });
     } catch (e) {
       console.error("Error formatting distance:", e);
-      timeRemaining = 'Unknown';
+      timeRemaining = "Unknown";
     }
   }
 
@@ -194,22 +280,35 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
     <div className="p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-sm uppercase">{lock.name || `Lock #${lockIdString}`}</span>
+          <span className="font-bold text-sm uppercase">
+            {lock.name || `Lock #${lockIdString}`}
+          </span>
         </div>
-        <span className={`px-2 py-0.5 text-xs font-bold uppercase ${lock.withdrawn ? 'bg-gray-400 text-white' : isExpired ? 'bg-[#64FE3E] text-white' : 'bg-[#64FE3E] text-black'}`}>
-          {lock.withdrawn ? 'Withdrawn' : isExpired ? 'Unlockable' : 'Locked'}
+        <span
+          className={`px-2 py-0.5 text-xs font-bold uppercase ${lock.withdrawn ? "bg-gray-400 text-white" : isExpired ? "bg-[#64FE3E] text-white" : "bg-[#64FE3E] text-black"}`}
+        >
+          {lock.withdrawn ? "Withdrawn" : isExpired ? "Unlockable" : "Locked"}
         </span>
       </div>
       <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-bold">{lock.formattedAmount || '0'} {lock.tokenSymbol || ''}</span>
+        <span className="text-sm font-bold">
+          {lock.formattedAmount || "0"} {lock.tokenSymbol || ""}
+        </span>
         <span className="text-xs text-gray-500">{timeRemaining}</span>
       </div>
       {!lock.withdrawn && (
-        <Progress value={progress} className={`h-1.5 border border-[#1A1A2E] ${isExpired ? 'bg-green-100' : 'bg-gray-100'}`} />
+        <Progress
+          value={progress}
+          className={`h-1.5 border border-[#1A1A2E] ${isExpired ? "bg-green-100" : "bg-gray-100"}`}
+        />
       )}
       <div className="mt-3 flex justify-end">
         <Link to={`/locks/${lockIdString}`}>
-          <Button size="sm" variant="outline" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]">
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)]"
+          >
             View <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </Link>
@@ -221,11 +320,13 @@ function LockPreviewCard({ lock }: { lock: { id: bigint; token: `0x${string}`; a
 export default function UserDashboardPage() {
   const { address, isConnected } = useAccount();
   const { tokens: createdTokens, isLoading } = useUserTokens();
-  const { presales, isLoading: isLoadingPresales } = useLaunchpadPresales('all', false);
-  const { locks: userLocks, isLoading: isLoadingLocks } = useAllLocks();
-  const { isWhitelisted, isLoading: isLoadingWhitelist } = useWhitelistedCreator(
-    address as Address | undefined
+  const { presales, isLoading: isLoadingPresales } = useLaunchpadPresales(
+    "all",
+    false,
   );
+  const { locks: userLocks, isLoading: isLoadingLocks } = useAllLocks();
+  const { isWhitelisted, isLoading: isLoadingWhitelist } =
+    useWhitelistedCreator(address as Address | undefined);
   const { isAdmin } = useIsAdmin(address as Address | undefined);
   const canCreatePresale = isWhitelisted || isAdmin;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -237,14 +338,17 @@ export default function UserDashboardPage() {
   const totalTokenPages = Math.ceil(tokenList.length / TOKENS_PER_PAGE);
   const paginatedTokens = tokenList.slice(
     tokenPage * TOKENS_PER_PAGE,
-    (tokenPage + 1) * TOKENS_PER_PAGE
+    (tokenPage + 1) * TOKENS_PER_PAGE,
   );
 
-  const myPresales = presales?.filter(
-    (p) => address && p.owner?.toLowerCase() === address.toLowerCase()
-  ) || [];
+  const myPresales =
+    presales?.filter(
+      (p) => address && p.owner?.toLowerCase() === address.toLowerCase(),
+    ) || [];
 
-  const activeLocks = [...(userLocks?.filter(l => !l.withdrawn) || [])].reverse();
+  const activeLocks = [
+    ...(userLocks?.filter((l) => !l.withdrawn) || []),
+  ].reverse();
 
   useEffect(() => {
     if (canCreatePresale && isModalOpen) {
@@ -256,7 +360,9 @@ export default function UserDashboardPage() {
     return (
       <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
         <div className="border-b-4 border-[#1A1A2E] bg-[#64FE3E] p-4 sm:p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider">Your Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider">
+            Your Dashboard
+          </h1>
         </div>
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardContent className="py-12 text-center">
@@ -293,7 +399,10 @@ export default function UserDashboardPage() {
             </CardTitle>
             {tokenList.length > 0 && (
               <Link to="/dashboard/create/token">
-                <Button size="sm" className="border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)]">
+                <Button
+                  size="sm"
+                  className="border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)]"
+                >
                   <Plus className="w-3 h-3 mr-1" /> New Token
                 </Button>
               </Link>
@@ -312,14 +421,18 @@ export default function UserDashboardPage() {
           ) : tokenList.length > 0 ? (
             <div className="space-y-3">
               {paginatedTokens.map((token) => (
-                <TokenInfo key={token} tokenAddress={token} onPresaleClick={() => setIsModalOpen(true)} />
+                <TokenInfo
+                  key={token}
+                  tokenAddress={token}
+                  onPresaleClick={() => setIsModalOpen(true)}
+                />
               ))}
               {totalTokenPages > 1 && (
                 <div className="flex items-center justify-between pt-4 border-t-2 border-gray-200">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setTokenPage(p => Math.max(0, p - 1))}
+                    onClick={() => setTokenPage((p) => Math.max(0, p - 1))}
                     disabled={tokenPage === 0}
                     className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] disabled:opacity-50 disabled:shadow-none"
                   >
@@ -331,7 +444,9 @@ export default function UserDashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setTokenPage(p => Math.min(totalTokenPages - 1, p + 1))}
+                    onClick={() =>
+                      setTokenPage((p) => Math.min(totalTokenPages - 1, p + 1))
+                    }
                     disabled={tokenPage >= totalTokenPages - 1}
                     className="border-2 border-[#1A1A2E] font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] disabled:opacity-50 disabled:shadow-none"
                   >
@@ -342,7 +457,9 @@ export default function UserDashboardPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">You have not created any tokens yet.</p>
+              <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">
+                You have not created any tokens yet.
+              </p>
               <Link to="/dashboard/create/token">
                 <Button className="border-2 border-[#1A1A2E] bg-[#64FE3E] text-white font-bold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-[#27AE60]">
                   Create Your First Token
@@ -372,21 +489,34 @@ export default function UserDashboardPage() {
             ) : myPresales.length > 0 ? (
               <div className="space-y-3">
                 {myPresales.slice(0, 3).map((presale) => (
-                  <PresaleInfo key={presale.address} presaleAddress={presale.address} />
+                  <PresaleInfo
+                    key={presale.address}
+                    presaleAddress={presale.address}
+                  />
                 ))}
                 {myPresales.length > 3 && (
                   <Link to="/dashboard/presales" className="block text-center">
-                    <Button variant="outline" size="sm" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase">
-                      View All ({myPresales.length}) <ArrowRight className="w-3 h-3 ml-1" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-2 border-[#1A1A2E] font-bold text-xs uppercase"
+                    >
+                      View All ({myPresales.length}){" "}
+                      <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                   </Link>
                 )}
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">No presales yet</p>
+                <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">
+                  No presales yet
+                </p>
                 {isLoadingWhitelist ? (
-                  <Button disabled className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-semibold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] opacity-70">
+                  <Button
+                    disabled
+                    className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-semibold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] opacity-70"
+                  >
                     Checking Whitelist...
                   </Button>
                 ) : canCreatePresale ? (
@@ -397,7 +527,10 @@ export default function UserDashboardPage() {
                   </Link>
                 ) : (
                   <>
-                    <Button onClick={() => setIsModalOpen(true)} className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-semibold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)]">
+                    <Button
+                      onClick={() => setIsModalOpen(true)}
+                      className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-semibold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)]"
+                    >
                       Create Presale
                     </Button>
                     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -405,19 +538,30 @@ export default function UserDashboardPage() {
                         <DialogOverlay className="bg-black/70 backdrop-blur-sm" />
                         <DialogPrimitive.Content className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-4 border-[#1A1A2E] bg-white p-6 shadow-[8px_8px_0_rgba(26,26,46,1)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-none">
                           <DialogHeader>
-                            <DialogTitle className="font-bold uppercase tracking-wider text-xl">Before You Continue</DialogTitle>
+                            <DialogTitle className="font-bold uppercase tracking-wider text-xl">
+                              Before You Continue
+                            </DialogTitle>
                             <DialogDescription className="text-gray-600">
-                              Please make sure to fill out all required fields in the form before proceeding. This will help ensure your presale is created successfully.
+                              Please make sure to fill out all required fields
+                              in the form before proceeding. This will help
+                              ensure your presale is created successfully.
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter className="gap-2">
-                            <Button variant="outline" onClick={() => setIsModalOpen(false)} className="border-2 border-[#1A1A2E] font-bold uppercase">
+                            <Button
+                              variant="outline"
+                              onClick={() => setIsModalOpen(false)}
+                              className="border-2 border-[#1A1A2E] font-bold uppercase"
+                            >
                               Cancel
                             </Button>
-                            <Button onClick={() => {
-                              setIsModalOpen(false);
-                              navigate("/dashboard/create/project");
-                            }} className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-bold uppercase shadow-[3px_3px_0_rgba(26,26,46,1)]">
+                            <Button
+                              onClick={() => {
+                                setIsModalOpen(false);
+                                navigate("/dashboard/create/project");
+                              }}
+                              className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-bold uppercase shadow-[3px_3px_0_rgba(26,26,46,1)]"
+                            >
                               Continue to Form
                             </Button>
                           </DialogFooter>
@@ -443,7 +587,11 @@ export default function UserDashboardPage() {
                 My Token Locks
               </CardTitle>
               <Link to="/dashboard/tools/token-locker">
-                <Button size="sm" variant="outline" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase bg-white">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-2 border-[#1A1A2E] font-bold text-xs uppercase bg-white"
+                >
                   Manage
                 </Button>
               </Link>
@@ -462,23 +610,35 @@ export default function UserDashboardPage() {
                 {activeLocks.slice(0, 3).map((lock) => {
                   if (!lock || lock.id === undefined) return null;
                   try {
-                    return <LockPreviewCard key={lock.id.toString()} lock={lock} />;
+                    return (
+                      <LockPreviewCard key={lock.id.toString()} lock={lock} />
+                    );
                   } catch (e) {
                     console.error("Error rendering lock:", e, lock);
                     return null;
                   }
                 })}
                 {activeLocks.length > 3 && (
-                  <Link to="/dashboard/tools/token-locker" className="block text-center">
-                    <Button variant="outline" size="sm" className="border-2 border-[#1A1A2E] font-bold text-xs uppercase">
-                      View All ({activeLocks.length}) <ArrowRight className="w-3 h-3 ml-1" />
+                  <Link
+                    to="/dashboard/tools/token-locker"
+                    className="block text-center"
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-2 border-[#1A1A2E] font-bold text-xs uppercase"
+                    >
+                      View All ({activeLocks.length}){" "}
+                      <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                   </Link>
                 )}
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">No active locks</p>
+                <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">
+                  No active locks
+                </p>
                 <Link to="/dashboard/tools/token-locker">
                   <Button className="border-2 border-[#1A1A2E] bg-[#0F59FF] text-white font-semibold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-[#0F59FF]">
                     Create Lock

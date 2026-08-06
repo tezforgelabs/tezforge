@@ -11,9 +11,10 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
-  const progress = presale.hardCap > 0n
-    ? Math.round(Number((presale.totalRaised * 100n) / presale.hardCap))
-    : 0;
+  const progress =
+    presale.hardCap > 0n
+      ? Math.round(Number((presale.totalRaised * 100n) / presale.hardCap))
+      : 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -40,7 +41,7 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
             </h3>
             <span
               className={`px-2 py-0.5 text-xs font-bold uppercase text-white ${getStatusColor(
-                presale.status
+                presale.status,
               )}`}
             >
               {presale.status}
@@ -67,8 +68,14 @@ function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
           <div className="flex justify-between text-xs mb-1">
             <span className="font-bold">{progress}% Funded</span>
             <span className="text-gray-500">
-              {Math.round(Number(formatUnits(presale.totalRaised, 18))).toLocaleString()} /{" "}
-              {Math.round(Number(formatUnits(presale.hardCap, 18))).toLocaleString()} XTZ
+              {Math.round(
+                Number(formatUnits(presale.totalRaised, 18)),
+              ).toLocaleString()}{" "}
+              /{" "}
+              {Math.round(
+                Number(formatUnits(presale.hardCap, 18)),
+              ).toLocaleString()}{" "}
+              XTZ
             </span>
           </div>
           <Progress value={progress} className="h-2 border border-[#1A1A2E]" />
@@ -82,9 +89,11 @@ export default function PresalesListPage() {
   const { address, isConnected } = useAccount();
   const { presales, isLoading } = useLaunchpadPresales("all", false);
 
-  const myPresales = presales?.filter(
-    (presale) => address && presale.owner?.toLowerCase() === address.toLowerCase()
-  ) || [];
+  const myPresales =
+    presales?.filter(
+      (presale) =>
+        address && presale.owner?.toLowerCase() === address.toLowerCase(),
+    ) || [];
 
   if (!isConnected) {
     return (
@@ -142,7 +151,8 @@ export default function PresalesListPage() {
               </p>
               <Link to="/dashboard/create/presale">
                 <Button className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
-                  Create Your First Presale <ArrowRight className="ml-2 h-4 w-4" />
+                  Create Your First Presale{" "}
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>

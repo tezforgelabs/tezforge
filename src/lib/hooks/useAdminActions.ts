@@ -1,7 +1,7 @@
-import { PresaleFactory, LaunchpadPresaleContract } from '@/config';
-import { useChainContracts } from '@/lib/hooks/useChainContracts';
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import type { Address } from 'viem';
+import { PresaleFactory, LaunchpadPresaleContract } from "@/config";
+import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import type { Address } from "viem";
 
 interface PresaleConfig {
   startTime: bigint;
@@ -38,11 +38,14 @@ export function useSetWhitelistedCreator() {
     hash,
   });
 
-  const setWhitelistedCreator = (creatorAddress: Address, whitelisted: boolean) => {
+  const setWhitelistedCreator = (
+    creatorAddress: Address,
+    whitelisted: boolean,
+  ) => {
     writeContract({
       address: presaleFactory,
       abi: PresaleFactory.abi,
-      functionName: 'setWhitelistedCreator',
+      functionName: "setWhitelistedCreator",
       args: [creatorAddress, whitelisted],
     });
   };
@@ -82,7 +85,7 @@ export function useSetFeeRecipient() {
     writeContract({
       address: presaleFactory,
       abi: PresaleFactory.abi,
-      functionName: 'setFeeRecipient',
+      functionName: "setFeeRecipient",
       args: [newRecipient],
     });
   };
@@ -123,7 +126,7 @@ export function useAdminCreatePresale() {
     writeContract({
       address: presaleFactory,
       abi: PresaleFactory.abi,
-      functionName: 'createPresale',
+      functionName: "createPresale",
       args: [params],
     });
   };
@@ -161,12 +164,12 @@ export function useUpdatePresaleFees() {
   const updateFees = (
     presaleAddress: Address,
     newTokenFeeBps: number,
-    newProceedsFeeBps: number
+    newProceedsFeeBps: number,
   ) => {
     writeContract({
       address: presaleAddress,
       abi: LaunchpadPresaleContract.abi,
-      functionName: 'updateFees',
+      functionName: "updateFees",
       args: [BigInt(newTokenFeeBps), BigInt(newProceedsFeeBps)],
     });
   };

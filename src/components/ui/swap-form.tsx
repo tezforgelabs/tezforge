@@ -25,9 +25,9 @@ export function SwapForm({ market }: SwapFormProps) {
         market.token0.address,
         market.token0.decimals,
         market.token0.symbol,
-        market.token0.name
+        market.token0.name,
       ),
-    [market]
+    [market],
   );
 
   const tokenOut = useMemo(
@@ -37,20 +37,20 @@ export function SwapForm({ market }: SwapFormProps) {
         market.token1.address,
         market.token1.decimals,
         market.token1.symbol,
-        market.token1.name
+        market.token1.name,
       ),
-    [market]
+    [market],
   );
 
   // Build a single Pair from the market reserves
   const pairs = useMemo(() => {
     const reserve0 = CurrencyAmount.fromRawAmount(
       tokenIn,
-      market.reserves[0].toString()
+      market.reserves[0].toString(),
     );
     const reserve1 = CurrencyAmount.fromRawAmount(
       tokenOut,
-      market.reserves[1].toString()
+      market.reserves[1].toString(),
     );
     return [new Pair(reserve0, reserve1)];
   }, [tokenIn, tokenOut, market.reserves]);
@@ -134,7 +134,10 @@ export function SwapForm({ market }: SwapFormProps) {
           </div>
           {quote && (
             <div className="space-y-1 text-xs text-gray-500">
-              <p>Rate: 1 {market.token0.symbol} ≈ {quote.executionPrice} {market.token1.symbol}</p>
+              <p>
+                Rate: 1 {market.token0.symbol} ≈ {quote.executionPrice}{" "}
+                {market.token1.symbol}
+              </p>
               <p>Route: {quote.route}</p>
               <p>Slippage: {slippageTolerance}%</p>
             </div>

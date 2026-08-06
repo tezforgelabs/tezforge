@@ -8,7 +8,8 @@ import {
   Plus,
   Shield,
   AlertTriangle,
-  WalletMinimal, Rocket
+  WalletMinimal,
+  Rocket,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/dialog";
 
 const navItems = [
-  { name: "Dashboard", href: "/dashboard/user", icon: LayoutGrid},
+  { name: "Dashboard", href: "/dashboard/user", icon: LayoutGrid },
   { name: "Launchpad", href: "/projects", icon: Rocket },
   { name: "Staking", href: "/dashboard/staking", icon: PiggyBank },
 ];
@@ -53,9 +54,15 @@ const SidebarContent = () => {
       <div className="p-2 pl-3 border-b-4 border-[#1A1A2E] bg-[#1A1A2E] flex items-center ">
         <Link to="/" className="flex items-center justify-center gap-2">
           <div className="size-11 flex items-center justify-center">
-            <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="w-17 h-17 object-contain" />
+            <img
+              src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png"
+              alt="Tezforge"
+              className="w-17 h-17 object-contain"
+            />
           </div>
-          <span className="text-white font-semibold text-md uppercase tracking-wider">Tezforge</span>
+          <span className="text-white font-semibold text-md uppercase tracking-wider">
+            Tezforge
+          </span>
         </Link>
       </div>
 
@@ -71,13 +78,21 @@ const SidebarContent = () => {
           </div>
           <div>
             <div className="text-3xl font-bold text-[#1A1A2E] tabular-nums">
-              {balance.toLocaleString(undefined, { maximumFractionDigits: 4 })} <span className="text-sm uppercase text-[#1A1A2E]">{'XTZ'}</span>
+              {balance.toLocaleString(undefined, { maximumFractionDigits: 4 })}{" "}
+              <span className="text-sm uppercase text-[#1A1A2E]">{"XTZ"}</span>
             </div>
             {(reactPriceUsd ?? 0) > 0 && (
               <div className="text-xs font-bold mt-1 text-[#1A1A2E]">
-                ~${valueUsd < 0.01 && valueUsd > 0
-                  ? valueUsd.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })
-                  : valueUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ~$
+                {valueUsd < 0.01 && valueUsd > 0
+                  ? valueUsd.toLocaleString(undefined, {
+                      minimumFractionDigits: 4,
+                      maximumFractionDigits: 4,
+                    })
+                  : valueUsd.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
               </div>
             )}
           </div>
@@ -98,7 +113,8 @@ const SidebarContent = () => {
                     Disconnect Wallet
                   </DialogTitle>
                   <DialogDescription className="text-base font-medium">
-                    Are you sure you want to disconnect your wallet? You will need to reconnect to interact with the platform.
+                    Are you sure you want to disconnect your wallet? You will
+                    need to reconnect to interact with the platform.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="gap-2">
@@ -132,10 +148,11 @@ const SidebarContent = () => {
               <li key={item.name}>
                 <Link
                   to={item.href}
-                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-semibold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${isActive
-                    ? "bg-[#1A1A2E] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                    : "text-[#1A1A2E] bg-white hover:bg-[#0F59FF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
-                    }`}
+                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-semibold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${
+                    isActive
+                      ? "bg-[#1A1A2E] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                      : "text-[#1A1A2E] bg-white hover:bg-[#0F59FF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                  }`}
                 >
                   <item.icon className="size-5 mr-3" strokeWidth={1.5} />
                   <span>{item.name}</span>
@@ -148,10 +165,11 @@ const SidebarContent = () => {
             <li>
               <Link
                 to="/admin"
-                className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${pathname.startsWith("/admin")
-                  ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-                  : "text-white bg-[#0F59FF] hover:bg-[#0A3DBF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
-                  }`}
+                className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-2 border-[#1A1A2E] ${
+                  pathname.startsWith("/admin")
+                    ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                    : "text-white bg-[#0F59FF] hover:bg-[#0A3DBF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                }`}
               >
                 <Shield className="size-5 mr-3" strokeWidth={2.5} />
                 <span>Admin</span>
@@ -163,10 +181,11 @@ const SidebarContent = () => {
         <div className="mt-8 mb-3">
           <Link
             to="/dashboard/create"
-            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${pathname === "/dashboard/create"
-              ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
-              : "bg-[#0F59FF] text-white hover:bg-[#0A3DBF] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
-              }`}
+            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${
+              pathname === "/dashboard/create"
+                ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
+                : "bg-[#0F59FF] text-white hover:bg-[#0A3DBF] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+            }`}
           >
             <Plus className="size-5 mr-2" />
             CREATE
@@ -189,14 +208,17 @@ const SidebarContent = () => {
   );
 };
 
-
 export function Sidebar({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState<string | null>(null);
   const location = useLocation();
 
   // Close sidebar on route change
-  if (prevPathname !== null && prevPathname !== location.pathname && sidebarOpen) {
+  if (
+    prevPathname !== null &&
+    prevPathname !== location.pathname &&
+    sidebarOpen
+  ) {
     setSidebarOpen(false);
   }
   if (prevPathname !== location.pathname) {
@@ -207,16 +229,18 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
     <>
       {/* Mobile sidebar overlay */}
       <div
-        className={`fixed inset-0 bg-gray-900 bg-opacity-50 z-30 lg:hidden transition-opacity ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 bg-gray-900 bg-opacity-50 z-30 lg:hidden transition-opacity ${
+          sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
         onClick={() => setSidebarOpen(false)}
         aria-hidden="true"
       ></div>
 
       {/* Mobile sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-72 bg-[#F7F3EE] text-[#1A1A2E] border-r-2 border-[#1A1A2E] z-40 transform transition-transform ease-in-out duration-300 lg:hidden overflow-y-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed top-0 left-0 h-full w-72 bg-[#F7F3EE] text-[#1A1A2E] border-r-2 border-[#1A1A2E] z-40 transform transition-transform ease-in-out duration-300 lg:hidden overflow-y-auto ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <SidebarContent />
       </div>
@@ -236,9 +260,15 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           <div className="lg:hidden relative z-10 flex-shrink-0 h-16 bg-white border-b-4 border-[#1A1A2E] flex items-center justify-between px-4">
             <Link to="/" className="flex items-center gap-2">
               <div className="size-14 flex items-center justify-center">
-                <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="size-14 object-contain" />
+                <img
+                  src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png"
+                  alt="Tezforge"
+                  className="size-14 object-contain"
+                />
               </div>
-              <span className="font-bold text-sm uppercase tracking-wider">Tezforge</span>
+              <span className="font-bold text-sm uppercase tracking-wider">
+                Tezforge
+              </span>
             </Link>
             <button
               onClick={() => setSidebarOpen(true)}

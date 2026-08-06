@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,16 +22,28 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { erc20Abi, formatUnits, parseAbiItem, type AbiEvent, type Address, type PublicClient } from "viem";
-import { useChainId, useConfig, usePublicClient, useReadContracts } from "wagmi";
+import {
+  erc20Abi,
+  formatUnits,
+  parseAbiItem,
+  type AbiEvent,
+  type Address,
+  type PublicClient,
+} from "viem";
+import {
+  useChainId,
+  useConfig,
+  usePublicClient,
+  useReadContracts,
+} from "wagmi";
 
 // ── Event signatures ───────────────────────────────────────────────────────
 const TOKEN_CREATED_EVENT = parseAbiItem(
-  "event TokenCreated(address indexed creator, address indexed token, uint8 indexed tokenType)"
+  "event TokenCreated(address indexed creator, address indexed token, uint8 indexed tokenType)",
 ) as unknown as AbiEvent;
 
 const TRANSFER_EVENT = parseAbiItem(
-  "event Transfer(address indexed from, address indexed to, uint256 value)"
+  "event Transfer(address indexed from, address indexed to, uint256 value)",
 ) as unknown as AbiEvent;
 
 // ── Log query helpers (RPC-limited to 1000 blocks per request) ─────────────
@@ -40,7 +52,7 @@ const LOG_CHUNK_SIZE = 1000n;
 // Binary-search for the block where a contract was first deployed (code non-empty)
 async function findContractDeploymentBlock(
   client: PublicClient,
-  address: Address
+  address: Address,
 ): Promise<bigint> {
   const head = await client.getBlockNumber();
 
@@ -69,13 +81,16 @@ async function fetchLogsChunked(
   client: PublicClient,
   params: { address: Address; event: AbiEvent; args?: Record<string, unknown> },
   fromBlock: bigint,
-  onLogs: (logs: Awaited<ReturnType<typeof client.getLogs>>) => boolean
+  onLogs: (logs: Awaited<ReturnType<typeof client.getLogs>>) => boolean,
 ): Promise<void> {
   const head = await client.getBlockNumber();
   let current = fromBlock;
 
   while (current <= head) {
-    const toBlock = current + LOG_CHUNK_SIZE - 1n < head ? current + LOG_CHUNK_SIZE - 1n : head;
+    const toBlock =
+      current + LOG_CHUNK_SIZE - 1n < head
+        ? current + LOG_CHUNK_SIZE - 1n
+        : head;
 
     const logs = await client.getLogs({
       address: params.address,
@@ -124,11 +139,11 @@ function useTokenInfo(tokenAddress: Address | undefined) {
   const { data, isLoading } = useReadContracts({
     contracts: tokenAddress
       ? [
-        { abi: erc20Abi, address: tokenAddress, functionName: "name" },
-        { abi: erc20Abi, address: tokenAddress, functionName: "symbol" },
-        { abi: erc20Abi, address: tokenAddress, functionName: "decimals" },
-        { abi: erc20Abi, address: tokenAddress, functionName: "totalSupply" },
-      ]
+          { abi: erc20Abi, address: tokenAddress, functionName: "name" },
+          { abi: erc20Abi, address: tokenAddress, functionName: "symbol" },
+          { abi: erc20Abi, address: tokenAddress, functionName: "decimals" },
+          { abi: erc20Abi, address: tokenAddress, functionName: "totalSupply" },
+        ]
       : [],
     query: { enabled },
   });
@@ -141,9 +156,12 @@ function useTokenInfo(tokenAddress: Address | undefined) {
   const formattedSupply = useMemo(() => {
     if (totalSupply === undefined || decimals === undefined) return null;
     try {
-      return Number(formatUnits(totalSupply, decimals)).toLocaleString(undefined, {
-        maximumFractionDigits: 2,
-      });
+      return Number(formatUnits(totalSupply, decimals)).toLocaleString(
+        undefined,
+        {
+          maximumFractionDigits: 2,
+        },
+      );
     } catch {
       return totalSupply.toString();
     }
@@ -168,14 +186,21 @@ function useTokenCreationInfo(tokenAddress: Address | undefined) {
         setIsLoading(true);
         setError(null);
 
-        const factoryDeployBlock = await findContractDeploymentBlock(publicClient!, tokenFactory);
+        const factoryDeployBlock = await findContractDeploymentBlock(
+          publicClient!,
+          tokenFactory,
+        );
         if (cancelled) return;
 
         let found = false;
 
         await fetchLogsChunked(
           publicClient!,
-          { address: tokenFactory, event: TOKEN_CREATED_EVENT, args: { token: tokenAddress } },
+          {
+            address: tokenFactory,
+            event: TOKEN_CREATED_EVENT,
+            args: { token: tokenAddress },
+          },
           factoryDeployBlock,
           (logs) => {
             if (cancelled) return true;
@@ -183,16 +208,23 @@ function useTokenCreationInfo(tokenAddress: Address | undefined) {
             processLatestLog(latestLog);
             found = true;
             return true;
-          }
+          },
         );
 
         async function processLatestLog(
-          latestLog: Awaited<ReturnType<NonNullable<typeof publicClient>["getLogs"]>>[0]
+          latestLog: Awaited<
+            ReturnType<NonNullable<typeof publicClient>["getLogs"]>
+          >[0],
         ) {
           try {
-            const block = await publicClient!.getBlock({ blockNumber: latestLog.blockNumber! });
+            const block = await publicClient!.getBlock({
+              blockNumber: latestLog.blockNumber!,
+            });
             if (cancelled) return;
-            const logArgs = (latestLog as any).args as { creator: Address; tokenType: bigint };
+            const logArgs = (latestLog as any).args as {
+              creator: Address;
+              tokenType: bigint;
+            };
             setCreationData({
               creator: logArgs.creator,
               blockNumber: latestLog.blockNumber!,
@@ -242,7 +274,10 @@ function useTokenHolders(tokenAddress: Address | undefined) {
         setIsLoading(true);
         const uniqueReceivers = new Set<string>();
 
-        const tokenDeployBlock = await findContractDeploymentBlock(publicClient, tokenAddress);
+        const tokenDeployBlock = await findContractDeploymentBlock(
+          publicClient,
+          tokenAddress,
+        );
         if (cancelled) return;
 
         await fetchLogsChunked(
@@ -258,7 +293,7 @@ function useTokenHolders(tokenAddress: Address | undefined) {
               }
             }
             return false;
-          }
+          },
         );
 
         if (cancelled) return;
@@ -277,8 +312,8 @@ function useTokenHolders(tokenAddress: Address | undefined) {
                 abi: erc20Abi,
                 functionName: "balanceOf",
                 args: [addr as Address],
-              })
-            )
+              }),
+            ),
           );
           for (const result of balances) {
             if (result.status === "fulfilled" && result.value > 0n) {
@@ -387,7 +422,9 @@ function DetailRow({
       <dt className="text-xs uppercase font-black text-gray-500 tracking-wider">
         {label}
       </dt>
-      <dd className={`font-bold text-sm mt-0.5 ${mono ? "font-mono text-xs break-all" : "break-all"}`}>
+      <dd
+        className={`font-bold text-sm mt-0.5 ${mono ? "font-mono text-xs break-all" : "break-all"}`}
+      >
         {value}
       </dd>
       {sub && <dd className="text-xs text-gray-500">{sub}</dd>}
@@ -422,14 +459,22 @@ function TokenIdentity({
               <DetailRow
                 label="Created"
                 value={format(creationData.timestamp, "MMM d, yyyy 'at' HH:mm")}
-                sub={formatDistanceToNow(creationData.timestamp, { addSuffix: true })}
+                sub={formatDistanceToNow(creationData.timestamp, {
+                  addSuffix: true,
+                })}
               />
-              <DetailRow label="Block" value={creationData.blockNumber.toString()} mono />
+              <DetailRow
+                label="Block"
+                value={creationData.blockNumber.toString()}
+                mono
+              />
             </>
           ) : isLoading ? (
             <p className="text-xs text-gray-400">Loading creation details…</p>
           ) : (
-            <p className="text-xs text-gray-400">{error ?? "Creation details unavailable"}</p>
+            <p className="text-xs text-gray-400">
+              {error ?? "Creation details unavailable"}
+            </p>
           )}
         </dl>
       </CardContent>
@@ -503,7 +548,9 @@ function RelatedPresales({ tokenAddress }: { tokenAddress: Address }) {
                       asChild
                       className="border-2 border-[#1A1A2E] bg-[#64FE3E] text-black font-bold text-xs uppercase flex-shrink-0"
                     >
-                      <Link to={`/dashboard/presales/manage/${presale.address}`}>
+                      <Link
+                        to={`/dashboard/presales/manage/${presale.address}`}
+                      >
                         Manage <ExternalLink className="ml-1 h-3 w-3" />
                       </Link>
                     </Button>
@@ -514,11 +561,11 @@ function RelatedPresales({ tokenAddress }: { tokenAddress: Address }) {
                         <span className="font-bold">{progress}%</span>
                         <span className="text-gray-500">
                           {Math.round(
-                            Number(formatUnits(presale.totalRaised, 18))
+                            Number(formatUnits(presale.totalRaised, 18)),
                           ).toLocaleString()}{" "}
                           /{" "}
                           {Math.round(
-                            Number(formatUnits(presale.hardCap, 18))
+                            Number(formatUnits(presale.hardCap, 18)),
                           ).toLocaleString()}{" "}
                           XTZ
                         </span>
@@ -585,10 +632,7 @@ function RelatedLocks({ tokenAddress }: { tokenAddress: Address }) {
               const lockIdStr = String(lock.id ?? "0");
               const badge = getLockBadge(lock);
               return (
-                <div
-                  key={lockIdStr}
-                  className="p-3 bg-gray-50 rounded-sm"
-                >
+                <div key={lockIdStr} className="p-3 bg-gray-50 rounded-sm">
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <p className="font-bold text-sm uppercase truncate">
@@ -636,7 +680,8 @@ export default function TokenDetailPage() {
   const chainId = useChainId();
   const config = useConfig();
 
-  const explorerUrl = config.chains.find((c) => c.id === chainId)?.blockExplorers?.default.url;
+  const explorerUrl = config.chains.find((c) => c.id === chainId)
+    ?.blockExplorers?.default.url;
   const tokenAddress = address as Address | undefined;
 
   // Single fetch — shared across all sections via props

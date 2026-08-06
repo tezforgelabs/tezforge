@@ -1,8 +1,12 @@
-import { LaunchpadPresaleContract } from '@/config';
-import { useLaunchpadPresaleStore } from '@/lib/store/launchpad-presale-store';
-import { useCallback } from 'react';
-import { type Address } from 'viem';
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { LaunchpadPresaleContract } from "@/config";
+import { useLaunchpadPresaleStore } from "@/lib/store/launchpad-presale-store";
+import { useCallback } from "react";
+import { type Address } from "viem";
+import {
+  useAccount,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 
 export interface ContributeParams {
   presaleAddress: Address;
@@ -13,7 +17,8 @@ export interface ContributeParams {
 
 export function usePresaleContribute() {
   const { address: userAddress } = useAccount();
-  const { invalidatePresale, invalidateUserPresaleData } = useLaunchpadPresaleStore();
+  const { invalidatePresale, invalidateUserPresaleData } =
+    useLaunchpadPresaleStore();
 
   const {
     data: hash,
@@ -36,7 +41,7 @@ export function usePresaleContribute() {
         writeContract({
           abi: LaunchpadPresaleContract.abi,
           address: presaleAddress,
-          functionName: 'contribute',
+          functionName: "contribute",
           args: [0n],
           value: amount,
         });
@@ -45,12 +50,12 @@ export function usePresaleContribute() {
         writeContract({
           abi: LaunchpadPresaleContract.abi,
           address: presaleAddress,
-          functionName: 'contribute',
+          functionName: "contribute",
           args: [amount],
         });
       }
     },
-    [writeContract]
+    [writeContract],
   );
 
   // Invalidate cache after successful transaction
@@ -61,7 +66,7 @@ export function usePresaleContribute() {
         invalidateUserPresaleData(userAddress, presaleAddress);
       }
     },
-    [isSuccess, userAddress, invalidatePresale, invalidateUserPresaleData]
+    [isSuccess, userAddress, invalidatePresale, invalidateUserPresaleData],
   );
 
   return {
@@ -78,7 +83,8 @@ export function usePresaleContribute() {
 
 export function usePresaleClaimTokens() {
   const { address: userAddress } = useAccount();
-  const { invalidatePresale, invalidateUserPresaleData } = useLaunchpadPresaleStore();
+  const { invalidatePresale, invalidateUserPresaleData } =
+    useLaunchpadPresaleStore();
 
   const {
     data: hash,
@@ -99,10 +105,10 @@ export function usePresaleClaimTokens() {
       writeContract({
         abi: LaunchpadPresaleContract.abi,
         address: presaleAddress,
-        functionName: 'claimTokens',
+        functionName: "claimTokens",
       });
     },
-    [writeContract]
+    [writeContract],
   );
 
   const invalidateOnSuccess = useCallback(
@@ -112,7 +118,7 @@ export function usePresaleClaimTokens() {
         invalidateUserPresaleData(userAddress, presaleAddress);
       }
     },
-    [isSuccess, userAddress, invalidatePresale, invalidateUserPresaleData]
+    [isSuccess, userAddress, invalidatePresale, invalidateUserPresaleData],
   );
 
   return {
@@ -129,7 +135,8 @@ export function usePresaleClaimTokens() {
 
 export function usePresaleClaimRefund() {
   const { address: userAddress } = useAccount();
-  const { invalidatePresale, invalidateUserPresaleData } = useLaunchpadPresaleStore();
+  const { invalidatePresale, invalidateUserPresaleData } =
+    useLaunchpadPresaleStore();
 
   const {
     data: hash,
@@ -150,10 +157,10 @@ export function usePresaleClaimRefund() {
       writeContract({
         abi: LaunchpadPresaleContract.abi,
         address: presaleAddress,
-        functionName: 'claimRefund',
+        functionName: "claimRefund",
       });
     },
-    [writeContract]
+    [writeContract],
   );
 
   const invalidateOnSuccess = useCallback(
@@ -163,7 +170,7 @@ export function usePresaleClaimRefund() {
         invalidateUserPresaleData(userAddress, presaleAddress);
       }
     },
-    [isSuccess, userAddress, invalidatePresale, invalidateUserPresaleData]
+    [isSuccess, userAddress, invalidatePresale, invalidateUserPresaleData],
   );
 
   return {
@@ -201,11 +208,11 @@ export function usePresaleOwnerActions() {
       writeContract({
         abi: LaunchpadPresaleContract.abi,
         address: presaleAddress,
-        functionName: 'depositSaleTokens',
+        functionName: "depositSaleTokens",
         args: [amount],
       });
     },
-    [writeContract]
+    [writeContract],
   );
 
   const finalize = useCallback(
@@ -213,10 +220,10 @@ export function usePresaleOwnerActions() {
       writeContract({
         abi: LaunchpadPresaleContract.abi,
         address: presaleAddress,
-        functionName: 'finalize',
+        functionName: "finalize",
       });
     },
-    [writeContract]
+    [writeContract],
   );
 
   const cancelPresale = useCallback(
@@ -224,10 +231,10 @@ export function usePresaleOwnerActions() {
       writeContract({
         abi: LaunchpadPresaleContract.abi,
         address: presaleAddress,
-        functionName: 'cancelPresale',
+        functionName: "cancelPresale",
       });
     },
-    [writeContract]
+    [writeContract],
   );
 
   const withdrawProceeds = useCallback(
@@ -235,11 +242,11 @@ export function usePresaleOwnerActions() {
       writeContract({
         abi: LaunchpadPresaleContract.abi,
         address: presaleAddress,
-        functionName: 'withdrawProceeds',
+        functionName: "withdrawProceeds",
         args: [amount],
       });
     },
-    [writeContract]
+    [writeContract],
   );
 
   const withdrawUnusedTokens = useCallback(
@@ -247,11 +254,11 @@ export function usePresaleOwnerActions() {
       writeContract({
         abi: LaunchpadPresaleContract.abi,
         address: presaleAddress,
-        functionName: 'withdrawUnusedTokens',
+        functionName: "withdrawUnusedTokens",
         args: [amount],
       });
     },
-    [writeContract]
+    [writeContract],
   );
 
   const invalidateOnSuccess = useCallback(
@@ -260,7 +267,7 @@ export function usePresaleOwnerActions() {
         invalidatePresale(presaleAddress);
       }
     },
-    [isSuccess, invalidatePresale]
+    [isSuccess, invalidatePresale],
   );
 
   return {
@@ -287,7 +294,7 @@ export function usePresaleCalculation() {
     (paymentAmount: bigint, rate: bigint): bigint => {
       return (paymentAmount * rate) / RATE_DIVISOR;
     },
-    []
+    [],
   );
 
   const calculatePaymentAmount = useCallback(
@@ -295,7 +302,7 @@ export function usePresaleCalculation() {
       if (rate === 0n) return 0n;
       return (tokenAmount * RATE_DIVISOR) / rate;
     },
-    []
+    [],
   );
 
   return {

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Albert Sans', sans-serif;
+  font-family: "Albert Sans", sans-serif;
 }
 
 @layer base {

@@ -8,8 +8,18 @@ import { useReadContracts } from "wagmi";
 export interface Market {
   id: string;
   pairAddress: `0x${string}`;
-  token0: { address: `0x${string}`; symbol: string; name: string; decimals: number };
-  token1: { address: `0x${string}`; symbol: string; name: string; decimals: number };
+  token0: {
+    address: `0x${string}`;
+    symbol: string;
+    name: string;
+    decimals: number;
+  };
+  token1: {
+    address: `0x${string}`;
+    symbol: string;
+    name: string;
+    decimals: number;
+  };
   reserves: [bigint, bigint, number];
   price: number;
   name: string;
@@ -50,8 +60,10 @@ export function useMarkets() {
   });
 
   const pairAddresses = useMemo(
-    () => (allPairsData?.map((d) => d.result).filter(Boolean) as `0x${string}`[] | undefined) || [],
-    [allPairsData]
+    () =>
+      (allPairsData?.map((d) => d.result).filter(Boolean) as
+        `0x${string}`[] | undefined) || [],
+    [allPairsData],
   );
 
   // ── Step 3: Fetch token0, token1, reserves for each pair ───────────────
@@ -83,8 +95,10 @@ export function useMarkets() {
     if (!pairTokensData) return [];
     const addresses = new Set<`0x${string}`>();
     for (let i = 0; i < pairTokensData.length; i += 3) {
-      if (pairTokensData[i].result) addresses.add(pairTokensData[i].result as `0x${string}`);
-      if (pairTokensData[i + 1].result) addresses.add(pairTokensData[i + 1].result as `0x${string}`);
+      if (pairTokensData[i].result)
+        addresses.add(pairTokensData[i].result as `0x${string}`);
+      if (pairTokensData[i + 1].result)
+        addresses.add(pairTokensData[i + 1].result as `0x${string}`);
     }
     return Array.from(addresses);
   }, [pairTokensData]);
@@ -118,7 +132,10 @@ export function useMarkets() {
     if (!pairAddresses.length || !pairTokensData || !tokensData) return [];
 
     // Build token metadata map
-    const tokenMap = new Map<string, { symbol: string; name: string; decimals: number }>();
+    const tokenMap = new Map<
+      string,
+      { symbol: string; name: string; decimals: number }
+    >();
     for (let i = 0; i < tokenAddresses.length; i++) {
       const address = tokenAddresses[i].toLowerCase();
       const symbol = (tokensData?.[i * 3]?.result as string) ?? "";
@@ -130,8 +147,10 @@ export function useMarkets() {
     return pairAddresses
       .map((pairAddress, index) => {
         const token0Address = pairTokensData[index * 3].result as `0x${string}`;
-        const token1Address = pairTokensData[index * 3 + 1].result as `0x${string}`;
-        const reserves = pairTokensData[index * 3 + 2].result as [bigint, bigint, number] | undefined;
+        const token1Address = pairTokensData[index * 3 + 1]
+          .result as `0x${string}`;
+        const reserves = pairTokensData[index * 3 + 2].result as
+          [bigint, bigint, number] | undefined;
 
         const t0 = tokenMap.get(token0Address.toLowerCase());
         const t1 = tokenMap.get(token1Address.toLowerCase());
@@ -139,21 +158,36 @@ export function useMarkets() {
         if (!t0 || !t1 || !reserves) return null;
 
         // Build Uniswap SDK Token instances
-        const token0 = new Token(0, token0Address, t0.decimals, t0.symbol, t0.name);
-        const token1 = new Token(0, token1Address, t1.decimals, t1.symbol, t1.name);
+        const token0 = new Token(
+          0,
+          token0Address,
+          t0.decimals,
+          t0.symbol,
+          t0.name,
+        );
+        const token1 = new Token(
+          0,
+          token1Address,
+          t1.decimals,
+          t1.symbol,
+          t1.name,
+        );
 
         // Create SDK Pair instance to derive price
         const sdkPair = new Pair(
           CurrencyAmount.fromRawAmount(token0, reserves[0].toString()),
-          CurrencyAmount.fromRawAmount(token1, reserves[1].toString())
+          CurrencyAmount.fromRawAmount(token1, reserves[1].toString()),
         );
 
         // SDK price: priceOf(token0) gives how much token1 per token0
-        const token0Price = parseFloat(sdkPair.priceOf(token0).toSignificant(12));
+        const token0Price = parseFloat(
+          sdkPair.priceOf(token0).toSignificant(12),
+        );
 
         // Liquidity in USD – approximate via token0 reserve * price
         const totalSupply = Number(reserves[0]) + Number(reserves[1]);
-        const liquidity = totalSupply / 10 ** Math.min(t0.decimals, t1.decimals);
+        const liquidity =
+          totalSupply / 10 ** Math.min(t0.decimals, t1.decimals);
 
         return {
           id: pairAddress,

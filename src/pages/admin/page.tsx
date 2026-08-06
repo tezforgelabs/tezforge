@@ -16,8 +16,13 @@ import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
 function AdminDashboardContent() {
   const { address } = useAccount();
   const { factoryOwner, isLoading: isLoadingOwner } = useFactoryOwner();
-  const { feeRecipient, isLoading: isLoadingFeeRecipient, refetch: refetchFeeRecipient } = useFeeRecipient();
-  const { presales, isLoading: isLoadingPresales } = useLaunchpadPresales("all");
+  const {
+    feeRecipient,
+    isLoading: isLoadingFeeRecipient,
+    refetch: refetchFeeRecipient,
+  } = useFeeRecipient();
+  const { presales, isLoading: isLoadingPresales } =
+    useLaunchpadPresales("all");
 
   const [newFeeRecipient, setNewFeeRecipient] = useState("");
   const {
@@ -40,7 +45,9 @@ function AdminDashboardContent() {
 
   useEffect(() => {
     if (isFeeRecipientError && feeRecipientError) {
-      toast.error(getFriendlyTxErrorMessage(feeRecipientError, "Update fee recipient"));
+      toast.error(
+        getFriendlyTxErrorMessage(feeRecipientError, "Update fee recipient"),
+      );
       resetFeeRecipient();
     }
   }, [isFeeRecipientError, feeRecipientError, resetFeeRecipient]);
@@ -56,15 +63,24 @@ function AdminDashboardContent() {
   // Stats
   const totalPresales = presales?.length ?? 0;
   const livePresales = presales?.filter((p) => p.status === "live").length ?? 0;
-  const upcomingPresales = presales?.filter((p) => p.status === "upcoming").length ?? 0;
-  const endedPresales = presales?.filter((p) => p.status === "ended" || p.status === "finalized" || p.status === "cancelled").length ?? 0;
+  const upcomingPresales =
+    presales?.filter((p) => p.status === "upcoming").length ?? 0;
+  const endedPresales =
+    presales?.filter(
+      (p) =>
+        p.status === "ended" ||
+        p.status === "finalized" ||
+        p.status === "cancelled",
+    ).length ?? 0;
 
   return (
     <div className="container mx-auto py-8 px-4">
       {/* Header */}
       <div className="mb-8">
         <div className="border-b-4 border-[#1A1A2E] bg-[#64FE3E] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
-          <h1 className="text-4xl font-black uppercase tracking-wider">Admin Dashboard</h1>
+          <h1 className="text-4xl font-black uppercase tracking-wider">
+            Admin Dashboard
+          </h1>
           <p className="text-sm text-gray-700 mt-2">
             Manage presales, whitelisted creators, and platform settings.
           </p>
@@ -75,7 +91,9 @@ function AdminDashboardContent() {
       <div className="grid gap-6 md:grid-cols-2 mb-8">
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
-            <CardTitle className="font-black uppercase tracking-wider">Factory Owner</CardTitle>
+            <CardTitle className="font-black uppercase tracking-wider">
+              Factory Owner
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             {isLoadingOwner ? (
@@ -84,14 +102,18 @@ function AdminDashboardContent() {
               <p className="font-mono text-sm break-all">{factoryOwner}</p>
             )}
             {address?.toLowerCase() === factoryOwner?.toLowerCase() && (
-              <p className="text-green-600 text-sm mt-2 font-bold">✓ You are the factory owner</p>
+              <p className="text-green-600 text-sm mt-2 font-bold">
+                ✓ You are the factory owner
+              </p>
             )}
           </CardContent>
         </Card>
 
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
-            <CardTitle className="font-black uppercase tracking-wider">Fee Recipient</CardTitle>
+            <CardTitle className="font-black uppercase tracking-wider">
+              Fee Recipient
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             {isLoadingFeeRecipient ? (
@@ -100,7 +122,9 @@ function AdminDashboardContent() {
               <p className="font-mono text-sm break-all">{feeRecipient}</p>
             )}
             {address?.toLowerCase() === feeRecipient?.toLowerCase() && (
-              <p className="text-green-600 text-sm mt-2 font-bold">✓ You are the fee recipient</p>
+              <p className="text-green-600 text-sm mt-2 font-bold">
+                ✓ You are the fee recipient
+              </p>
             )}
           </CardContent>
         </Card>
@@ -110,26 +134,42 @@ function AdminDashboardContent() {
       <div className="grid gap-4 md:grid-cols-4 mb-8">
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#0F59FF]">
           <CardContent className="p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">Total Presales</p>
-            <p className="text-3xl font-black">{isLoadingPresales ? "..." : totalPresales}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
+              Total Presales
+            </p>
+            <p className="text-3xl font-black">
+              {isLoadingPresales ? "..." : totalPresales}
+            </p>
           </CardContent>
         </Card>
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#90EE90]">
           <CardContent className="p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">Live</p>
-            <p className="text-3xl font-black">{isLoadingPresales ? "..." : livePresales}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
+              Live
+            </p>
+            <p className="text-3xl font-black">
+              {isLoadingPresales ? "..." : livePresales}
+            </p>
           </CardContent>
         </Card>
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#64FE3E]">
           <CardContent className="p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">Upcoming</p>
-            <p className="text-3xl font-black">{isLoadingPresales ? "..." : upcomingPresales}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
+              Upcoming
+            </p>
+            <p className="text-3xl font-black">
+              {isLoadingPresales ? "..." : upcomingPresales}
+            </p>
           </CardContent>
         </Card>
         <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] bg-[#FFB6C1]">
           <CardContent className="p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">Ended</p>
-            <p className="text-3xl font-black">{isLoadingPresales ? "..." : endedPresales}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
+              Ended
+            </p>
+            <p className="text-3xl font-black">
+              {isLoadingPresales ? "..." : endedPresales}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -144,8 +184,12 @@ function AdminDashboardContent() {
                   <Coins className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="font-black uppercase tracking-wider">Manage Presales</p>
-                  <p className="text-sm text-gray-600">View all presales, update fees</p>
+                  <p className="font-black uppercase tracking-wider">
+                    Manage Presales
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    View all presales, update fees
+                  </p>
                 </div>
               </div>
               <ArrowRight className="w-6 h-6" />
@@ -161,8 +205,12 @@ function AdminDashboardContent() {
                   <Users className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="font-black uppercase tracking-wider">Whitelist Creators</p>
-                  <p className="text-sm text-gray-600">Add or remove whitelisted creators</p>
+                  <p className="font-black uppercase tracking-wider">
+                    Whitelist Creators
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Add or remove whitelisted creators
+                  </p>
                 </div>
               </div>
               <ArrowRight className="w-6 h-6" />
@@ -188,11 +236,14 @@ function AdminDashboardContent() {
       {/* Update Fee Recipient */}
       <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
         <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#F7F3EE]">
-          <CardTitle className="font-black uppercase tracking-wider">Update Fee Recipient</CardTitle>
+          <CardTitle className="font-black uppercase tracking-wider">
+            Update Fee Recipient
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
           <p className="text-sm text-gray-700">
-            The fee recipient receives all platform fees from presales. Only the factory owner can update this.
+            The fee recipient receives all platform fees from presales. Only the
+            factory owner can update this.
           </p>
           <div className="flex gap-4">
             <Input

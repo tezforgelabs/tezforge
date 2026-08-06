@@ -47,7 +47,10 @@ export async function submitVerification(
   formData.append("address", payload.address);
   formData.append("contract_type", payload.contract_type);
   formData.append("license_type", payload.license_type);
-  formData.append("autodetect_constructor_args", String(payload.autodetect_constructor_args));
+  formData.append(
+    "autodetect_constructor_args",
+    String(payload.autodetect_constructor_args),
+  );
 
   const { data } = await apiClient.post<VerificationResponse>("", formData);
   return data;

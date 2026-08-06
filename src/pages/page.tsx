@@ -141,10 +141,7 @@ export default function Home() {
   }, [isLoadingPresales, featuredPresales]);
 
   return (
-    <main
-      ref={pageRef}
-      className="min-h-screen bg-[#F7F3EE] text-[#1A1A2E]"
-    >
+    <main ref={pageRef} className="min-h-screen bg-[#F7F3EE] text-[#1A1A2E]">
       <div className="container mx-auto px-4 text-pretty sm:px-6 py-7 max-w-7xl">
         {/* ── Header ── */}
         <header className="mb-16">
@@ -155,7 +152,11 @@ export default function Home() {
                 className="inline-flex items-center gap-3 text-2xl sm:text-3xl font-black tracking-wider uppercase"
               >
                 <div className="size-12 flex items-center justify-center">
-                  <img src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png" alt="Tezforge" className="w-17 h-17 object-contain" />
+                  <img
+                    src="https://res.cloudinary.com/dma1c8i6n/image/upload/v1785418522/tezforge_mmgibf.png"
+                    alt="Tezforge"
+                    className="w-17 h-17 object-contain"
+                  />
                 </div>
                 <span className="text-[#1A1A2E]">Tezforge</span>
               </Link>
@@ -196,7 +197,9 @@ export default function Home() {
             <div
               id="mobile-nav-menu"
               className={`md:hidden overflow-hidden transition-[transform,shadow,opacity,colors] duration-200 ${
-                isMobileMenuOpen ? "max-h-80 mt-4 border-t-2 border-[#1A1A2E] pt-4" : "max-h-0"
+                isMobileMenuOpen
+                  ? "max-h-80 mt-4 border-t-2 border-[#1A1A2E] pt-4"
+                  : "max-h-0"
               }`}
             >
               <nav className="flex flex-col gap-3 text-sm font-black uppercase tracking-wider">
@@ -230,7 +233,9 @@ export default function Home() {
         {/* ── Hero ── */}
         <section className="mb-32 text-center">
           <div className="inline-flex items-center gap-2 bg-[#1A1A2E] text-white px-4 py-2 mb-8 border-2 border-[#1A1A2E]">
-            <span className="text-xs font-black uppercase tracking-widest">The Builder OS on Tezos</span>
+            <span className="text-xs font-black uppercase tracking-widest">
+              The Builder OS on Tezos
+            </span>
           </div>
           <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black uppercase leading-none mb-8 tracking-tight text-balance animate-fade-in-up">
             FORGE YOUR
@@ -238,7 +243,8 @@ export default function Home() {
             <span className="text-[#0F59FF]">ONCHAIN</span> FUTURE.
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl mb-12 max-w-3xl mx-auto font-bold px-4 text-pretty animate-fade-in-up animation-delay-200">
-            Tools, infrastructure, and capital formation for launching and growing projects.
+            Tools, infrastructure, and capital formation for launching and
+            growing projects.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
             <a
@@ -262,7 +268,10 @@ export default function Home() {
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Projects
             </p>
-            <p ref={totalProjectsRef} className="text-6xl font-black tabular-nums">
+            <p
+              ref={totalProjectsRef}
+              className="text-6xl font-black tabular-nums"
+            >
               {Math.floor(totalProjects).toLocaleString()}
             </p>
           </div>
@@ -270,13 +279,16 @@ export default function Home() {
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Total Raised
             </p>
-            <p ref={totalRaisedRef} className="text-6xl font-black tabular-nums">
+            <p
+              ref={totalRaisedRef}
+              className="text-6xl font-black tabular-nums"
+            >
               {totalRaisedUsd === null
                 ? "..."
                 : `$${totalRaisedUsd.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}`}
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`}
             </p>
             <p className="text-xl font-black mt-2">
               {totalRaised < 0.01 ? "0" : totalRaised.toFixed(2)} XTZ
@@ -286,7 +298,10 @@ export default function Home() {
             <p className="text-sm font-black tracking-wider mb-4 uppercase">
               Active Presales
             </p>
-            <p ref={activePresalesRef} className="text-6xl font-black tabular-nums">
+            <p
+              ref={activePresalesRef}
+              className="text-6xl font-black tabular-nums"
+            >
               {Math.floor(activePresales).toLocaleString()}
             </p>
           </div>
@@ -374,7 +389,8 @@ export default function Home() {
             Ready to Build?
           </h2>
           <p className="text-lg sm:text-xl md:text-2xl mb-10 max-w-2xl mx-auto px-4 text-pretty">
-            Got the next big idea? Launch your project on Tezforge and get the tools, funding, and community you need to make it a reality.
+            Got the next big idea? Launch your project on Tezforge and get the
+            tools, funding, and community you need to make it a reality.
           </p>
           <a
             href="/dashboard/create"
