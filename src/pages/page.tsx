@@ -2,7 +2,7 @@ import { TelegramIcon } from "@/components/ui/icons/telegram-icon";
 import { XIcon as XSocialIcon } from "@/components/ui/icons/x-icon";
 import { useCountUp } from "@/lib/hooks/useCountUp";
 import { useLaunchpadPresales } from "@/lib/hooks/useLaunchpadPresales";
-import { useReactPriceUsd } from "@/lib/hooks/useReactPriceUsd";
+import { sumNativePresaleRaised } from "@/lib/utils/presale-amount";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -16,10 +16,15 @@ import { useAccount } from "wagmi";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const cardStyles = [
-  { bg: "bg-[#0F59FF]", text: "text-white" },
-  { bg: "bg-[#64FE3E]", text: "text-black" },
-  { bg: "bg-[#1A1A2E]", text: "text-white" },
+  { bg: "bg-tezforge-blue", text: "text-white" },
+  { bg: "bg-tezforge-green", text: "text-tezforge-ink" },
+  { bg: "bg-tezforge-ink", text: "text-white" },
 ];
+
+const focusStyles =
+  "focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-tezforge-blue";
+const lightFocusStyles =
+  "focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-tezforge-green";
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -30,7 +35,6 @@ export default function Home() {
 
   const navLinks = [
     { label: "Projects", href: "/projects" },
-    { label: "Staking", href: "/dashboard/staking" },
     { label: "Create", href: "/dashboard/create" },
   ];
 
@@ -41,10 +45,9 @@ export default function Home() {
     return [...live, ...upcoming].slice(0, 3);
   }, [allPresales]);
 
-  // Calculate total raised across all presales in XTZ
+  // Only native payments can be summed as XTZ.
   const totalRaisedValue = useMemo(() => {
-    const sum = allPresales.reduce((acc, p) => acc + (p.totalRaised || 0n), 0n);
-    return parseFloat(formatEther(sum));
+    return parseFloat(formatEther(sumNativePresaleRaised(allPresales)));
   }, [allPresales]);
 
   // Count live presales
@@ -61,17 +64,14 @@ export default function Home() {
     useCountUp(totalRaisedValue);
   const { count: activePresales, ref: activePresalesRef } =
     useCountUp(livePresaleCount);
-  const reactPriceUsd = useReactPriceUsd();
-
-  const totalRaisedUsd = useMemo(() => {
-    if (reactPriceUsd === null) return null;
-    return totalRaised * reactPriceUsd;
-  }, [reactPriceUsd, totalRaised]);
-
   const pageRef = useRef<HTMLElement>(null);
 
   useGSAP(
     () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+
       gsap.from(".stat-card", {
         autoAlpha: 0,
         y: 32,
@@ -141,15 +141,15 @@ export default function Home() {
   }, [isLoadingPresales, featuredPresales]);
 
   return (
-    <main ref={pageRef} className="min-h-screen bg-[#F7F3EE] text-[#1A1A2E]">
-      <div className="container mx-auto px-4 text-pretty sm:px-6 py-7 max-w-7xl">
+    <main ref={pageRef} className="min-h-screen bg-tezforge-cream text-tezforge-ink">
+      <div className="container mx-auto max-w-7xl px-4 py-5 text-pretty sm:px-6 sm:py-7">
         {/* ── Header ── */}
-        <header className="mb-16">
-          <div className="border-2 border-[#1A1A2E] bg-white px-4 py-4 sm:px-6 sm:py-5 shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
+        <header className="mb-12 lg:mb-16">
+          <div className="border-2 border-tezforge-ink bg-white px-4 py-3 shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] sm:px-6 sm:py-4">
             <div className="flex items-center justify-between gap-4">
               <Link
                 to="/"
-                className="inline-flex items-center gap-3 text-2xl sm:text-3xl font-black tracking-wider uppercase"
+                className={`inline-flex items-center gap-3 text-2xl font-black uppercase tracking-wider sm:text-3xl ${focusStyles}`}
               >
                 <div className="size-12 flex items-center justify-center">
                   <img
@@ -158,7 +158,10 @@ export default function Home() {
                     className="w-17 h-17 object-contain"
                   />
                 </div>
-                <span className="text-[#1A1A2E]">Tezforge</span>
+                <span className="flex flex-col text-tezforge-ink">
+                  <span>Tezforge</span>
+                  <span className="text-[10px] font-bold tracking-wider text-tezforge-blue sm:text-xs">Demo · no real funds</span>
+                </span>
               </Link>
 
               <nav className="hidden md:flex items-center gap-6 text-sm lg:text-base font-black uppercase tracking-wider">
@@ -166,7 +169,7 @@ export default function Home() {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="hover:text-[#0F59FF] transition-colors"
+                    className={`transition-colors hover:text-tezforge-blue ${focusStyles}`}
                   >
                     {link.label}
                   </Link>
@@ -175,7 +178,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => openConnectModal?.()}
-                    className="inline-flex items-center bg-[#1A1A2E] text-white px-4 py-2 border-2 border-[#1A1A2E] hover:bg-[#0F59FF] hover:text-white transition-colors"
+                    className={`inline-flex items-center border-2 border-tezforge-ink bg-tezforge-ink px-4 py-2 text-white transition-colors hover:bg-tezforge-blue ${focusStyles}`}
                   >
                     CONNECT WALLET
                   </button>
@@ -188,7 +191,7 @@ export default function Home() {
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-nav-menu"
                 aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-                className="md:hidden inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#0F59FF] p-2 text-white"
+                className={`inline-flex items-center justify-center border-2 border-tezforge-ink bg-tezforge-blue p-2 text-white md:hidden ${focusStyles}`}
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -198,7 +201,7 @@ export default function Home() {
               id="mobile-nav-menu"
               className={`md:hidden overflow-hidden transition-[transform,shadow,opacity,colors] duration-200 ${
                 isMobileMenuOpen
-                  ? "max-h-80 mt-4 border-t-2 border-[#1A1A2E] pt-4"
+                  ? "max-h-80 mt-4 border-t-2 border-tezforge-ink pt-4"
                   : "max-h-0"
               }`}
             >
@@ -208,7 +211,7 @@ export default function Home() {
                     key={`${link.href}-mobile`}
                     to={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="border-2 border-[#1A1A2E] bg-[#F7F3EE] px-4 py-3"
+                    className={`border-2 border-tezforge-ink bg-tezforge-cream px-4 py-3 ${focusStyles}`}
                   >
                     {link.label}
                   </Link>
@@ -220,7 +223,7 @@ export default function Home() {
                       setIsMobileMenuOpen(false);
                       openConnectModal?.();
                     }}
-                    className="inline-flex items-center justify-center border-2 border-[#1A1A2E] bg-[#1A1A2E] text-white px-4 py-3"
+                    className={`inline-flex items-center justify-center border-2 border-tezforge-ink bg-tezforge-ink px-4 py-3 text-white ${focusStyles}`}
                   >
                     CONNECT WALLET
                   </button>
@@ -231,76 +234,83 @@ export default function Home() {
         </header>
 
         {/* ── Hero ── */}
-        <section className="mb-32 text-center">
-          <div className="inline-flex items-center gap-2 bg-[#1A1A2E] text-white px-4 py-2 mb-8 border-2 border-[#1A1A2E]">
-            <span className="text-xs font-black uppercase tracking-widest">
-              The Builder OS on Tezos
-            </span>
+        <section className="mb-20 grid items-stretch gap-8 lg:mb-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)] lg:gap-10">
+          <div className="flex flex-col items-start justify-center py-4 lg:py-8">
+            <div className="mb-6 inline-flex items-center gap-3 border-2 border-tezforge-ink bg-tezforge-ink px-4 py-2 text-white">
+              <span className="size-2 bg-tezforge-green" aria-hidden="true" />
+              <span className="text-xs font-black uppercase tracking-widest">
+                Build on Tezos
+              </span>
+            </div>
+            <h1 className="mb-6 max-w-4xl text-balance text-5xl font-black uppercase leading-[0.95] tracking-tight sm:text-6xl xl:text-7xl animate-fade-in-up motion-reduce:animate-none">
+              LAUNCH ON <span className="text-tezforge-blue">TEZOS.</span>
+            </h1>
+            <p className="mb-8 max-w-2xl text-pretty text-lg font-bold leading-relaxed sm:text-xl animate-fade-in-up animation-delay-200 motion-reduce:animate-none">
+              Create tokens, run presales, and discover projects.
+            </p>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row animate-fade-in-up animation-delay-400 motion-reduce:animate-none">
+              <Link
+                to="/projects"
+                className={`inline-flex items-center justify-center border-2 border-tezforge-ink bg-tezforge-blue px-7 py-4 text-center text-sm font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] transition-[transform,shadow] hover:-translate-y-0.5 hover:shadow-[4px_5px_0px_0px_rgba(26,26,46,1)] motion-reduce:transform-none ${focusStyles}`}
+              >
+                Explore projects <span className="ml-2" aria-hidden="true">→</span>
+              </Link>
+              <Link
+                to="/dashboard/create"
+                className={`inline-flex items-center justify-center border-2 border-tezforge-ink bg-white px-7 py-4 text-center text-sm font-black uppercase tracking-wider text-tezforge-ink shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] transition-[transform,shadow] hover:-translate-y-0.5 hover:shadow-[4px_5px_0px_0px_rgba(26,26,46,1)] motion-reduce:transform-none ${focusStyles}`}
+              >
+                Launch a project
+              </Link>
+            </div>
           </div>
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black uppercase leading-none mb-8 tracking-tight text-balance animate-fade-in-up">
-            FORGE YOUR
-            <br />
-            <span className="text-[#0F59FF]">ONCHAIN</span> FUTURE.
-          </h1>
-          <p className="text-xl sm:text-2xl md:text-3xl mb-12 max-w-3xl mx-auto font-bold px-4 text-pretty animate-fade-in-up animation-delay-200">
-            Tools, infrastructure, and capital formation for launching and
-            growing projects.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
-            <a
-              href="/projects"
-              className="inline-block bg-[#0F59FF] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-2 border-[#1A1A2E] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200"
-            >
-              EXPLORE PROJECTS →
-            </a>
-            <a
-              href="/dashboard/create"
-              className="inline-block bg-white text-[#1A1A2E] font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-2 border-[#1A1A2E] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200"
-            >
-              LAUNCH A PROJECT
-            </a>
+          <div className="relative flex min-h-[360px] flex-col justify-between overflow-hidden border-2 border-tezforge-ink bg-tezforge-blue p-6 text-white shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] sm:p-8 lg:min-h-[470px]">
+            <div className="flex items-start justify-between gap-4 border-b-2 border-white/40 pb-5 text-xs font-black uppercase tracking-widest">
+              <span>Tezforge</span>
+              <span>01 / 03</span>
+            </div>
+            <div className="py-8">
+              <p className="mb-5 text-sm font-black uppercase tracking-[0.2em] text-tezforge-green">Token launches</p>
+              <p className="max-w-md text-4xl font-black uppercase leading-none tracking-tight sm:text-5xl lg:text-6xl">
+                Create a token. Start a presale.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 border-t-2 border-white/40 pt-5 text-xs font-black uppercase tracking-wider sm:text-sm">
+              <span>Discover</span><span>Back</span><span>Launch</span>
+            </div>
           </div>
         </section>
 
         {/* ── Stats ── */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 stats-section">
-          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 stat-card">
-            <p className="text-sm font-black tracking-wider mb-4 uppercase">
+        <section aria-label="Platform activity" className="mb-24 grid grid-cols-1 gap-4 stats-section md:grid-cols-3 lg:mb-28">
+          <div className="stat-card flex min-h-48 flex-col justify-between border-2 border-tezforge-ink bg-white p-6 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] sm:p-7">
+            <p className="mb-4 border-b border-tezforge-ink/25 pb-4 text-xs font-black uppercase tracking-widest">
               Total Projects
             </p>
             <p
               ref={totalProjectsRef}
-              className="text-6xl font-black tabular-nums"
+              className="text-5xl font-black tabular-nums text-tezforge-blue sm:text-6xl"
             >
               {Math.floor(totalProjects).toLocaleString()}
             </p>
           </div>
-          <div className="bg-[#64FE3E] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 stat-card">
-            <p className="text-sm font-black tracking-wider mb-4 uppercase">
-              Total Raised
+          <div className="stat-card flex min-h-48 flex-col justify-between border-2 border-tezforge-ink bg-tezforge-green p-6 text-tezforge-ink shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] sm:p-7">
+            <p className="mb-4 border-b border-tezforge-ink/25 pb-4 text-xs font-black uppercase tracking-widest">
+              XTZ Raised
             </p>
             <p
               ref={totalRaisedRef}
-              className="text-6xl font-black tabular-nums"
+              className="break-words text-4xl font-black tabular-nums sm:text-5xl"
             >
-              {totalRaisedUsd === null
-                ? "..."
-                : `$${totalRaisedUsd.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`}
-            </p>
-            <p className="text-xl font-black mt-2">
-              {totalRaised < 0.01 ? "0" : totalRaised.toFixed(2)} XTZ
+              {totalRaised.toLocaleString(undefined, { maximumFractionDigits: 4 })}
             </p>
           </div>
-          <div className="bg-[#0F59FF] text-white border-2 border-[#1A1A2E] p-8 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 stat-card">
-            <p className="text-sm font-black tracking-wider mb-4 uppercase">
+          <div className="stat-card flex min-h-48 flex-col justify-between border-2 border-tezforge-ink bg-white p-6 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] sm:p-7">
+            <p className="mb-4 border-b border-tezforge-ink/25 pb-4 text-xs font-black uppercase tracking-widest">
               Active Presales
             </p>
             <p
               ref={activePresalesRef}
-              className="text-6xl font-black tabular-nums"
+              className="text-5xl font-black tabular-nums text-tezforge-blue sm:text-6xl"
             >
               {Math.floor(activePresales).toLocaleString()}
             </p>
@@ -308,47 +318,47 @@ export default function Home() {
         </section>
 
         {/* ── How It Works ── */}
-        <section className="mb-32 how-section">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-balance text-center">
+        <section className="mb-24 how-section lg:mb-28">
+          <h2 className="mb-8 text-balance text-4xl font-black uppercase tracking-tight sm:text-5xl">
             HOW IT WORKS
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] how-card">
-              <div className="text-6xl font-black mb-4 text-[#0F59FF]">1</div>
-              <h3 className="text-2xl font-black uppercase mb-4">DISCOVER</h3>
-              <p className="font-bold text-lg">
-                Browse projects building on Tezos.
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="how-card border-2 border-tezforge-ink bg-white p-7 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+              <div className="mb-8 text-5xl font-black text-tezforge-blue">01</div>
+              <h3 className="mb-3 text-2xl font-black uppercase">DISCOVER</h3>
+              <p className="text-base font-bold leading-relaxed">
+                Explore live launches.
               </p>
             </div>
-            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] how-card">
-              <div className="text-6xl font-black mb-4 text-[#0F59FF]">2</div>
-              <h3 className="text-2xl font-black uppercase mb-4">BACK</h3>
-              <p className="font-bold text-lg">
-                Support projects you believe in.
+            <div className="how-card border-2 border-tezforge-ink bg-white p-7 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+              <div className="mb-8 text-5xl font-black text-tezforge-blue">02</div>
+              <h3 className="mb-3 text-2xl font-black uppercase">BACK</h3>
+              <p className="text-base font-bold leading-relaxed">
+                Join a presale.
               </p>
             </div>
-            <div className="border-2 border-[#1A1A2E] p-8 text-center bg-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] how-card">
-              <div className="text-6xl font-black mb-4 text-[#0F59FF]">3</div>
-              <h3 className="text-2xl font-black uppercase mb-4">LAUNCH</h3>
-              <p className="font-bold text-lg">
-                Help projects reach their goals and watch them grow.
+            <div className="how-card border-2 border-tezforge-ink bg-white p-7 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
+              <div className="mb-8 text-5xl font-black text-tezforge-blue">03</div>
+              <h3 className="mb-3 text-2xl font-black uppercase">LAUNCH</h3>
+              <p className="text-base font-bold leading-relaxed">
+                Create your own.
               </p>
             </div>
           </div>
         </section>
 
         {/* ── Featured Launches ── */}
-        <section className="mb-32 featured-section">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-16 tracking-tight text-balance">
+        <section className="mb-24 featured-section lg:mb-28">
+          <h2 className="mb-8 text-balance text-4xl font-black uppercase tracking-tight sm:text-5xl">
             FEATURED LAUNCHES
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {isLoadingPresales ? (
-              <div className="text-center md:col-span-2 lg:col-span-3 py-10">
+              <div className="border-2 border-tezforge-ink bg-white py-12 text-center font-bold md:col-span-2 lg:col-span-3">
                 Loading Projects...
               </div>
             ) : featuredPresales.length === 0 ? (
-              <div className="text-center md:col-span-2 lg:col-span-3 py-10">
+              <div className="border-2 border-tezforge-ink bg-white px-6 py-12 text-center md:col-span-2 lg:col-span-3">
                 <p className="text-2xl font-bold uppercase mb-2">
                   No Projects to Feature
                 </p>
@@ -357,18 +367,22 @@ export default function Home() {
                 </p>
                 <a
                   href="/dashboard/create"
-                  className="inline-block bg-[#0F59FF] text-white font-black py-3 px-6 text-sm border-2 border-[#1A1A2E] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] hover:shadow-[5px_5px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,colors]"
+                  className={`inline-block border-2 border-tezforge-ink bg-tezforge-blue px-6 py-3 text-sm font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] transition-[transform,shadow] hover:-translate-y-0.5 hover:shadow-[4px_5px_0px_0px_rgba(26,26,46,1)] motion-reduce:transform-none ${focusStyles}`}
                 >
                   Launch Your Project
                 </a>
               </div>
             ) : (
               featuredPresales.map((presale, index) => (
-                <Link to={`/projects/${presale.address}`} key={presale.address}>
+                <Link
+                  to={`/projects/${presale.address}`}
+                  key={presale.address}
+                  className={`block ${focusStyles}`}
+                >
                   <div
                     className={`featured-card ${cardStyles[index % cardStyles.length].bg} ${
                       cardStyles[index % cardStyles.length].text
-                    } border-2 border-[#1A1A2E] p-8 cursor-pointer shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 h-full flex flex-col`}
+                    } flex h-full min-h-48 cursor-pointer flex-col border-2 border-tezforge-ink p-7 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] transition-[transform,shadow] hover:-translate-y-0.5 hover:shadow-[4px_5px_0px_0px_rgba(26,26,46,1)] motion-reduce:transform-none`}
                   >
                     <h3 className="text-2xl font-black uppercase mb-4 flex-grow">
                       {presale.saleTokenName || "Unnamed Project"}
@@ -384,17 +398,16 @@ export default function Home() {
         </section>
 
         {/* ── CTA ── */}
-        <section className="bg-[#1A1A2E] text-white border-2 border-[#1A1A2E] p-8 sm:p-12 md:p-16 text-center mb-16 shadow-[4px_4px_0px_0px_#0F59FF] cta-section">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-6 tracking-tight text-balance">
+        <section className="cta-section mb-16 border-2 border-tezforge-ink bg-tezforge-ink p-8 text-center text-white shadow-[4px_4px_0px_0px_#0F59FF] sm:p-12 md:p-16">
+          <h2 className="mb-6 text-balance text-4xl font-black uppercase tracking-tight sm:text-5xl md:text-6xl">
             Ready to Build?
           </h2>
           <p className="text-lg sm:text-xl md:text-2xl mb-10 max-w-2xl mx-auto px-4 text-pretty">
-            Got the next big idea? Launch your project on Tezforge and get the
-            tools, funding, and community you need to make it a reality.
+            Create a token or launch a presale.
           </p>
           <a
             href="/dashboard/create"
-            className="inline-block bg-[#0F59FF] text-white font-black py-4 px-8 sm:py-5 sm:px-12 text-base sm:text-lg border-2 border-black uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200"
+            className={`inline-block border-2 border-white bg-tezforge-blue px-8 py-4 text-base font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)] transition-[transform,shadow] hover:-translate-y-0.5 hover:shadow-[4px_5px_0px_0px_rgba(255,255,255,0.5)] motion-reduce:transform-none sm:px-12 sm:py-5 sm:text-lg ${lightFocusStyles}`}
           >
             CREATE A PROJECT
           </a>
@@ -402,7 +415,7 @@ export default function Home() {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="bg-[#1A1A2E] text-white border-t-2 border-[#1A1A2E]">
+      <footer className="border-t-2 border-tezforge-ink bg-tezforge-ink text-white">
         <div className="container mx-auto px-6 py-8 max-w-7xl flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-bold uppercase tracking-wider text-center md:text-left">
             &copy; {new Date().getFullYear()} Tezforge
@@ -412,7 +425,8 @@ export default function Home() {
               href="https://x.com/tezforge"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#0F59FF] transition-colors"
+              className={`transition-colors hover:text-tezforge-green ${lightFocusStyles}`}
+              aria-label="Tezforge on X"
             >
               <XSocialIcon size={24} />
             </a>
@@ -420,7 +434,8 @@ export default function Home() {
               href="https://t.me/tezforge"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#0F59FF] transition-colors"
+              className={`transition-colors hover:text-tezforge-green ${lightFocusStyles}`}
+              aria-label="Tezforge on Telegram"
             >
               <TelegramIcon size={24} />
             </a>
@@ -428,7 +443,8 @@ export default function Home() {
               href="https://docs.tezforge.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#0F59FF] transition-colors"
+              className={`transition-colors hover:text-tezforge-green ${lightFocusStyles}`}
+              aria-label="Tezforge documentation"
             >
               <BookOpen size={24} />
             </a>

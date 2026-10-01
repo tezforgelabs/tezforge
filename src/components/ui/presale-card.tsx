@@ -1,336 +1,175 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Project } from "@/components/ui/project-card";
-import { Link } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
-import { formatEther } from "viem";
+import { formatPresalePaymentAmount } from "@/lib/utils/presale-amount";
 import type { PresaleWithStatus } from "@/lib/hooks/useLaunchpadPresales";
 import type { PresaleCategory } from "@/lib/store/launchpad-presale-store";
-import { Twitter, Send, Globe, MessageCircle } from "lucide-react";
 import { getPresaleMetadata } from "@/config/presale-metadata";
+import { ArrowUpRight, Globe, MessageCircle, Send, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
 
-function CountdownTimer({
-  targetDate,
-  isStart = false,
-}: {
-  targetDate: Date;
-  isStart?: boolean;
-}) {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+const amountFormatter = new Intl.NumberFormat(undefined, {
+  maximumFractionDigits: 4,
+});
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = targetDate.getTime() - now;
-
-      if (distance > 0) {
-        setTimeLeft({
-          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-          hours: Math.floor(
-            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-          ),
-          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((distance % (1000 * 60)) / 1000),
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [targetDate]);
-
-  return (
-    <div className="text-sm">
-      <span className="font-bold uppercase tracking-wider">
-        {isStart ? "STARTS IN:" : "ENDS IN:"}
-      </span>
-      <div className="font-mono mt-2 text-xl font-black">
-        {timeLeft.days}D {timeLeft.hours}H {timeLeft.minutes}M{" "}
-        {timeLeft.seconds}S
-      </div>
-    </div>
-  );
-}
-
-function mapStatusToStatusType(
-  status: PresaleWithStatus["status"],
-): Project["statusType"] {
-  switch (status) {
-    case "live":
-      return "live";
-    case "upcoming":
-      return "upcoming";
-    case "ended":
-    case "cancelled":
-    case "finalized":
-      return "completed";
-    default:
-      return "upcoming";
+function getCategoryLabel(category?: PresaleCategory) {
+  switch (category) {
+    case "defi": return "DeFi";
+    case "ai": return "AI";
+    case "gaming": return "Gaming";
+    case "infrastructure": return "Infrastructure";
+    case "meme": return "Meme";
+    default: return "Project";
   }
 }
 
-function getCategoryStyle(category?: PresaleCategory) {
-  switch (category) {
-    case "defi":
-      return { bg: "bg-[#0F59FF]", label: "DeFi" };
-    case "ai":
-      return { bg: "bg-[#0F59FF]", label: "AI" };
-    case "gaming":
-      return { bg: "bg-[#0F59FF]", label: "Gaming" };
-    case "infrastructure":
-      return { bg: "bg-[#0F59FF]", label: "INFRA" };
-    case "meme":
-      return { bg: "bg-[#64FE3E]", label: "Meme" };
-    default:
-      return { bg: "bg-[#D1D5DB]", label: "Other" };
+function externalUrl(value?: string) {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : undefined;
+  } catch {
+    return undefined;
   }
 }
 
 export function PresaleCard({ presale }: { presale: PresaleWithStatus }) {
-  // Get metadata from config (socials, category, etc.)
-  const metadata = useMemo(
-    () => getPresaleMetadata(presale.address),
-    [presale.address],
-  );
-
-  // Default social links
-  const defaultSocials = {
-    twitter: "https://twitter.com",
-    telegram: "https://t.me",
-    discord: "https://discord.com",
-    website: "#",
-  };
-
-  // Merge presale data with metadata (metadata takes precedence if available)
+  const metadata = getPresaleMetadata(presale.address);
   const socials = {
-    twitter:
-      presale.socials?.twitter ??
-      metadata?.socials?.twitter ??
-      defaultSocials.twitter,
-    telegram:
-      presale.socials?.telegram ??
-      metadata?.socials?.telegram ??
-      defaultSocials.telegram,
-    discord:
-      presale.socials?.discord ??
-      metadata?.socials?.discord ??
-      defaultSocials.discord,
-    website:
-      presale.socials?.website ??
-      metadata?.socials?.website ??
-      defaultSocials.website,
+    twitter: externalUrl(presale.socials?.twitter ?? metadata?.socials?.twitter),
+    telegram: externalUrl(presale.socials?.telegram ?? metadata?.socials?.telegram),
+    discord: externalUrl(presale.socials?.discord ?? metadata?.socials?.discord),
+    website: externalUrl(presale.socials?.website ?? metadata?.socials?.website),
   };
-  const category = presale.category || metadata?.category;
-  const customDescription = presale.description || metadata?.description;
-  const customLogo = presale.logo || metadata?.logo;
+  const socialLinks = [
+    { label: "Twitter", href: socials.twitter, Icon: Twitter },
+    { label: "Telegram", href: socials.telegram, Icon: Send },
+    { label: "Discord", href: socials.discord, Icon: MessageCircle },
+    { label: "Website", href: socials.website, Icon: Globe },
+  ].filter((social) => social.href);
 
-  // Convert wei values to ether
-  const raised = parseFloat(formatEther(presale.totalRaised || 0n));
-  const goal = parseFloat(formatEther(presale.hardCap || 0n));
-  const progressValue = presale.progress || 0;
-
-  // Parse dates from bigint timestamps
-  const startTime = new Date(Number(presale.startTime) * 1000);
-  const endTime = new Date(Number(presale.endTime) * 1000);
-
-  // Determine status type
-  const statusType = mapStatusToStatusType(presale.status);
-
-  // Use sale token name as display name
-  const displayName =
-    presale.saleTokenName || presale.saleTokenSymbol || "Unknown";
-
-  // Create a default description
+  const name = presale.saleTokenName || presale.saleTokenSymbol || "Unknown token";
   const description =
-    customDescription ||
-    `Presale for ${presale.saleTokenName || presale.saleTokenSymbol}.`;
-
-  // Use a deterministic avatar based on the token address
+    presale.description ||
+    metadata?.description ||
+    `Presale for ${name}.`;
   const logo =
-    customLogo ||
-    `https://api.dicebear.com/7.x/rings/svg?seed=${presale.saleToken}`;
+    presale.logo ||
+    metadata?.logo ||
+    `https://api.dicebear.com/7.x/rings/svg?seed=${encodeURIComponent(presale.saleToken)}`;
+  const currency = presale.isPaymentETH
+    ? "XTZ"
+    : (presale.paymentTokenSymbol ?? "Token");
+  const paymentDecimals = presale.isPaymentETH ? 18 : presale.paymentTokenDecimals;
+  const raised = formatPresalePaymentAmount(presale.totalRaised || 0n, paymentDecimals);
+  const goal = formatPresalePaymentAmount(presale.hardCap || 0n, paymentDecimals);
+  const progress = Number.isFinite(presale.progress)
+    ? Math.max(0, Math.min(100, presale.progress))
+    : 0;
 
-  // Use payment token symbol if available, otherwise default to XTZ
-  const currency = presale.paymentTokenSymbol || "XTZ";
-
-  const project: Project = {
-    id: presale.address,
-    name: displayName,
-    description: description,
-    logo: logo,
-    statusType: statusType,
-    raised: raised,
-    goal: goal,
-    currency: currency,
-    progress: progressValue,
-    endTime: endTime,
-    startTime: startTime,
-    website: "",
-  };
-
-  const getStatusColor = () => {
-    switch (project.statusType) {
-      case "live":
-        return "bg-[#0F59FF]";
-      case "upcoming":
-        return "bg-[#64FE3E]";
-      case "completed":
-        return "bg-[#64FE3E]";
-      default:
-        return "bg-[#F7F3EE]";
-    }
-  };
-
-  const categoryStyle = getCategoryStyle(category);
+  const isLive = presale.status === "live";
+  const isUpcoming = presale.status === "upcoming";
+  const statusLabel = isLive
+    ? "Live now"
+    : isUpcoming
+      ? "Upcoming"
+      : presale.status === "cancelled"
+        ? "Cancelled"
+        : presale.status === "finalized"
+          ? "Finalized"
+          : "Ended";
+  const deadline = new Date(Number(isUpcoming ? presale.startTime : presale.endTime) * 1000);
+  const deadlineLabel = isUpcoming
+    ? "Starts"
+    : isLive
+      ? "Ends"
+      : presale.status === "cancelled"
+        ? "Scheduled end"
+        : "Ended";
+  const readableDeadline = Number.isNaN(deadline.getTime())
+    ? "Date unavailable"
+    : new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(deadline);
 
   return (
-    <Link to={`/projects/${presale.address}`}>
-      <div className="relative border-4 border-[#1A1A2E] p-6 bg-[#F7F3EE] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[8px_8px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] duration-200 group cursor-pointer h-full flex flex-col">
-        {/* Status indicator */}
-        <div
-          className={`absolute top-0 right-0 size-4 border-2 border-[#1A1A2E] ${getStatusColor()}`}
-        ></div>
+    <article className="flex h-full flex-col border-2 border-tezforge-ink bg-white p-5 shadow-[5px_5px_0_0_#1A1A2E] transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[7px_7px_0_0_#1A1A2E] sm:p-6">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+        <span className={`inline-flex items-center gap-2 border-2 border-tezforge-ink px-3 py-1 text-xs font-black uppercase tracking-wider ${
+          isLive ? "bg-tezforge-green" : isUpcoming ? "bg-tezforge-blue text-white" : "bg-tezforge-cream-dark"
+        }`}>
+          <span aria-hidden="true" className={`size-2 rounded-full ${isLive ? "bg-tezforge-ink" : isUpcoming ? "bg-white" : "bg-tezforge-ink/50"}`} />
+          {statusLabel}
+        </span>
+        <span className="text-xs font-black uppercase tracking-[0.14em] text-tezforge-ink/65">
+          {getCategoryLabel(presale.category || metadata?.category)}
+        </span>
+      </div>
 
-        {/* Category badge */}
-        <div
-          className={`absolute top-4 left-4 px-3 py-1 ${categoryStyle.bg} border-2 border-[#1A1A2E] text-xs font-black uppercase tracking-wider`}
-        >
-          {categoryStyle.label}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 mt-8 mb-4">
-          {presale.requiresWhitelist && (
-            <span className="border-2 border-[#1A1A2E] bg-[#64FE3E] px-3 py-1 text-xs font-black uppercase tracking-wider">
-              Whitelist Only
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center space-x-4 mb-4">
-          <Avatar className="size-14 border-2 border-[#1A1A2E]">
-            <AvatarImage src={logo} alt={`${project.name} logo`} />
-            <AvatarFallback className="text-lg font-black uppercase">
-              {project.name.slice(0, 2)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-2xl font-black uppercase tracking-tight leading-tight break-words">
-              {project.name}
-            </h3>
-          </div>
-        </div>
-
-        {/* Social icons */}
-        <div className="flex items-center gap-2 mb-4">
-          {socials.twitter && socials.twitter !== "#" && (
-            <a
-              href={socials.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              aria-label="Twitter"
-              className="size-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
-            >
-              <Twitter className="size-4" />
-            </a>
-          )}
-          {socials.telegram && socials.telegram !== "#" && (
-            <a
-              href={socials.telegram}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              aria-label="Telegram"
-            >
-              <Send className="size-4" />
-            </a>
-          )}
-          {socials.discord && socials.discord !== "#" && (
-            <a
-              href={socials.discord}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              aria-label="Discord"
-              className="size-8 flex items-center justify-center border-2 border-[#1A1A2E] bg-white hover:bg-black hover:text-white transition-colors"
-            >
-              <MessageCircle className="size-4" />
-            </a>
-          )}
-          {socials.website && socials.website !== "#" && (
-            <a
-              href={socials.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              aria-label="Website"
-            >
-              <Globe className="size-4" />
-            </a>
-          )}
-        </div>
-
-        <p className="font-medium mb-6 min-h-[3rem]">{description}</p>
-
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-black uppercase tracking-wider">
-              PROGRESS
-            </span>
-            <span className="text-sm font-black tabular-nums">
-              {project.progress.toFixed(2)}%
-            </span>
-          </div>
-          <div className="w-full bg-white border-2 border-[#1A1A2E] h-4">
-            <div
-              className="bg-black h-full transition-[width]"
-              style={{ width: `${project.progress}%` }}
-            ></div>
-          </div>
-          <div className="flex justify-between items-center mt-2">
-            <span className="text-xs font-bold">
-              {project.raised.toLocaleString()} {project.currency}
-            </span>
-            <span className="text-xs font-bold">
-              {project.goal.toLocaleString()} {project.currency}
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-auto">
-          {project.statusType === "live" && project.endTime && (
-            <div className="pt-6 border-t-2 border-[#1A1A2E]">
-              <CountdownTimer targetDate={project.endTime} />
-              <button className="w-full mt-4 bg-[#0F59FF] text-[#1A1A2E] h-12 font-black uppercase text-sm tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]">
-                PARTICIPATE
-              </button>
-            </div>
-          )}
-
-          {project.statusType === "upcoming" && project.startTime && (
-            <div className="pt-6 border-t-2 border-[#1A1A2E]">
-              <CountdownTimer targetDate={project.startTime} isStart={true} />
-              <button className="w-full mt-4 bg-[#64FE3E] text-[#1A1A2E] h-12 font-black uppercase text-sm tracking-wider border-4 border-[#1A1A2E] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors]">
-                NOTIFY ME
-              </button>
-            </div>
-          )}
-
-          {project.statusType === "completed" && (
-            <div className="pt-6 border-t-2 border-[#1A1A2E] text-center">
-              <p className="font-black uppercase text-sm tracking-wider mb-2">
-                PROJECT COMPLETED
-              </p>
-              <button className="text-sm font-black uppercase underline hover:no-underline">
-                VIEW RESULTS →
-              </button>
-            </div>
-          )}
+      <div className="mb-4 flex min-w-0 items-center gap-4">
+        <Avatar className="size-14 shrink-0 border-2 border-tezforge-ink bg-tezforge-cream">
+          <AvatarImage src={logo} alt={`${name} logo`} />
+          <AvatarFallback className="font-black uppercase">{name.slice(0, 2)}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <h3 className="break-words font-display text-2xl font-black uppercase leading-tight tracking-tight">{name}</h3>
+          {presale.saleTokenSymbol && <p className="mt-0.5 text-xs font-bold uppercase tracking-wider text-tezforge-ink/70">{presale.saleTokenSymbol}</p>}
         </div>
       </div>
-    </Link>
+
+      <p className="mb-5 line-clamp-2 text-sm font-medium leading-relaxed text-tezforge-ink/70">{description}</p>
+      {presale.requiresWhitelist && (
+        <span className="mb-5 self-start border border-tezforge-ink bg-tezforge-cream px-2 py-1 text-[11px] font-black uppercase tracking-wider">
+          Whitelist only
+        </span>
+      )}
+
+      <div className="mt-auto border-t-2 border-tezforge-ink pt-5">
+        <div className="mb-2 flex items-baseline justify-between gap-3">
+          <span className="text-xs font-black uppercase tracking-[0.14em]">Funding progress</span>
+          <span className="text-lg font-black tabular-nums">{progress.toFixed(1)}%</span>
+        </div>
+        <div
+          role="progressbar"
+          aria-label={`${name} funding progress`}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+          className="h-3 overflow-hidden border border-tezforge-ink bg-tezforge-cream"
+        >
+          <div className="h-full bg-tezforge-blue" style={{ width: `${progress}%` }} />
+        </div>
+        <p className="mt-2 text-xs font-bold tabular-nums text-tezforge-ink/70">
+          {raised === null ? "—" : amountFormatter.format(raised)} {currency}
+          <span aria-hidden="true" className="mx-1 text-tezforge-ink/40">/</span>
+          {goal === null ? "—" : amountFormatter.format(goal)} {currency} goal
+        </p>
+
+        <div className="mt-5 flex items-center justify-between gap-3 border-t border-tezforge-ink/20 pt-4">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-wider text-tezforge-ink/70">{deadlineLabel}</p>
+            <p className="mt-0.5 text-sm font-bold">{readableDeadline}</p>
+          </div>
+          {socialLinks.length > 0 && (
+            <div className="flex shrink-0 items-center gap-1">
+              {socialLinks.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${name} on ${label}`}
+                  className="flex size-8 items-center justify-center text-tezforge-ink/65 transition-colors hover:text-tezforge-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-tezforge-blue"
+                >
+                  <Icon aria-hidden="true" className="size-4" />
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+        <Link
+          to={`/projects/${presale.address}`}
+          className="mt-5 flex min-h-12 items-center justify-between border-2 border-tezforge-ink bg-tezforge-blue px-4 text-sm font-black uppercase tracking-wider text-white shadow-[4px_4px_0_0_#1A1A2E] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#1A1A2E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tezforge-blue"
+        >
+          View project <ArrowUpRight aria-hidden="true" className="size-5" />
+        </Link>
+      </div>
+    </article>
   );
 }

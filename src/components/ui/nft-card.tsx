@@ -20,7 +20,7 @@ export function NFTCard({ nftAddress }: { nftAddress: `0x${string}` }) {
     ],
   });
 
-  const [name, _symbol, maxSupply, totalMinted, mintPrice] = data || [];
+  const [name, , maxSupply, totalMinted, mintPrice] = data || [];
 
   if (isLoading || !data) {
     return (

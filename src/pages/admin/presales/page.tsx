@@ -15,6 +15,7 @@ import {
 } from "@/lib/hooks/useLaunchpadPresales";
 import { useFeeRecipient } from "@/lib/utils/admin";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
+import { buildBetaPresaleConfig, ZERO_ADDRESS } from "@/lib/utils/beta-presale";
 import { ArrowLeft, ExternalLink, Plus, RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,8 +24,7 @@ import {
   decodeEventLog,
   erc20Abi,
   formatEther,
-  parseEther,
-  parseUnits,
+  isAddress,
   type Abi,
   type Address,
 } from "viem";
@@ -70,11 +70,14 @@ function PresaleCard({
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success("Fees updated successfully");
-      setShowFeeForm(false);
-      setNewTokenFeeBps("");
-      setNewProceedsFeeBps("");
-      reset();
+      const timer = window.setTimeout(() => {
+        toast.success("Fees updated successfully");
+        setShowFeeForm(false);
+        setNewTokenFeeBps("");
+        setNewProceedsFeeBps("");
+        reset();
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [isSuccess, reset]);
 
@@ -279,10 +282,8 @@ function QuickCreatePresale({ onCreated }: { onCreated: () => void }) {
     address: saleToken as Address | undefined,
     abi: erc20Abi,
     functionName: "decimals",
-    query: { enabled: Boolean(saleToken && saleToken.startsWith("0x")) },
+    query: { enabled: isAddress(saleToken) },
   });
-
-  const decimals = (tokenDecimals as number) ?? 18;
 
   const {
     createPresale,
@@ -325,21 +326,24 @@ function QuickCreatePresale({ onCreated }: { onCreated: () => void }) {
 
   useEffect(() => {
     if (isConfirmed && newPresaleAddress && hash) {
-      toast.success(
-        `Presale created! Tx: ${hash.slice(0, 10)}...${hash.slice(-8)}`,
-      );
-      onCreated();
-      setShowForm(false);
-      resetCreate();
-      setSaleToken("");
-      setSaleAmount("");
-      setHardCap("");
-      setSoftCap("10");
-      setMinContribution("0.1");
-      setMaxContribution("10");
-      setStartTime("");
-      setEndTime("");
-      navigate(`/dashboard/presales/manage/${newPresaleAddress}`);
+      const timer = window.setTimeout(() => {
+        toast.success(
+          `Presale created! Tx: ${hash.slice(0, 10)}...${hash.slice(-8)}`,
+        );
+        onCreated();
+        setShowForm(false);
+        setSaleToken("");
+        setSaleAmount("");
+        setHardCap("");
+        setSoftCap("10");
+        setMinContribution("0.1");
+        setMaxContribution("10");
+        setStartTime("");
+        setEndTime("");
+        resetCreate();
+        navigate(`/dashboard/presales/manage/${newPresaleAddress}`);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [isConfirmed, newPresaleAddress, hash, navigate, onCreated, resetCreate]);
 
@@ -350,60 +354,44 @@ function QuickCreatePresale({ onCreated }: { onCreated: () => void }) {
     }
   }, [isError, error, resetCreate]);
 
-  // Set default start/end times when form opens
-  useEffect(() => {
-    if (showForm) {
-      if (!startTime) {
-        const now = new Date();
-        now.setDate(now.getDate() + 1);
-        setStartTime(now.toISOString().slice(0, 16));
-      }
-      if (!endTime) {
-        const later = new Date();
-        later.setDate(later.getDate() + 14);
-        setEndTime(later.toISOString().slice(0, 16));
-      }
+  const openForm = () => {
+    const now = new Date();
+    if (!startTime) {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      setStartTime(tomorrow.toISOString().slice(0, 16));
     }
-  }, [showForm, startTime, endTime]);
+    if (!endTime) {
+      const later = new Date(now);
+      later.setDate(later.getDate() + 14);
+      setEndTime(later.toISOString().slice(0, 16));
+    }
+    setShowForm(true);
+  };
 
   const handleCreate = () => {
-    if (!saleToken || !saleToken.startsWith("0x")) {
-      toast.error("Enter a valid sale token address");
+    let presaleConfig: ReturnType<typeof buildBetaPresaleConfig>;
+    try {
+      presaleConfig = buildBetaPresaleConfig({
+        saleToken,
+        owner: address ?? "",
+        paymentToken: ZERO_ADDRESS,
+        startTime,
+        endTime,
+        saleAmount,
+        softCap,
+        hardCap,
+        minContribution,
+        maxContribution,
+      }, tokenDecimals);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Invalid presale settings.");
       return;
     }
-    if (!saleAmount || Number(saleAmount) <= 0) {
-      toast.error("Enter total tokens for sale");
-      return;
-    }
-    if (!hardCap || Number(hardCap) <= 0) {
-      toast.error("Enter a hard cap");
-      return;
-    }
-
-    const saleAmountWei = parseUnits(saleAmount, decimals);
-    const hardCapWei = parseEther(hardCap);
-    const rate = (saleAmountWei * 100n) / hardCapWei;
-
-    if (rate === 0n) {
-      toast.error("Calculated rate is 0. Check sale amount and hard cap.");
-      return;
-    }
-
-    const presaleConfig = {
-      startTime: BigInt(new Date(startTime || Date.now()).getTime() / 1000),
-      endTime: BigInt(
-        new Date(endTime || Date.now() + 14 * 86400000).getTime() / 1000,
-      ),
-      rate,
-      softCap: parseEther(softCap || "10"),
-      hardCap: hardCapWei,
-      minContribution: parseEther(minContribution || "0.1"),
-      maxContribution: parseEther(maxContribution || "10"),
-    };
 
     createPresale({
       saleToken: saleToken as Address,
-      paymentToken: "0x0000000000000000000000000000000000000000" as Address,
+      paymentToken: ZERO_ADDRESS,
       config: presaleConfig,
       owner: address as Address,
     });
@@ -428,7 +416,7 @@ function QuickCreatePresale({ onCreated }: { onCreated: () => void }) {
               </p>
             </div>
             <Button
-              onClick={() => setShowForm(true)}
+              onClick={openForm}
               className="border-4 border-[#1A1A2E] bg-white text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-gray-100"
             >
               <Plus className="w-5 h-5 mr-2" />

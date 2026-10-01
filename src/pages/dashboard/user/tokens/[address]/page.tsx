@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 import { useAllLocks } from "@/lib/hooks/useAllLocks";
+import { useNow } from "@/lib/hooks/useNow";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import { useLaunchpadPresales } from "@/lib/hooks/useLaunchpadPresales";
 import { format, formatDistanceToNow } from "date-fns";
@@ -95,7 +96,7 @@ async function fetchLogsChunked(
     const logs = await client.getLogs({
       address: params.address,
       event: params.event,
-      args: params.args as any,
+      args: params.args,
       fromBlock: current,
       toBlock,
     });
@@ -221,10 +222,12 @@ function useTokenCreationInfo(tokenAddress: Address | undefined) {
               blockNumber: latestLog.blockNumber!,
             });
             if (cancelled) return;
-            const logArgs = (latestLog as any).args as {
-              creator: Address;
-              tokenType: bigint;
+            if (!("args" in latestLog)) return;
+            const logArgs = latestLog.args as {
+              creator?: Address;
+              tokenType?: bigint;
             };
+            if (!logArgs.creator || logArgs.tokenType === undefined) return;
             setCreationData({
               creator: logArgs.creator,
               blockNumber: latestLog.blockNumber!,
@@ -286,7 +289,8 @@ function useTokenHolders(tokenAddress: Address | undefined) {
           tokenDeployBlock,
           (logs) => {
             for (const log of logs) {
-              const logArgs = (log as any).args as { to?: string };
+              if (!("args" in log)) continue;
+              const logArgs = log.args as { to?: string };
               const to = logArgs.to?.toLowerCase();
               if (to && to !== "0x0000000000000000000000000000000000000000") {
                 uniqueReceivers.add(to);
@@ -592,6 +596,7 @@ function RelatedPresales({ tokenAddress }: { tokenAddress: Address }) {
 
 function RelatedLocks({ tokenAddress }: { tokenAddress: Address }) {
   const { locks, isLoading } = useAllLocks();
+  const nowMs = useNow();
 
   const relatedLocks = useMemo(() => {
     if (!locks || locks.length === 0) return [];
@@ -603,8 +608,8 @@ function RelatedLocks({ tokenAddress }: { tokenAddress: Address }) {
     if (lock.withdrawn) {
       return { label: "Withdrawn", variant: "outline" as const };
     }
-    const isExpired = lock.unlockDate
-      ? Date.now() >= Number(lock.unlockDate) * 1000
+    const isExpired = lock.unlockDate && nowMs !== null
+      ? nowMs >= Number(lock.unlockDate) * 1000
       : false;
     if (isExpired) {
       return { label: "Unlockable", variant: "destructive" as const };

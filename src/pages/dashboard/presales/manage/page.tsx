@@ -26,7 +26,6 @@ import {
 export default function ManagePresalePage() {
   const { address: presaleAddress } = useParams<{ address: string }>();
   const navigate = useNavigate();
-  const { address: userAddress } = useAccount();
 
   if (!presaleAddress || !isAddress(presaleAddress)) {
     return (
@@ -46,11 +45,17 @@ export default function ManagePresalePage() {
     );
   }
 
+  return <ManagePresaleData presaleAddress={presaleAddress} />;
+}
+
+function ManagePresaleData({ presaleAddress }: { presaleAddress: Address }) {
+  const navigate = useNavigate();
+  const { address: userAddress } = useAccount();
   const {
     presale,
     isLoading: isLoadingPresale,
     refetch: refetchPresale,
-  } = useLaunchpadPresale(presaleAddress as Address, false);
+  } = useLaunchpadPresale(presaleAddress, false);
 
   if (isLoadingPresale) {
     return (
@@ -139,7 +144,7 @@ export default function ManagePresalePage() {
         </CardHeader>
         <CardContent className="space-y-6 p-6">
           <ManagePresaleView
-            presaleAddress={presaleAddress as Address}
+            presaleAddress={presaleAddress}
             presale={presale}
             refetchPresale={refetchPresale}
           />
@@ -156,7 +161,7 @@ function ManagePresaleView({
 }: {
   presaleAddress: Address;
   presale: PresaleWithStatus;
-  refetchPresale: () => void;
+  refetchPresale: () => Promise<unknown>;
 }) {
   const chainId = useChainId();
   const config = useConfig();
@@ -171,17 +176,6 @@ function ManagePresaleView({
   const [activeWhitelistAction, setActiveWhitelistAction] = useState<
     string | null
   >(null);
-
-  // Safety check - ensure we have required data
-  if (!presale.saleToken) {
-    return (
-      <div className="text-center p-6">
-        <p className="text-red-600">
-          Invalid presale data: missing sale token address
-        </p>
-      </div>
-    );
-  }
 
   const { data: saleTokenInfo } = useReadContracts({
     contracts: [
@@ -370,9 +364,14 @@ function ManagePresaleView({
         withdrawTokens: "Unsold tokens withdrawn",
       };
       toast.success(labels[activeOwnerAction] || "Transaction confirmed");
-      setActiveOwnerAction(null);
+      const completedAction = activeOwnerAction;
       resetOwnerAction();
-      refetchPresale();
+      queueMicrotask(() => {
+        setActiveOwnerAction((current) =>
+          current === completedAction ? null : current,
+        );
+      });
+      void refetchPresale();
     }
   }, [
     isOwnerActionSuccess,
@@ -389,12 +388,17 @@ function ManagePresaleView({
         remove: "Wallet removed from whitelist",
       };
       toast.success(messages[activeWhitelistAction] || "Whitelist updated");
-      setActiveWhitelistAction(null);
+      const completedAction = activeWhitelistAction;
       resetWhitelist();
-      if (activeWhitelistAction === "addOne") setSingleWhitelist("");
-      if (activeWhitelistAction === "bulkAdd") setBulkWhitelist("");
-      if (activeWhitelistAction === "remove") setRemoveAddress("");
-      refetchPresale();
+      queueMicrotask(() => {
+        setActiveWhitelistAction((current) =>
+          current === completedAction ? null : current,
+        );
+        if (completedAction === "addOne") setSingleWhitelist("");
+        if (completedAction === "bulkAdd") setBulkWhitelist("");
+        if (completedAction === "remove") setRemoveAddress("");
+      });
+      void refetchPresale();
     }
   }, [
     isWhitelistSuccess,
@@ -772,11 +776,11 @@ function ManagePresaleView({
       ) : (
         <div className="border-4 border-[#1A1A2E] bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <p className="text-lg font-black uppercase tracking-wider">
-            Step 2 · Open Access
+            Step 2 · Access
           </p>
           <p className="text-sm text-gray-700">
-            Whitelisting is disabled for this presale. Anyone can participate
-            while it is live.
+            Contribution eligibility is checked against the contract when a
+            wallet submits a transaction.
           </p>
         </div>
       )}

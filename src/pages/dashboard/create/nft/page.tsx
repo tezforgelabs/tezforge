@@ -35,7 +35,10 @@ export default function CreateNftPage() {
   const [symbol, setSymbol] = useState("");
   const [baseURI, setBaseURI] = useState("");
   const [maxSupply, setMaxSupply] = useState("");
-  const [payoutWallet, setPayoutWallet] = useState(address ?? "");
+  const [payoutWalletInput, setPayoutWalletInput] = useState<string | null>(
+    null,
+  );
+  const payoutWallet = payoutWalletInput ?? address ?? "";
   const [saleStart, setSaleStart] = useState("");
   const [saleEnd, setSaleEnd] = useState("");
   const [walletLimit, setWalletLimit] = useState("");
@@ -50,12 +53,6 @@ export default function CreateNftPage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageUploaded, setImageUploaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (address) {
-      setPayoutWallet(address);
-    }
-  }, [address]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -96,9 +93,7 @@ export default function CreateNftPage() {
     }
 
     if (!isPinataConfigured()) {
-      toast.error(
-        "Pinata is not configured. Set VITE_PINATA_JWT in your .env file.",
-      );
+      toast.error("NFT uploads are unavailable.");
       return;
     }
 
@@ -436,7 +431,7 @@ export default function CreateNftPage() {
               id="payout-wallet"
               placeholder="0x..."
               value={payoutWallet}
-              onChange={(e) => setPayoutWallet(e.target.value)}
+              onChange={(e) => setPayoutWalletInput(e.target.value)}
               className="border-2 border-[#1A1A2E] font-mono"
             />
           </div>

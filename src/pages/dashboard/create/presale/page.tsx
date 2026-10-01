@@ -9,11 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  LaunchpadPresaleContract,
-  PresaleFactory,
-  getContractAddresses,
-} from "@/config";
+import { LaunchpadPresaleContract, PresaleFactory } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 // LaunchpadService removed - data is now stored only on blockchain
 import { useBlockchainStore } from "@/lib/store/blockchain-store";
@@ -21,19 +17,18 @@ import { useWhitelistedCreator } from "@/lib/hooks/useWhitelistedCreator";
 import { useUserTokens } from "@/lib/hooks/useUserTokens";
 import { useIsAdmin } from "@/lib/utils/admin";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
+import { buildBetaPresaleConfig, ZERO_ADDRESS } from "@/lib/utils/beta-presale";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   decodeEventLog,
-  parseEther,
-  parseUnits,
   type Abi,
   type Address,
+  type ContractFunctionArgs,
 } from "viem";
 import {
   useAccount,
-  useChainId,
   useConfig,
   useReadContract,
   useWaitForTransactionReceipt,
@@ -41,8 +36,6 @@ import {
 } from "wagmi";
 import { readContract, readContracts } from "wagmi/actions";
 import { erc20Abi } from "viem";
-
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 function TokenSymbol({ address }: { address: `0x${string}` }) {
   const { data: symbol } = useReadContract({
@@ -64,7 +57,6 @@ interface PresaleFormData {
   minContribution: string;
   maxContribution: string;
   owner: string;
-  requiresWhitelist: boolean;
 }
 
 function CreatePresaleForm({
@@ -86,9 +78,6 @@ function CreatePresaleForm({
 
   const { tokens: userTokens, isLoading: isUserTokensLoading } =
     useUserTokens();
-
-  const nativeUSDC = getContractAddresses(useChainId()).nativeUSDC;
-  const nativeUSDT = getContractAddresses(useChainId()).nativeUSDT;
 
   // Auto-select sale token from URL if it matches a user-created token
   useEffect(() => {
@@ -115,7 +104,6 @@ function CreatePresaleForm({
     minContribution,
     maxContribution,
     owner,
-    requiresWhitelist,
   } = formData;
 
   // Fetch sale token decimals
@@ -128,8 +116,6 @@ function CreatePresaleForm({
     },
   });
 
-  const decimals = (saleTokenDecimals as number) || 18;
-
   useEffect(() => {
     if (address && !owner) {
       setFormData((prev) => ({ ...prev, owner: address }));
@@ -140,14 +126,6 @@ function CreatePresaleForm({
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleToggleWhitelist = (checked?: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      requiresWhitelist:
-        typeof checked === "boolean" ? checked : !prev.requiresWhitelist,
-    }));
-  };
-
   const handleCreatePresale = async () => {
     if (!saleToken) {
       toast.error("Sale Token Address is required.");
@@ -155,6 +133,14 @@ function CreatePresaleForm({
     }
     if (!owner) {
       toast.error("Presale Owner address is required.");
+      return;
+    }
+
+    let presaleConfig: ReturnType<typeof buildBetaPresaleConfig>;
+    try {
+      presaleConfig = buildBetaPresaleConfig(formData, saleTokenDecimals);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Invalid presale configuration.");
       return;
     }
 
@@ -220,56 +206,16 @@ function CreatePresaleForm({
     }
     setIsChecking(false);
 
-    // Validate required fields
-    if (!saleAmount || !hardCap) {
-      toast.error(
-        "Sale Amount and Hard Cap are required to calculate the rate.",
-      );
-      return;
-    }
-
-    // Calculate rate from saleAmount and hardCap
-    // rate = (saleAmount * 100) / hardCap
-    // This gives tokens per payment unit, scaled by 100 (as contract expects)
-    const saleAmountWei = parseUnits(saleAmount, decimals);
-    const hardCapWei = parseEther(hardCap);
-
-    if (hardCapWei === 0n) {
-      toast.error("Hard Cap must be greater than 0.");
-      return;
-    }
-
-    // Calculate rate: (saleAmount * 100) / hardCap
-    // The 100 is the RATE_DIVISOR from the contract
-    const calculatedRate = (saleAmountWei * 100n) / hardCapWei;
-
-    if (calculatedRate === 0n) {
-      toast.error(
-        "Calculated rate is 0. Please check your Sale Amount and Hard Cap values.",
-      );
-      return;
-    }
-
-    const presaleConfig = {
-      startTime: BigInt(new Date(startTime).getTime() / 1000),
-      endTime: BigInt(new Date(endTime).getTime() / 1000),
-      rate: calculatedRate,
-      softCap: parseEther(softCap),
-      hardCap: hardCapWei,
-      minContribution: parseEther(minContribution),
-      maxContribution: parseEther(maxContribution),
-    };
-
-    const finalPaymentToken = (paymentToken ||
-      "0x0000000000000000000000000000000000000000") as `0x${string}`;
-
     const params = {
       saleToken: saleToken as `0x${string}`,
-      paymentToken: finalPaymentToken,
+      paymentToken: ZERO_ADDRESS,
       config: presaleConfig,
       owner: owner as `0x${string}`,
-      requiresWhitelist,
-    };
+    } satisfies ContractFunctionArgs<
+      typeof PresaleFactory.abi,
+      "nonpayable",
+      "createPresale"
+    >[0];
 
     writeContract(
       {
@@ -360,10 +306,9 @@ function CreatePresaleForm({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ZERO_ADDRESS}>XTZ (Native)</SelectItem>
-              <SelectItem value={nativeUSDC}>USDC</SelectItem>
-              <SelectItem value={nativeUSDT}>USDT</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-gray-600">XTZ payments only.</p>
         </div>
       </div>
       {/* START / END TIME */}
@@ -412,14 +357,7 @@ function CreatePresaleForm({
                 Calculated Rate
               </p>
               <p>
-                {(Number(saleAmount) / Number(hardCap)).toFixed(2)} tokens per{" "}
-                {paymentToken === ZERO_ADDRESS || !paymentToken
-                  ? "XTZ"
-                  : paymentToken === nativeUSDC
-                    ? "USDC"
-                    : paymentToken === nativeUSDT
-                      ? "USDT"
-                      : "payment token"}
+                {(Number(saleAmount) / Number(hardCap)).toFixed(2)} tokens per XTZ
               </p>
             </div>
           )}
@@ -477,41 +415,6 @@ function CreatePresaleForm({
           onChange={handleChange}
         />
       </div>
-      <div className="border-2 border-[#1A1A2E] bg-white p-4 sm:p-5 space-y-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-black uppercase tracking-wider text-gray-800">
-              Whitelist Access
-            </p>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {requiresWhitelist
-                ? "Only wallets you approve will be able to contribute. Perfect for private or KYC-based launches."
-                : "Anyone can contribute while the presale is live."}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-wide text-gray-600">
-              {requiresWhitelist ? "Enabled" : "Disabled"}
-            </span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={requiresWhitelist}
-                onChange={(event) =>
-                  handleToggleWhitelist(event.target.checked)
-                }
-              />
-              <div className="h-7 w-12 rounded-full border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] transition-colors peer-checked:bg-[#1A1A2E]" />
-              <div className="absolute left-1 top-1 h-5 w-5 rounded-full bg-black transition-transform peer-checked:translate-x-5 peer-checked:bg-white" />
-            </label>
-          </div>
-        </div>
-        <p className="text-xs text-gray-600 leading-relaxed">
-          You can add or remove addresses from the whitelist as soon as your
-          presale is deployed.
-        </p>
-      </div>
       <Button
         onClick={handleCreatePresale}
         disabled={isLoading}
@@ -538,7 +441,7 @@ export default function CreatePresalePage() {
   const [creationHash, setCreationHash] = useState<`0x${string}` | undefined>(
     undefined,
   );
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PresaleFormData>({
     saleToken: searchParams.get("token") ?? "",
     paymentToken: ZERO_ADDRESS,
     startTime: "",
@@ -549,7 +452,6 @@ export default function CreatePresalePage() {
     minContribution: "",
     maxContribution: "",
     owner: address ?? "",
-    requiresWhitelist: false,
   });
 
   // Redirect to project submission if not whitelisted

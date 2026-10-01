@@ -2,6 +2,8 @@ import { LaunchpadPresaleContract } from "@/config";
 import { useLaunchpadPresaleStore } from "@/lib/store/launchpad-presale-store";
 import { useCallback } from "react";
 import { type Address } from "viem";
+
+const RATE_DIVISOR = 100n;
 import {
   useAccount,
   useWaitForTransactionReceipt,
@@ -288,8 +290,6 @@ export function usePresaleOwnerActions() {
 
 // Utility hook for calculating token amounts from payment
 export function usePresaleCalculation() {
-  const RATE_DIVISOR = 100n;
-
   const calculateTokenAmount = useCallback(
     (paymentAmount: bigint, rate: bigint): bigint => {
       return (paymentAmount * rate) / RATE_DIVISOR;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
 import { toast } from "sonner";
@@ -30,6 +30,7 @@ export function PresaleParticipationForm({
   presale,
 }: PresaleParticipationFormProps) {
   const [amount, setAmount] = useState("");
+  const [isSimulating, setIsSimulating] = useState(false);
   const { address: account } = useAccount();
 
   const { presale: updatedPresale, refetch: refetchPresale } =
@@ -45,11 +46,16 @@ export function PresaleParticipationForm({
   const {
     contribution: userContribution,
     purchasedTokens: userPurchasedTokens,
-    refetch: refetchContribution,
   } = useUserPresaleContribution(presaleData.address, account);
 
-  const { contribute, isPending, isConfirming, isSuccess, error } =
-    usePresaleContribute();
+  const {
+    contribute,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    invalidateOnSuccess: invalidateContribution,
+  } = usePresaleContribute();
 
   const {
     claimTokens,
@@ -57,6 +63,7 @@ export function PresaleParticipationForm({
     isConfirming: isClaimTokensConfirming,
     isSuccess: isClaimTokensSuccess,
     error: claimTokensError,
+    invalidateOnSuccess: invalidateClaimTokens,
   } = usePresaleClaimTokens();
 
   const {
@@ -65,32 +72,43 @@ export function PresaleParticipationForm({
     isConfirming: isClaimRefundConfirming,
     isSuccess: isClaimRefundSuccess,
     error: claimRefundError,
+    invalidateOnSuccess: invalidateClaimRefund,
   } = usePresaleClaimRefund();
 
   const { calculateTokenAmount } = usePresaleCalculation();
 
-  const paymentTokenDecimals = presaleData.paymentTokenDecimals || 18;
-  const saleTokenDecimals = presaleData.saleTokenDecimals || 18;
+  const paymentTokenDecimals = presaleData.isPaymentETH
+    ? 18
+    : presaleData.paymentTokenDecimals;
+  const saleTokenDecimals = presaleData.saleTokenDecimals ?? 18;
 
-  const amountAsBigInt = useMemo(() => {
+  const amountAsBigInt = (() => {
+    if (paymentTokenDecimals === undefined) return 0n;
     try {
       return parseUnits(amount, paymentTokenDecimals);
     } catch {
       return 0n;
     }
-  }, [amount, paymentTokenDecimals]);
+  })();
 
   // Calculate expected tokens for the input amount
-  const expectedTokens = useMemo(() => {
+  const expectedTokens = (() => {
     if (amountAsBigInt === 0n || !presaleData.rate) return 0n;
     return calculateTokenAmount(amountAsBigInt, presaleData.rate);
-  }, [amountAsBigInt, presaleData.rate, calculateTokenAmount]);
+  })();
 
-  const { needsApproval, approve, isApproving } = usePresaleApproval({
+  const {
+    needsApproval,
+    isAllowanceReady,
+    isAllowanceError,
+    isAllowanceLoading,
+    approve,
+    isApproving,
+    refetchAllowance,
+  } = usePresaleApproval({
     presaleAddress: presaleData.address,
     paymentToken: {
       address: presaleData.paymentToken,
-      decimals: paymentTokenDecimals,
     },
     amount: amountAsBigInt,
     isPaymentETH: presaleData.isPaymentETH,
@@ -98,7 +116,28 @@ export function PresaleParticipationForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!presaleData) return;
+    if (!canContribute || needsApproval || !presaleData) return;
+    if (!account || !publicClient) {
+      toast.error("Connect your wallet to check contribution eligibility.");
+      return;
+    }
+
+    setIsSimulating(true);
+    try {
+      await publicClient.simulateContract({
+        abi: LaunchpadPresaleContract.abi,
+        address: presaleData.address,
+        functionName: "contribute",
+        args: [presaleData.isPaymentETH ? 0n : amountAsBigInt],
+        value: presaleData.isPaymentETH ? amountAsBigInt : 0n,
+        account,
+      });
+    } catch (error) {
+      toast.error(getFriendlyTxErrorMessage(error, "Contribution eligibility"));
+      return;
+    } finally {
+      setIsSimulating(false);
+    }
 
     await contribute({
       presaleAddress: presaleData.address,
@@ -108,6 +147,8 @@ export function PresaleParticipationForm({
     });
   };
 
+  // Whitelist state follows the connected account and on-chain access check.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!presaleData.requiresWhitelist) {
       setIsWhitelisted(true);
@@ -158,33 +199,46 @@ export function PresaleParticipationForm({
     account,
     publicClient,
   ]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (isSuccess) {
-      refetchContribution();
+      invalidateContribution(presaleData.address);
       refetchPresale();
+      // Reset the input after the transaction receipt confirms success.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAmount("");
       toast.success("Contribution successful!");
     }
-  }, [isSuccess, refetchContribution, refetchPresale]);
+  }, [isSuccess, invalidateContribution, presaleData.address, refetchPresale]);
 
   // Handle claim tokens success
   useEffect(() => {
     if (isClaimTokensSuccess) {
-      refetchContribution();
+      invalidateClaimTokens(presaleData.address);
       refetchPresale();
       toast.success("Tokens claimed successfully! 🎉");
     }
-  }, [isClaimTokensSuccess, refetchContribution, refetchPresale]);
+  }, [
+    isClaimTokensSuccess,
+    invalidateClaimTokens,
+    presaleData.address,
+    refetchPresale,
+  ]);
 
   // Handle claim refund success
   useEffect(() => {
     if (isClaimRefundSuccess) {
-      refetchContribution();
+      invalidateClaimRefund(presaleData.address);
       refetchPresale();
       toast.success("Refund claimed successfully!");
     }
-  }, [isClaimRefundSuccess, refetchContribution, refetchPresale]);
+  }, [
+    isClaimRefundSuccess,
+    invalidateClaimRefund,
+    presaleData.address,
+    refetchPresale,
+  ]);
 
   // Handle errors
   useEffect(() => {
@@ -215,46 +269,37 @@ export function PresaleParticipationForm({
   const isPresaleFinalized = presaleData.claimEnabled === true;
   const isPresaleCancelled = presaleData.refundsEnabled === true;
 
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
   // Check if presale has ended (based on endTime)
   const presaleHasEnded = presaleData.endTime
-    ? Date.now() > Number(presaleData.endTime) * 1000
+    ? nowMs > Number(presaleData.endTime) * 1000
     : false;
 
   // Countdown until claim time (presale end)
-  const [claimCountdown, setClaimCountdown] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!presaleData.endTime) {
-      setClaimCountdown(null);
-      return;
-    }
-
-    const endMs = Number(presaleData.endTime) * 1000;
-
-    const format = (ms: number) => {
-      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      const hh = hours.toString().padStart(2, "0");
-      const mm = minutes.toString().padStart(2, "0");
-      const ss = seconds.toString().padStart(2, "0");
-      return days > 0 ? `${days}d ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
-    };
-
-    const update = () => {
-      const remaining = endMs - Date.now();
-      setClaimCountdown(format(remaining));
-    };
-
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, [presaleData.endTime]);
+  const claimCountdown = presaleData.endTime
+    ? (() => {
+        const remaining = Number(presaleData.endTime) * 1000 - nowMs;
+        const totalSeconds = Math.max(0, Math.floor(remaining / 1000));
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const hh = hours.toString().padStart(2, "0");
+        const mm = minutes.toString().padStart(2, "0");
+        const ss = seconds.toString().padStart(2, "0");
+        return days > 0 ? `${days}d ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
+      })()
+    : null;
 
   const canContribute =
     amountAsBigInt > 0 &&
+    paymentTokenDecimals !== undefined &&
+    isAllowanceReady &&
     amountAsBigInt >= minContribution &&
     (maxContribution === 0n || amountAsBigInt <= maxContribution) &&
     whitelistGateOpen &&
@@ -290,7 +335,13 @@ export function PresaleParticipationForm({
       if (whitelistError) return "Retry whitelist check";
       return "Not whitelisted";
     }
+    if (!isAllowanceReady) {
+      return isAllowanceError
+        ? "Unable to check token allowance"
+        : "Checking token allowance...";
+    }
     if (isApproving) return "Approving...";
+    if (isSimulating) return "Checking eligibility...";
     if (isPending) return "Confirming...";
     if (isConfirming) return "Waiting for transaction...";
     if (needsApproval) return `Approve ${presaleData.paymentTokenSymbol}`;
@@ -336,7 +387,9 @@ export function PresaleParticipationForm({
             <div>
               <p className="text-gray-500 text-xs">Contributed</p>
               <p className="font-semibold">
-                {formatUnits(currentContribution, paymentTokenDecimals)}{" "}
+                {paymentTokenDecimals === undefined
+                  ? "—"
+                  : formatUnits(currentContribution, paymentTokenDecimals)}{" "}
                 {presaleData.paymentTokenSymbol}
               </p>
             </div>
@@ -397,10 +450,7 @@ export function PresaleParticipationForm({
             {isClaimRefundPending || isClaimRefundConfirming
               ? "Claiming refund..."
               : canClaimRefund
-                ? `Claim Refund: ${formatUnits(
-                    currentContribution,
-                    paymentTokenDecimals,
-                  )} ${presaleData.paymentTokenSymbol}`
+                ? `Claim Refund: ${paymentTokenDecimals === undefined ? "—" : formatUnits(currentContribution, paymentTokenDecimals)} ${presaleData.paymentTokenSymbol}`
                 : currentContribution === 0n
                   ? "No refund available"
                   : "✓ Already Refunded"}
@@ -451,14 +501,18 @@ export function PresaleParticipationForm({
               <div>
                 <span className="text-gray-500">Min:</span>{" "}
                 <span className="font-semibold">
-                  {formatUnits(minContribution, paymentTokenDecimals)}{" "}
+                  {paymentTokenDecimals === undefined
+                    ? "—"
+                    : formatUnits(minContribution, paymentTokenDecimals)}{" "}
                   {presaleData.paymentTokenSymbol}
                 </span>
               </div>
               <div>
                 <span className="text-gray-500">Max:</span>{" "}
                 <span className="font-semibold">
-                  {formatUnits(maxContribution, paymentTokenDecimals)}{" "}
+                  {paymentTokenDecimals === undefined
+                    ? "—"
+                    : formatUnits(maxContribution, paymentTokenDecimals)}{" "}
                   {presaleData.paymentTokenSymbol}
                 </span>
               </div>
@@ -506,9 +560,10 @@ export function PresaleParticipationForm({
               isPending ||
               isConfirming ||
               isApproving ||
+              isSimulating ||
               isContributionDisabled ||
               !whitelistGateOpen ||
-              (needsApproval ? false : !canContribute)
+              !canContribute
             }
             className={`w-full border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
               isContributionDisabled
@@ -518,6 +573,15 @@ export function PresaleParticipationForm({
           >
             {getButtonText()}
           </Button>
+          {isAllowanceError && !isAllowanceLoading && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => refetchAllowance()}
+            >
+              Retry allowance check
+            </Button>
+          )}
         </>
       )}
 

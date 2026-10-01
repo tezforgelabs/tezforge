@@ -1,10 +1,8 @@
-import { useReactPriceUsd } from "@/lib/hooks/useReactPriceUsd";
 import { useIsAdmin } from "@/lib/utils/admin";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   LayoutGrid,
   Menu,
-  PiggyBank,
   Plus,
   Shield,
   AlertTriangle,
@@ -29,7 +27,6 @@ import {
 const navItems = [
   { name: "Dashboard", href: "/dashboard/user", icon: LayoutGrid },
   { name: "Launchpad", href: "/projects", icon: Rocket },
-  { name: "Staking", href: "/dashboard/staking", icon: PiggyBank },
 ];
 
 // Re-usable component for sidebar content
@@ -39,7 +36,6 @@ const SidebarContent = () => {
   const { openConnectModal } = useConnectModal();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const reactPriceUsd = useReactPriceUsd();
   const { isAdmin } = useIsAdmin(address as Address | undefined);
 
   const isConnected = !!address;
@@ -47,11 +43,10 @@ const SidebarContent = () => {
   const { data: balanceData } = useBalance({ address });
   const balance = balanceData ? parseFloat(balanceData.formatted) : 0;
 
-  const valueUsd = balance * (reactPriceUsd ?? 0);
 
   return (
     <div className="flex flex-col flex-1 h-full">
-      <div className="p-2 pl-3 border-b-4 border-[#1A1A2E] bg-[#1A1A2E] flex items-center ">
+      <div className="p-3 border-b-2 border-tezforge-ink bg-tezforge-ink flex items-center">
         <Link to="/" className="flex items-center justify-center gap-2">
           <div className="size-11 flex items-center justify-center">
             <img
@@ -60,48 +55,33 @@ const SidebarContent = () => {
               className="w-17 h-17 object-contain"
             />
           </div>
-          <span className="text-white font-semibold text-md uppercase tracking-wider">
-            Tezforge
+          <span className="flex flex-col text-white font-semibold text-md uppercase tracking-wider">
+            <span>Tezforge</span>
+            <span className="text-[10px] font-bold normal-case tracking-wide text-tezforge-green">Demo · no real funds</span>
           </span>
         </Link>
       </div>
 
       {isConnected && (
-        <div className="mx-6 my-3 p-4 border-0 border-[#1A1A2E] bg-[#64FE3E] shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
+        <div className="mx-5 mt-6 border-2 border-tezforge-ink bg-tezforge-cream-dark p-4 shadow-[3px_3px_0px_0px_rgba(26,26,46,1)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-mono font-medium uppercase text-[#1A1A2E]">
               {address?.slice(0, 6)}...{address?.slice(-4)}
             </span>
-            <button className="hover:scale-110 transition-transform">
-              <WalletMinimal size={18} strokeWidth={1.5} />
-            </button>
+            <WalletMinimal size={18} strokeWidth={1.5} aria-hidden="true" />
           </div>
           <div>
             <div className="text-3xl font-bold text-[#1A1A2E] tabular-nums">
               {balance.toLocaleString(undefined, { maximumFractionDigits: 4 })}{" "}
               <span className="text-sm uppercase text-[#1A1A2E]">{"XTZ"}</span>
             </div>
-            {(reactPriceUsd ?? 0) > 0 && (
-              <div className="text-xs font-bold mt-1 text-[#1A1A2E]">
-                ~$
-                {valueUsd < 0.01 && valueUsd > 0
-                  ? valueUsd.toLocaleString(undefined, {
-                      minimumFractionDigits: 4,
-                      maximumFractionDigits: 4,
-                    })
-                  : valueUsd.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-              </div>
-            )}
           </div>
           <div className="mt-4 space-y-2">
             <Dialog>
               <DialogTrigger asChild>
                 <button
                   type="button"
-                  className="w-full bg-red-500 text-white font-bold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-[transform,shadow,opacity,colors] px-2 py-2"
+                  className="min-h-11 w-full border-2 border-tezforge-ink bg-white px-2 py-2 text-xs font-bold uppercase tracking-wider text-tezforge-ink shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] transition-colors hover:bg-tezforge-cream"
                 >
                   DISCONNECT
                 </button>
@@ -141,14 +121,14 @@ const SidebarContent = () => {
       )}
 
       <nav className="flex-1 flex flex-col px-6 mt-6">
-        <ul className="space-y-3">
+        <ul className="space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <li key={item.name}>
                 <Link
                   to={item.href}
-                  className={`flex items-center px-4 py-3 transition-[transform,shadow,opacity,colors] font-semibold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${
+                  className={`flex min-h-11 items-center border-2 border-tezforge-ink px-4 py-3 text-xs font-bold uppercase tracking-wider transition-[transform,shadow,opacity,colors] ${
                     isActive
                       ? "bg-[#1A1A2E] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                       : "text-[#1A1A2E] bg-white hover:bg-[#0F59FF] hover:text-white shadow-[2px_2px_0px_0px_rgba(26,26,46,1)] hover:shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
@@ -181,7 +161,7 @@ const SidebarContent = () => {
         <div className="mt-8 mb-3">
           <Link
             to="/dashboard/create"
-            className={`flex items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-0 border-[#1A1A2E] ${
+            className={`flex min-h-11 items-center justify-center w-full px-4 py-4 transition-[transform,shadow,opacity,colors] font-bold uppercase text-xs tracking-wider border-2 border-tezforge-ink ${
               pathname === "/dashboard/create"
                 ? "bg-[#0F59FF] text-white shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] translate-x-[-2px] translate-y-[-2px]"
                 : "bg-[#0F59FF] text-white hover:bg-[#0A3DBF] shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(26,26,46,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
@@ -266,13 +246,14 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
                   className="size-14 object-contain"
                 />
               </div>
-              <span className="font-bold text-sm uppercase tracking-wider">
-                Tezforge
+              <span className="flex flex-col font-bold text-sm uppercase tracking-wider">
+                <span>Tezforge</span>
+                <span className="text-[10px] font-bold normal-case tracking-wide text-tezforge-blue">Demo · no real funds</span>
               </span>
             </Link>
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-md text-gray-500 hover:text-gray-900"
+              className="min-h-11 min-w-11 border-2 border-tezforge-ink bg-tezforge-cream p-2 text-tezforge-ink hover:bg-tezforge-cream-dark"
             >
               <span className="sr-only">Open sidebar</span>
               <Menu className="h-6 w-6" />

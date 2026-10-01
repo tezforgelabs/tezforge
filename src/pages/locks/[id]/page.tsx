@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { TokenLocker } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { useNow } from "@/lib/hooks/useNow";
 import { format, formatDistanceToNow } from "date-fns";
 import {
   ArrowLeft,
@@ -16,7 +17,6 @@ import {
   User,
   XCircle,
 } from "lucide-react";
-import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { erc20Abi, formatUnits, type Abi } from "viem";
 import { useChainId, useConfig, useReadContract } from "wagmi";
@@ -39,7 +39,7 @@ function LockProgressBar({
   lockDate: bigint;
   unlockDate: bigint;
 }) {
-  const now = Date.now();
+  const now = useNow();
 
   // Safe number conversions
   let lockTimestamp = 0;
@@ -52,13 +52,13 @@ function LockProgressBar({
   }
 
   const totalDuration = unlockTimestamp - lockTimestamp;
-  const elapsed = now - lockTimestamp;
+  const elapsed = (now ?? lockTimestamp) - lockTimestamp;
   const progress =
     totalDuration > 0
       ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100))
       : 0;
 
-  const isExpired = unlockTimestamp > 0 && now >= unlockTimestamp;
+  const isExpired = now !== null && unlockTimestamp > 0 && now >= unlockTimestamp;
 
   // Safe date formatting
   let lockDateStr = "Unknown";
@@ -116,6 +116,7 @@ function LockProgressBar({
 }
 
 export default function LockDetailPage() {
+  const now = useNow();
   const { id } = useParams<{ id: string }>();
   const { tokenLocker } = useChainContracts();
 
@@ -178,32 +179,22 @@ export default function LockDetailPage() {
     },
   });
 
-  const formattedAmount = useMemo(() => {
-    if (!lock?.amount || tokenDecimals === undefined) return "...";
+  let formattedAmount = "...";
+  if (lock?.amount && tokenDecimals !== undefined) {
     try {
-      return Number(formatUnits(lock.amount, tokenDecimals)).toLocaleString();
+      formattedAmount = Number(formatUnits(lock.amount, tokenDecimals)).toLocaleString();
     } catch (e) {
       console.error("Error formatting amount:", e);
-      return "...";
     }
-  }, [lock?.amount, tokenDecimals]);
+  }
 
-  const lockStatus = useMemo(() => {
-    if (!lock) return "unknown";
-    if (lock.withdrawn) return "withdrawn";
-    try {
-      const now = Date.now();
-      const unlockTimestamp = lock.unlockDate
-        ? Number(lock.unlockDate) * 1000
-        : 0;
-      return unlockTimestamp > 0 && now >= unlockTimestamp
+  const lockStatus = !lock
+    ? "unknown"
+    : lock.withdrawn
+      ? "withdrawn"
+      : now !== null && lock.unlockDate && now >= Number(lock.unlockDate) * 1000
         ? "unlockable"
         : "locked";
-    } catch (e) {
-      console.error("Error calculating lock status:", e);
-      return "locked";
-    }
-  }, [lock]);
 
   if (isLoadingLock) {
     return (
