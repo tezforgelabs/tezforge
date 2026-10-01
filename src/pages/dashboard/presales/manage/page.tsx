@@ -776,11 +776,11 @@ function ManagePresaleView({
       ) : (
         <div className="border-4 border-[#1A1A2E] bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <p className="text-lg font-black uppercase tracking-wider">
-            Step 2 · Open Access
+            Step 2 · Access
           </p>
           <p className="text-sm text-gray-700">
-            Whitelisting is disabled for this presale. Anyone can participate
-            while it is live.
+            Contribution eligibility is checked against the contract when a
+            wallet submits a transaction.
           </p>
         </div>
       )}

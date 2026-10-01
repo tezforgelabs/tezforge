@@ -25,6 +25,7 @@ import {
   decodeEventLog,
   type Abi,
   type Address,
+  type ContractFunctionArgs,
 } from "viem";
 import {
   useAccount,
@@ -56,7 +57,6 @@ interface PresaleFormData {
   minContribution: string;
   maxContribution: string;
   owner: string;
-  requiresWhitelist: boolean;
 }
 
 function CreatePresaleForm({
@@ -104,7 +104,6 @@ function CreatePresaleForm({
     minContribution,
     maxContribution,
     owner,
-    requiresWhitelist,
   } = formData;
 
   // Fetch sale token decimals
@@ -125,14 +124,6 @@ function CreatePresaleForm({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-
-  const handleToggleWhitelist = (checked?: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      requiresWhitelist:
-        typeof checked === "boolean" ? checked : !prev.requiresWhitelist,
-    }));
   };
 
   const handleCreatePresale = async () => {
@@ -220,8 +211,11 @@ function CreatePresaleForm({
       paymentToken: ZERO_ADDRESS,
       config: presaleConfig,
       owner: owner as `0x${string}`,
-      requiresWhitelist,
-    };
+    } satisfies ContractFunctionArgs<
+      typeof PresaleFactory.abi,
+      "nonpayable",
+      "createPresale"
+    >[0];
 
     writeContract(
       {
@@ -421,41 +415,6 @@ function CreatePresaleForm({
           onChange={handleChange}
         />
       </div>
-      <div className="border-2 border-[#1A1A2E] bg-white p-4 sm:p-5 space-y-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-black uppercase tracking-wider text-gray-800">
-              Whitelist Access
-            </p>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {requiresWhitelist
-                ? "Only wallets you approve will be able to contribute. Perfect for private or KYC-based launches."
-                : "Anyone can contribute while the presale is live."}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-wide text-gray-600">
-              {requiresWhitelist ? "Enabled" : "Disabled"}
-            </span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={requiresWhitelist}
-                onChange={(event) =>
-                  handleToggleWhitelist(event.target.checked)
-                }
-              />
-              <div className="h-7 w-12 rounded-full border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)] transition-colors peer-checked:bg-[#1A1A2E]" />
-              <div className="absolute left-1 top-1 h-5 w-5 rounded-full bg-black transition-transform peer-checked:translate-x-5 peer-checked:bg-white" />
-            </label>
-          </div>
-        </div>
-        <p className="text-xs text-gray-600 leading-relaxed">
-          You can add or remove addresses from the whitelist as soon as your
-          presale is deployed.
-        </p>
-      </div>
       <Button
         onClick={handleCreatePresale}
         disabled={isLoading}
@@ -493,7 +452,6 @@ export default function CreatePresalePage() {
     minContribution: "",
     maxContribution: "",
     owner: address ?? "",
-    requiresWhitelist: false,
   });
 
   // Redirect to project submission if not whitelisted

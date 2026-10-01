@@ -30,6 +30,7 @@ export function PresaleParticipationForm({
   presale,
 }: PresaleParticipationFormProps) {
   const [amount, setAmount] = useState("");
+  const [isSimulating, setIsSimulating] = useState(false);
   const { address: account } = useAccount();
 
   const { presale: updatedPresale, refetch: refetchPresale } =
@@ -109,6 +110,27 @@ export function PresaleParticipationForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canContribute || needsApproval || !presaleData) return;
+    if (!account || !publicClient) {
+      toast.error("Connect your wallet to check contribution eligibility.");
+      return;
+    }
+
+    setIsSimulating(true);
+    try {
+      await publicClient.simulateContract({
+        abi: LaunchpadPresaleContract.abi,
+        address: presaleData.address,
+        functionName: "contribute",
+        args: [presaleData.isPaymentETH ? 0n : amountAsBigInt],
+        value: presaleData.isPaymentETH ? amountAsBigInt : 0n,
+        account,
+      });
+    } catch (error) {
+      toast.error(getFriendlyTxErrorMessage(error, "Contribution eligibility"));
+      return;
+    } finally {
+      setIsSimulating(false);
+    }
 
     await contribute({
       presaleAddress: presaleData.address,
@@ -302,6 +324,7 @@ export function PresaleParticipationForm({
         : "Checking token allowance...";
     }
     if (isApproving) return "Approving...";
+    if (isSimulating) return "Checking eligibility...";
     if (isPending) return "Confirming...";
     if (isConfirming) return "Waiting for transaction...";
     if (needsApproval) return `Approve ${presaleData.paymentTokenSymbol}`;
@@ -520,6 +543,7 @@ export function PresaleParticipationForm({
               isPending ||
               isConfirming ||
               isApproving ||
+              isSimulating ||
               isContributionDisabled ||
               !whitelistGateOpen ||
               !canContribute
