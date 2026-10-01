@@ -102,6 +102,7 @@ export function useIsFeeRecipient(address: Address | undefined) {
  * @deprecated Use useIsAdmin hook instead
  */
 export function isAdmin(_address: string | undefined): boolean {
+  void _address;
   // This function is deprecated - admin check now happens on-chain
   // Returning false to prevent accidental access
   // The AdminRoute component should use useIsAdmin hook instead
@@ -124,6 +125,7 @@ export function useIsAdminLegacy(_address: string | undefined): boolean {
  * @deprecated Admin check now happens on-chain
  */
 export function requireAdmin(_address: string | undefined): void {
+  void _address;
   console.warn(
     "requireAdmin() is deprecated. Use on-chain admin verification instead.",
   );

@@ -1,7 +1,9 @@
-import { useMemo } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useState } from "react";
+import { useAccount, usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import { erc20Abi } from "viem";
-import { type Address, maxUint256 } from "viem";
+import { type Address } from "viem";
+import { toast } from "sonner";
+import { getPresaleAllowanceState } from "@/lib/utils/presale-approval";
 
 export function usePresaleApproval({
   presaleAddress,
@@ -10,16 +12,19 @@ export function usePresaleApproval({
   isPaymentETH,
 }: {
   presaleAddress: Address;
-  paymentToken: { address: Address; decimals: number };
+  paymentToken: { address: Address };
   amount: bigint;
   isPaymentETH: boolean;
 }) {
   const { address } = useAccount();
+  const publicClient = usePublicClient();
+  const [isApprovalConfirming, setIsApprovalConfirming] = useState(false);
 
   const {
     data: allowance,
     refetch,
     isLoading: isAllowanceLoading,
+    isError: isAllowanceError,
   } = useReadContract({
     address: paymentToken.address,
     abi: erc20Abi,
@@ -33,35 +38,47 @@ export function usePresaleApproval({
   const { isPending: isApproveLoading, writeContractAsync: approveAsync } =
     useWriteContract();
 
-  const needsApproval = useMemo(() => {
-    if (isPaymentETH || !allowance) return false;
-    return allowance < amount;
-  }, [allowance, amount, isPaymentETH]);
+  const allowanceState = getPresaleAllowanceState(
+    isPaymentETH,
+    allowance,
+    amount,
+  );
+  const needsApproval = allowanceState === "needs-approval";
+  const isAllowanceReady = allowanceState !== "unknown";
 
   const approve = async () => {
-    if (!paymentToken.address) return;
+    if (!paymentToken.address || !publicClient || !needsApproval || amount <= 0n)
+      return;
 
     try {
+      setIsApprovalConfirming(true);
       const hash = await approveAsync({
         address: paymentToken.address,
         abi: erc20Abi,
         functionName: "approve",
-        args: [presaleAddress, maxUint256],
+        args: [presaleAddress, amount],
       });
 
-      // After approval, refetch allowance
-      if (hash) {
-        refetch();
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.status !== "success") {
+        throw new Error("Token approval was reverted");
       }
+      await refetch();
     } catch (error) {
       console.error("Approval failed", error);
+      toast.error("Token approval failed. Please try again.");
+    } finally {
+      setIsApprovalConfirming(false);
     }
   };
 
   return {
     needsApproval,
+    isAllowanceReady,
+    isAllowanceError,
     approve,
-    isApproving: isApproveLoading || isAllowanceLoading,
+    isApproving: isApproveLoading || isApprovalConfirming,
+    isAllowanceLoading,
     refetchAllowance: refetch,
   };
 }

@@ -36,10 +36,13 @@ function AdminDashboardContent() {
 
   useEffect(() => {
     if (isFeeRecipientSuccess) {
-      toast.success("Fee recipient updated successfully");
-      setNewFeeRecipient("");
-      resetFeeRecipient();
-      refetchFeeRecipient();
+      const timer = window.setTimeout(() => {
+        toast.success("Fee recipient updated successfully");
+        setNewFeeRecipient("");
+        resetFeeRecipient();
+        refetchFeeRecipient();
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [isFeeRecipientSuccess, resetFeeRecipient, refetchFeeRecipient]);
 

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { TokenLocker } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { useNow } from "@/lib/hooks/useNow";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowRight,
@@ -82,6 +83,7 @@ function RecentLockCard({
   lockId: bigint;
   tokenLocker: Address;
 }) {
+  const now = useNow();
   const { data: lockInfo, isLoading } = useReadContract({
     address: tokenLocker,
     abi: TokenLocker.abi as Abi,
@@ -109,28 +111,28 @@ function RecentLockCard({
     },
   });
 
-  const formattedAmount = useMemo(() => {
-    if (!lock?.amount || tokenDecimals === undefined) return "...";
-    return formatUnits(lock.amount, tokenDecimals);
-  }, [lock?.amount, tokenDecimals]);
+  const formattedAmount =
+    lock?.amount && tokenDecimals !== undefined
+      ? formatUnits(lock.amount, tokenDecimals)
+      : "...";
 
-  const lockStatus = useMemo(() => {
-    if (!lock) return "unknown";
-    if (lock.withdrawn) return "withdrawn";
-    const now = Date.now();
-    const unlockTimestamp = Number(lock.unlockDate) * 1000;
-    return now >= unlockTimestamp ? "unlockable" : "locked";
-  }, [lock]);
+  const lockStatus = !lock
+    ? "unknown"
+    : lock.withdrawn
+      ? "withdrawn"
+      : now !== null && now >= Number(lock.unlockDate) * 1000
+        ? "unlockable"
+        : "locked";
 
-  const progress = useMemo(() => {
-    if (!lock) return 0;
-    const now = Date.now();
+  const progress = (() => {
+    if (!lock || now === null) return 0;
     const lockTimestamp = Number(lock.lockDate) * 1000;
     const unlockTimestamp = Number(lock.unlockDate) * 1000;
     const totalDuration = unlockTimestamp - lockTimestamp;
+    if (totalDuration <= 0) return 0;
     const elapsed = now - lockTimestamp;
     return Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
-  }, [lock]);
+  })();
 
   if (isLoading) {
     return (

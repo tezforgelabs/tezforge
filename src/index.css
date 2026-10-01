@@ -9,24 +9,26 @@ body {
 @layer base {
   :root {
     --radius: 0.625rem;
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    --background: #f7f3ee;
+    --background-rgb: 247 243 238;
+    --foreground: #1a1a2e;
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    --primary: #0f59ff;
+    --primary-foreground: #ffffff;
+    --secondary: #64fe3e;
+    --secondary-foreground: #1a1a2e;
+    --muted: #ede5dc;
+    --muted-rgb: 237 229 220;
+    --muted-foreground: #4a4a5b;
+    --accent: #ede5dc;
+    --accent-foreground: #1a1a2e;
+    --destructive: #e74c3c;
+    --border: #1a1a2e;
+    --input: #1a1a2e;
+    --ring: #0f59ff;
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
@@ -44,6 +46,7 @@ body {
 
   .dark {
     --background: oklch(0.145 0 0);
+    --background-rgb: 26 26 46;
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
@@ -54,6 +57,7 @@ body {
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
+    --muted-rgb: 52 52 63;
     --muted-foreground: oklch(0.708 0 0);
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
@@ -83,6 +87,10 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  :is(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 3px;
   }
 }
 
@@ -121,13 +129,14 @@ body {
     display: none;
   }
 
-  /* Global scrollbar hiding */
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  * {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

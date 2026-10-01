@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { TokenLocker } from "@/config";
 import { useAllLocks } from "@/lib/hooks/useAllLocks";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
+import { useNow } from "@/lib/hooks/useNow";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
 import { format, formatDistanceToNow } from "date-fns";
 import {
@@ -51,7 +52,7 @@ function LockProgressBar({
   lockDate: bigint;
   unlockDate: bigint;
 }) {
-  const now = Date.now();
+  const now = useNow(60_000);
 
   // Safe number conversions
   let lockTimestamp = 0;
@@ -64,13 +65,13 @@ function LockProgressBar({
   }
 
   const totalDuration = unlockTimestamp - lockTimestamp;
-  const elapsed = now - lockTimestamp;
+  const elapsed = (now ?? lockTimestamp) - lockTimestamp;
   const progress =
     totalDuration > 0
       ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100))
       : 0;
 
-  const isExpired = unlockTimestamp > 0 && now >= unlockTimestamp;
+  const isExpired = now !== null && unlockTimestamp > 0 && now >= unlockTimestamp;
 
   // Safe date formatting
   let lockDateStr = "Unknown";

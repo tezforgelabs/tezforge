@@ -132,9 +132,12 @@ function WhitelistManager() {
   // Add success/error handlers
   useEffect(() => {
     if (isAddSuccess) {
-      toast.success("Creator added to whitelist");
-      setAddAddress("");
-      resetAdd();
+      const timer = window.setTimeout(() => {
+        toast.success("Creator added to whitelist");
+        setAddAddress("");
+        resetAdd();
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [isAddSuccess, resetAdd]);
 
@@ -147,9 +150,12 @@ function WhitelistManager() {
 
   useEffect(() => {
     if (isRemoveSuccess) {
-      toast.success("Creator removed from whitelist");
-      setRemoveAddress("");
-      resetRemove();
+      const timer = window.setTimeout(() => {
+        toast.success("Creator removed from whitelist");
+        setRemoveAddress("");
+        resetRemove();
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [isRemoveSuccess, resetRemove]);
 

@@ -2,21 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { TokenFactory } from "@/config";
 import { useChainContracts } from "@/lib/hooks/useChainContracts";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
+import { buildBetaTokenParams } from "@/lib/utils/beta-token";
 import { CheckCircle2, Coins, ExternalLink } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { decodeEventLog, parseUnits } from "viem";
+import { decodeEventLog } from "viem";
 import {
   useAccount,
   useWaitForTransactionReceipt,
@@ -24,17 +18,6 @@ import {
 } from "wagmi";
 
 import { useChainId, useConfig } from "wagmi";
-import { useTokenVerification } from "@/lib/hooks/useTokenVerification";
-
-const TokenType = {
-  Plain: 0,
-  Mintable: 1,
-  Burnable: 2,
-  Taxable: 3,
-  NonMintable: 4,
-} as const;
-
-type TokenType = (typeof TokenType)[keyof typeof TokenType];
 
 export default function CreateTokenPage() {
   const { address } = useAccount();
@@ -53,80 +36,39 @@ export default function CreateTokenPage() {
   const explorerUrl = config.chains.find((chain) => chain.id === chainId)
     ?.blockExplorers?.default.url;
 
-  const [tokenType, setTokenType] = useState<TokenType>(TokenType.Plain);
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
-  const [decimals, setDecimals] = useState("18");
   const [initialSupply, setInitialSupply] = useState("1000000");
-  const [initialRecipient, setInitialRecipient] = useState("");
-  const [taxWallet, setTaxWallet] = useState("");
-  const [taxBps, setTaxBps] = useState("0");
+  const [initialRecipientInput, setInitialRecipientInput] = useState<string | null>(null);
+  const initialRecipient = initialRecipientInput ?? address ?? "";
 
   const [createdTokenAddress, setCreatedTokenAddress] = useState<string | null>(
     null,
   );
-  const { verifyToken } = useTokenVerification();
-
   const processedHash = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (address) {
-      setInitialRecipient(address);
-    }
-  }, [address]);
 
   const handleCreateToken = async () => {
     setCreatedTokenAddress(null);
     processedHash.current = null;
 
-    const tokenParams = {
-      name,
-      symbol,
-      decimals: parseInt(decimals),
-      initialSupply: parseUnits(initialSupply, parseInt(decimals)),
-      initialRecipient: initialRecipient as `0x${string}`,
-    };
-
-    let functionName:
-      | "createPlainToken"
-      | "createMintableToken"
-      | "createBurnableToken"
-      | "createTaxableToken"
-      | "createNonMintableToken";
-    const args: unknown[] = [tokenParams];
-
-    switch (tokenType) {
-      case TokenType.Plain:
-        functionName = "createPlainToken";
-        break;
-      case TokenType.Mintable:
-        functionName = "createMintableToken";
-        break;
-      case TokenType.Burnable:
-        functionName = "createBurnableToken";
-        break;
-      case TokenType.Taxable: {
-        functionName = "createTaxableToken";
-        const taxParams = {
-          taxWallet: taxWallet as `0x${string}`,
-          taxBps: parseInt(taxBps),
-        };
-        args.push(taxParams);
-        break;
-      }
-      case TokenType.NonMintable:
-        functionName = "createNonMintableToken";
-        break;
-      default:
-        toast.error("Invalid token type selected");
-        return;
+    let tokenParams: ReturnType<typeof buildBetaTokenParams>;
+    try {
+      tokenParams = buildBetaTokenParams({
+        name,
+        symbol,
+        initialSupply,
+        initialRecipient,
+      });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Invalid token details.");
+      return;
     }
 
     writeContract({
       address: tokenFactory,
       abi: TokenFactory.abi,
-      functionName,
-      args: args as never,
+      functionName: "createPlainToken",
+      args: [tokenParams],
     });
   };
 
@@ -166,21 +108,14 @@ export default function CreateTokenPage() {
       if (event) {
         const tokenAddress = (event.args as unknown as { token: `0x${string}` })
           .token;
+        // The confirmed transaction is an external event that updates the form.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCreatedTokenAddress(tokenAddress);
         toast.success("Token created successfully!");
         setName("");
         setSymbol("");
-        setDecimals("18");
         setInitialSupply("1000000");
-        setTaxWallet("");
-        setTaxBps("0");
         reset();
-
-        // Fire-and-forget verification on Blockscout
-        verifyToken({
-          address: tokenAddress,
-          tokenType,
-        });
       } else {
         toast.error("Could not find TokenCreated event in transaction logs.");
       }
@@ -196,7 +131,7 @@ export default function CreateTokenPage() {
             <Coins className="w-8 h-8" /> Create Token
           </h1>
           <p className="text-sm text-white/80 mt-2">
-            Deploy your own ERC-20 token on Tezos X.
+            Deploy an ERC-20 token.
           </p>
         </div>
       </div>
@@ -219,6 +154,9 @@ export default function CreateTokenPage() {
                 {createdTokenAddress}
               </code>
             </div>
+            <p className="text-sm text-gray-600">
+              Source verification is unavailable. Blockscout will show this contract as unverified.
+            </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <a
                 href={`${explorerUrl}/address/${createdTokenAddress}`}
@@ -232,11 +170,11 @@ export default function CreateTokenPage() {
                 </Button>
               </a>
               <Link
-                to={`/dashboard/tools/token-locker?token=${createdTokenAddress}`}
+                to={`/dashboard/create/presale?token=${createdTokenAddress}`}
                 className="flex-1"
               >
                 <Button className="w-full border-2 border-[#1A1A2E] bg-[#64FE3E] text-black font-bold uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]">
-                  Lock Tokens
+                  Create Presale
                 </Button>
               </Link>
             </div>
@@ -260,56 +198,9 @@ export default function CreateTokenPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
-            <div className="space-y-2">
-              <Label
-                htmlFor="token-type"
-                className="font-semibold uppercase text-xs"
-              >
-                Token Type
-              </Label>
-              <Select
-                onValueChange={(value) =>
-                  setTokenType(parseInt(value) as TokenType)
-                }
-                defaultValue={TokenType.Plain.toString()}
-              >
-                <SelectTrigger
-                  id="token-type"
-                  className="border-2 border-[#1A1A2E]"
-                >
-                  <SelectValue placeholder="Select token type" />
-                </SelectTrigger>
-                <SelectContent className="border-2 border-[#1A1A2E]">
-                  <SelectItem value={TokenType.Plain.toString()}>
-                    Plain
-                  </SelectItem>
-                  <SelectItem value={TokenType.Mintable.toString()}>
-                    Mintable
-                  </SelectItem>
-                  <SelectItem value={TokenType.Burnable.toString()}>
-                    Burnable
-                  </SelectItem>
-                  <SelectItem value={TokenType.Taxable.toString()}>
-                    Taxable
-                  </SelectItem>
-                  <SelectItem value={TokenType.NonMintable.toString()}>
-                    Non-Mintable
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500">
-                {tokenType === TokenType.Plain &&
-                  "A standard ERC-20 token with basic transfer functionality."}
-                {tokenType === TokenType.Mintable &&
-                  "Allows the owner to mint new tokens after deployment."}
-                {tokenType === TokenType.Burnable &&
-                  "Allows holders to burn (destroy) their tokens."}
-                {tokenType === TokenType.Taxable &&
-                  "Applies a tax on transfers, sent to a designated wallet."}
-                {tokenType === TokenType.NonMintable &&
-                  "Fixed supply token that cannot be minted after creation."}
-              </p>
-            </div>
+            <p className="text-sm text-gray-600">
+              Standard ERC-20 · 18 decimals
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -349,11 +240,13 @@ export default function CreateTokenPage() {
                 <Input
                   id="decimals"
                   type="number"
-                  placeholder="18"
-                  value={decimals}
-                  onChange={(e) => setDecimals(e.target.value)}
+                  value="18"
+                  readOnly
                   className="border-2 border-[#1A1A2E]"
                 />
+                <p className="text-xs text-gray-600">
+                  Fixed at 18 decimals for presales.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label
@@ -384,52 +277,13 @@ export default function CreateTokenPage() {
                 id="initial-recipient"
                 placeholder="e.g. 0x..."
                 value={initialRecipient}
-                onChange={(e) => setInitialRecipient(e.target.value)}
+                onChange={(e) => setInitialRecipientInput(e.target.value)}
                 className="border-2 border-[#1A1A2E] font-mono text-sm"
               />
               <p className="text-xs text-gray-500">
                 Defaults to your connected wallet address.
               </p>
             </div>
-
-            {tokenType === TokenType.Taxable && (
-              <div className="space-y-4 pt-4 border-t-2 border-[#1A1A2E]">
-                <h3 className="font-black uppercase text-sm">
-                  Taxable Token Configuration
-                </h3>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="tax-wallet"
-                    className="font-bold uppercase text-xs"
-                  >
-                    Tax Wallet
-                  </Label>
-                  <Input
-                    id="tax-wallet"
-                    placeholder="e.g. 0x..."
-                    value={taxWallet}
-                    onChange={(e) => setTaxWallet(e.target.value)}
-                    className="border-2 border-[#1A1A2E] font-mono text-sm"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="tax-bps"
-                    className="font-bold uppercase text-xs"
-                  >
-                    Tax (in BPS, 1% = 100)
-                  </Label>
-                  <Input
-                    id="tax-bps"
-                    type="number"
-                    placeholder="100"
-                    value={taxBps}
-                    onChange={(e) => setTaxBps(e.target.value)}
-                    className="border-2 border-[#1A1A2E]"
-                  />
-                </div>
-              </div>
-            )}
 
             <Button
               onClick={handleCreateToken}

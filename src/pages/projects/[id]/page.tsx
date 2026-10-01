@@ -2,15 +2,13 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMarkets } from "@/lib/hooks/useMarkets";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   useLaunchpadPresale,
   type PresaleWithStatus,
 } from "@/lib/hooks/useLaunchpadPresales";
 import { PresaleParticipationForm } from "@/components/ui/presale-participation-form";
-import { SwapForm } from "@/components/ui/swap-form";
 import { formatUnits } from "viem";
 import { Badge } from "@/components/ui/badge";
 import { getPresaleMetadata } from "@/config/presale-metadata";
@@ -20,16 +18,11 @@ export default function ProjectDetailPage() {
   const { presale, isLoading: isLoadingPresale } = useLaunchpadPresale(
     id as `0x${string}`,
   );
-  const { markets } = useMarkets();
-  const metadata = useMemo(
-    () =>
-      presale?.address
-        ? getPresaleMetadata(presale.address)
-        : id
-          ? getPresaleMetadata(id)
-          : undefined,
-    [presale?.address, id],
-  );
+  const metadata = presale?.address
+    ? getPresaleMetadata(presale.address)
+    : id
+      ? getPresaleMetadata(id)
+      : undefined;
 
   const [nowMs, setNowMs] = useState<number | null>(null);
   useEffect(() => {
@@ -69,51 +62,14 @@ export default function ProjectDetailPage() {
     presaleHasEnded;
 
   const renderMarketView = () => {
-    const presaleTokens = [
-      presale.saleToken.toLowerCase(),
-      presale.paymentToken.toLowerCase(),
-    ];
-
-    const market = markets.find((m) => {
-      if (!m) return false;
-      const marketTokens = [
-        m.token0.address.toLowerCase(),
-        m.token1.address.toLowerCase(),
-      ];
-      return (
-        marketTokens.includes(presaleTokens[0]) &&
-        marketTokens.includes(presaleTokens[1])
-      );
-    });
-
-    if (!market) {
-      return (
-        <div className="text-center py-10">
-          <p className="text-xl font-bold">Market Not Available</p>
-          <p className="text-gray-500">
-            The launch has ended, but a trading market has not been created for
-            this token yet.
-          </p>
-        </div>
-      );
-    }
-
-    const dexScreenerUrl = `https://dexscreener.com/etherlink/${market.pairAddress}?embed=1&theme=dark&info=0`;
-
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <Card className="w-full h-[600px] overflow-hidden border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
-            <iframe
-              src={dexScreenerUrl}
-              className="w-full h-full border-0"
-              allowFullScreen
-            ></iframe>
-          </Card>
-        </div>
-        <div>
-          <SwapForm market={market} />
-        </div>
+      <div className="py-10 text-center">
+        <p className="text-xl font-bold">
+          Trading is unavailable
+        </p>
+        <p className="text-gray-500">
+          No exchange is connected yet.
+        </p>
       </div>
     );
   };
@@ -148,7 +104,7 @@ export default function ProjectDetailPage() {
                       Number(
                         formatUnits(
                           presale.totalRaised,
-                          presale.paymentTokenDecimals || 18,
+                          presale.paymentTokenDecimals ?? 18,
                         ),
                       ),
                     ).toLocaleString()}{" "}
@@ -160,7 +116,7 @@ export default function ProjectDetailPage() {
                   <p>
                     {formatUnits(
                       presale.hardCap,
-                      presale.paymentTokenDecimals || 18,
+                      presale.paymentTokenDecimals ?? 18,
                     )}{" "}
                     {presale.paymentTokenSymbol}
                   </p>
@@ -210,7 +166,7 @@ export default function ProjectDetailPage() {
               <p>
                 {formatUnits(
                   presale.softCap,
-                  presale.paymentTokenDecimals || 18,
+                  presale.paymentTokenDecimals ?? 18,
                 )}{" "}
                 {presale.paymentTokenSymbol}
               </p>

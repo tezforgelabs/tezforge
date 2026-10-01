@@ -22,6 +22,7 @@ const PRESALE_CREATED_EVENT = parseAbiItem(
 );
 
 type WhitelistMap = Record<string, boolean>;
+const EMPTY_WHITELIST_MAP: WhitelistMap = {};
 
 async function fetchAllWhitelistFlags(
   client: PublicClient,
@@ -82,18 +83,20 @@ export function useLaunchpadPresales(
     setPresaleAddresses,
     setPresaleAddressesLoading,
     setPresale,
-    getPresale,
     getPresaleStatus,
     presales: presaleCache,
   } = useLaunchpadPresaleStore();
 
   const publicClient = usePublicClient();
   const { presaleFactory } = useChainContracts();
-  const [whitelistMap, setWhitelistMap] = useState<WhitelistMap>({});
-
-  useEffect(() => {
-    setWhitelistMap({});
-  }, [presaleFactory]);
+  const [whitelistState, setWhitelistState] = useState({
+    factory: presaleFactory,
+    map: EMPTY_WHITELIST_MAP,
+  });
+  const whitelistMap =
+    whitelistState.factory === presaleFactory
+      ? whitelistState.map
+      : EMPTY_WHITELIST_MAP;
 
   const cachedAddresses = getPresaleAddresses();
   const shouldFetchAddresses = Boolean(presaleFactory);
@@ -174,7 +177,13 @@ export function useLaunchpadPresales(
           presaleFactory,
         );
         if (!cancelled) {
-          setWhitelistMap((prev) => ({ ...prev, ...latest }));
+          setWhitelistState((prev) => ({
+            factory: presaleFactory,
+            map:
+              prev.factory === presaleFactory
+                ? { ...prev.map, ...latest }
+                : latest,
+          }));
         }
       } catch (error) {
         console.error("Failed to read whitelist flags", error);
@@ -389,7 +398,7 @@ export function useLaunchpadPresales(
   const allPresales = useMemo((): PresaleWithStatus[] => {
     return presaleAddresses
       .map((addr) => {
-        const cached = getPresale(addr);
+        const cached = presaleCache[addr.toLowerCase()]?.data;
         if (!cached) return null;
 
         const status = getPresaleStatus(cached);
@@ -405,7 +414,7 @@ export function useLaunchpadPresales(
         };
       })
       .filter((p): p is PresaleWithStatus => p !== null);
-  }, [presaleAddresses, getPresale, getPresaleStatus, presaleCache]);
+  }, [presaleAddresses, getPresaleStatus, presaleCache]);
 
   // Filter presales by status
   const filteredPresales = useMemo(() => {
@@ -462,17 +471,17 @@ export function useLaunchpadPresale(
   const publicClient = usePublicClient();
   const { presaleFactory } = useChainContracts();
   const cachedPresale = presaleAddress ? getPresale(presaleAddress) : null;
-  const [requiresWhitelist, setRequiresWhitelist] = useState<
-    boolean | undefined
-  >(cachedPresale?.requiresWhitelist);
+  const [fetchedWhitelist, setFetchedWhitelist] = useState<{
+    address: Address;
+    value: boolean;
+  } | null>(null);
+  const requiresWhitelist =
+    cachedPresale?.requiresWhitelist ??
+    (fetchedWhitelist && fetchedWhitelist.address === presaleAddress
+      ? fetchedWhitelist.value
+      : undefined);
 
   const shouldFetch = Boolean(presaleAddress);
-
-  useEffect(() => {
-    if (cachedPresale?.requiresWhitelist !== undefined) {
-      setRequiresWhitelist(cachedPresale.requiresWhitelist);
-    }
-  }, [cachedPresale?.requiresWhitelist]);
 
   useEffect(() => {
     if (!publicClient || !presaleAddress) return;
@@ -487,12 +496,12 @@ export function useLaunchpadPresale(
           presaleAddress,
         );
         if (!cancelled) {
-          setRequiresWhitelist(flag);
+          setFetchedWhitelist({ address: presaleAddress, value: flag });
         }
       } catch (error) {
         console.error("Failed to fetch whitelist flag", error);
         if (!cancelled) {
-          setRequiresWhitelist(false);
+          setFetchedWhitelist({ address: presaleAddress, value: false });
         }
       }
     })();

@@ -11,23 +11,22 @@ export function useCountUp(to: number, duration: number = 2000) {
   const startTime = useRef<number | undefined>(undefined);
   const hasAnimated = useRef(false);
 
-  const animate = (timestamp: number) => {
-    if (startTime.current === undefined) {
-      startTime.current = timestamp;
-    }
-    const elapsed = timestamp - startTime.current;
-    const progress = Math.min(elapsed / duration, 1);
-    const easedProgress = easeOutExpo(progress);
-    const newCount = easedProgress * to;
-
-    setCount(newCount);
-
-    if (progress < 1) {
-      animationFrameId.current = requestAnimationFrame(animate);
-    }
-  };
-
   useEffect(() => {
+    const animate = (timestamp: number) => {
+      if (startTime.current === undefined) {
+        startTime.current = timestamp;
+      }
+      const elapsed = timestamp - startTime.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutExpo(progress);
+
+      setCount(easedProgress * to);
+
+      if (progress < 1) {
+        animationFrameId.current = requestAnimationFrame(animate);
+      }
+    };
+
     // If already animated and target changed, re-animate from current value
     if (hasAnimated.current) {
       startTime.current = undefined;

@@ -192,7 +192,8 @@ export const useBlockchainStore = create<BlockchainStore>()(
           const userLocks = state.userLocks[address.toLowerCase()];
           if (!userLocks) return state;
 
-          const { [lockId.toString()]: _, ...remainingLocks } = userLocks.locks;
+          const remainingLocks = { ...userLocks.locks };
+          delete remainingLocks[lockId.toString()];
 
           return {
             userLocks: {
@@ -246,9 +247,10 @@ export const useBlockchainStore = create<BlockchainStore>()(
 
       clearUserCache: (address) =>
         set((state) => {
-          const { [address.toLowerCase()]: _, ...restTokens } =
-            state.userTokens;
-          const { [address.toLowerCase()]: __, ...restLocks } = state.userLocks;
+          const restTokens = { ...state.userTokens };
+          const restLocks = { ...state.userLocks };
+          delete restTokens[address.toLowerCase()];
+          delete restLocks[address.toLowerCase()];
           return {
             userTokens: restTokens,
             userLocks: restLocks,

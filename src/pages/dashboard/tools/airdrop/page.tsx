@@ -65,8 +65,11 @@ export default function AirdropPage() {
         (t) => t.toLowerCase() === tokenFromUrl.toLowerCase(),
       );
       if (matched) {
-        setTokenAddress(matched);
-        setSendType("erc20");
+        const timer = window.setTimeout(() => {
+          setTokenAddress(matched);
+          setSendType("erc20");
+        }, 0);
+        return () => window.clearTimeout(timer);
       }
     }
   }, [tokenFromUrl, userTokens, isUserTokensLoading]);
@@ -179,7 +182,7 @@ export default function AirdropPage() {
           const amount = parseUnits(amountStr, decimals);
           acc.recipients.push(recipient as `0x${string}`);
           acc.amounts.push(amount);
-        } catch (error) {
+        } catch {
           errors.push(
             `Line ${index + 1}: Could not parse amount "${amountStr}"`,
           );
@@ -311,9 +314,12 @@ export default function AirdropPage() {
 
   useEffect(() => {
     if (isSendConfirmed && sendHash) {
-      toast.success("Airdrop sent successfully!");
-      setRecipientsData("");
-      resetSend();
+      const timer = window.setTimeout(() => {
+        toast.success("Airdrop sent successfully!");
+        setRecipientsData("");
+        resetSend();
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [isSendConfirmed, sendHash, resetSend]);
 
