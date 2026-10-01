@@ -38,22 +38,32 @@ export function useFactoryOwner() {
  */
 export function useFeeRecipient() {
   const { presaleFactory } = useChainContracts();
+  const { factoryOwner } = useFactoryOwner();
   const {
-    data: feeRecipient,
+    data: feeRecipientData,
     isLoading,
+    isError,
     refetch,
   } = useReadContract({
     address: presaleFactory,
     abi: PresaleFactory.abi,
     functionName: "feeRecipient",
     query: {
+      retry: false, // Older factory deployments revert on this getter
       refetchInterval: 30000, // Refetch every 30 seconds
     },
   });
 
+  // Older deployments have no feeRecipient(): platform fees accrue to the
+  // factory owner, so fall back to owner() when the getter reverts.
+  const feeRecipient = (
+    isError ? factoryOwner : feeRecipientData
+  ) as Address | undefined;
+
   return {
-    feeRecipient: feeRecipient as Address | undefined,
+    feeRecipient,
     isLoading,
+    isError,
     refetch,
   };
 }

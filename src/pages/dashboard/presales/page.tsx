@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import {
   useLaunchpadPresales,
   type PresaleWithStatus,
@@ -10,78 +9,93 @@ import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
+function statusBadge(status: string) {
+  switch (status) {
+    case "live":
+      return { label: "Live", classes: "bg-tezforge-green", dot: "bg-tezforge-ink" };
+    case "upcoming":
+      return { label: "Upcoming", classes: "bg-tezforge-blue text-white", dot: "bg-white" };
+    case "cancelled":
+      return { label: "Cancelled", classes: "bg-tezforge-red text-white", dot: "bg-white" };
+    case "finalized":
+      return { label: "Finalized", classes: "bg-tezforge-blue text-white", dot: "bg-white" };
+    default:
+      return { label: "Ended", classes: "bg-tezforge-cream-dark", dot: "bg-tezforge-ink/50" };
+  }
+}
+
 function PresaleRow({ presale }: { presale: PresaleWithStatus }) {
   const progress =
     presale.hardCap > 0n
-      ? Math.round(Number((presale.totalRaised * 100n) / presale.hardCap))
+      ? Math.min(
+          100,
+          Math.round(Number((presale.totalRaised * 100n) / presale.hardCap)),
+        )
       : 0;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "live":
-        return "bg-[#64FE3E]";
-      case "upcoming":
-        return "bg-[#64FE3E]";
-      case "finalized":
-        return "bg-[#0F59FF]";
-      case "cancelled":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
+  const isCancelled = presale.status === "cancelled";
+  const name = presale.saleTokenName || presale.saleTokenSymbol || "Token";
+  const symbol = presale.saleTokenSymbol;
+  const badge = statusBadge(presale.status);
 
   return (
-    <div className="p-4 border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_rgba(26,26,46,1)]">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-black text-lg uppercase">
-              {presale.saleTokenSymbol || "Token"} Presale
-            </h3>
+    <li>
+      <Link
+        to={`/dashboard/presales/manage/${presale.address}`}
+        aria-label={`Manage ${name} presale — ${progress}% funded`}
+        className="block border-2 border-tezforge-ink bg-white p-3 shadow-[3px_3px_0_0_rgba(26,26,46,1)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-tezforge-cream/60 hover:shadow-[5px_5px_0_0_rgba(26,26,46,1)] motion-reduce:transform-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tezforge-blue sm:p-4"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2.5">
             <span
-              className={`px-2 py-0.5 text-xs font-bold uppercase text-white ${getStatusColor(
-                presale.status,
-              )}`}
+              aria-hidden="true"
+              className="flex size-9 shrink-0 items-center justify-center border-2 border-tezforge-ink bg-tezforge-cream text-xs font-black uppercase"
             >
-              {presale.status}
+              {(symbol || name).slice(0, 2)}
             </span>
+            <h3 className="truncate text-base font-black uppercase tracking-tight">
+              {symbol ? `${symbol} Presale` : "Presale"}
+            </h3>
           </div>
-          <p className="text-xs text-gray-500 break-all font-mono">
-            {presale.address}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 flex-shrink-0">
-          <Button
-            size="sm"
-            asChild
-            className="border-2 border-[#1A1A2E] bg-[#64FE3E] text-black font-bold text-xs uppercase shadow-[2px_2px_0_rgba(26,26,46,1)] hover:shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#E0B800]"
+          <span
+            className={`inline-flex shrink-0 items-center gap-1.5 border-2 border-tezforge-ink px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${badge.classes}`}
           >
-            <Link to={`/dashboard/presales/manage/${presale.address}`}>
-              Manage <ExternalLink className="ml-1 h-3 w-3" />
-            </Link>
-          </Button>
+            <span aria-hidden="true" className={`size-1.5 rounded-full ${badge.dot}`} />
+            {badge.label}
+          </span>
         </div>
-      </div>
-      {presale.hardCap > 0n && (
-        <div className="mt-3">
-          <div className="flex justify-between text-xs mb-1">
-            <span className="font-bold">{progress}% Funded</span>
-            <span className="text-gray-500">
-              {Math.round(
-                Number(formatUnits(presale.totalRaised, 18)),
-              ).toLocaleString()}{" "}
-              /{" "}
-              {Math.round(
-                Number(formatUnits(presale.hardCap, 18)),
-              ).toLocaleString()}{" "}
-              XTZ
+
+        {presale.hardCap > 0n && (
+          <div className="mt-3 flex items-center gap-3">
+            <div
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progress}
+              aria-label={`${name} presale funding progress`}
+              className="h-2.5 flex-1 overflow-hidden border border-tezforge-ink bg-tezforge-cream"
+            >
+              <div
+                className={`h-full ${isCancelled ? "bg-tezforge-red" : "bg-tezforge-blue"}`}
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className="shrink-0 text-sm font-black tabular-nums">
+              {progress}%
             </span>
           </div>
-          <Progress value={progress} className="h-2 border border-[#1A1A2E]" />
+        )}
+
+        <div className="mt-2 flex items-center justify-between gap-3 text-xs">
+          <span className="font-bold tabular-nums text-tezforge-ink/70">
+            {Math.round(Number(formatUnits(presale.totalRaised, 18))).toLocaleString()} /{" "}
+            {Math.round(Number(formatUnits(presale.hardCap, 18))).toLocaleString()} XTZ
+          </span>
+          <span className="inline-flex items-center gap-1 font-black uppercase tracking-wider">
+            Manage <ExternalLink className="size-3.5" aria-hidden="true" />
+          </span>
         </div>
-      )}
-    </div>
+      </Link>
+    </li>
   );
 }
 
@@ -97,14 +111,17 @@ export default function PresalesListPage() {
 
   if (!isConnected) {
     return (
-      <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
-        <Card className="max-w-2xl mx-auto border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)]">
+      <div className="container mx-auto px-4 py-12 text-tezforge-ink">
+        <Card className="mx-auto max-w-2xl border-2 border-tezforge-ink shadow-[4px_4px_0_rgba(26,26,46,1)]">
           <CardContent className="py-12 text-center">
-            <p className="text-lg text-gray-600 mb-4">
+            <p className="mb-4 text-lg font-medium text-tezforge-ink/70">
               Please connect your wallet to view your presales.
             </p>
             <Link to="/dashboard/user">
-              <Button className="border-4 border-[#1A1A2E] bg-white text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
+              <Button
+                variant="outline"
+                className="border-2 border-tezforge-ink font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
+              >
                 Back to Dashboard
               </Button>
             </Link>
@@ -115,50 +132,43 @@ export default function PresalesListPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 text-[#1A1A2E]">
-      <Card className="mx-auto max-w-4xl border-4 border-[#1A1A2E] shadow-[6px_6px_0_rgba(26,26,46,1)]">
-        <CardHeader className="border-b-2 border-[#1A1A2E] bg-white">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <CardTitle className="text-2xl font-black uppercase tracking-wider">
-              My Presales
-            </CardTitle>
-            <Link to="/dashboard/create/presale">
-              <Button className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
-                Create Presale
-              </Button>
-            </Link>
-          </div>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          {isLoading ? (
-            <div className="space-y-3">
-              <div className="animate-pulse">
-                <div className="h-20 bg-gray-200 rounded mb-3"></div>
-                <div className="h-20 bg-gray-200 rounded mb-3"></div>
-                <div className="h-20 bg-gray-200 rounded"></div>
-              </div>
-            </div>
-          ) : myPresales.length > 0 ? (
-            <>
-              {myPresales.map((presale) => (
-                <PresaleRow key={presale.address} presale={presale} />
-              ))}
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 mb-4 text-base sm:text-lg font-medium">
-                You do not have any presales yet.
-              </p>
-              <Link to="/dashboard/create/presale">
-                <Button className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-white font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]">
-                  Create Your First Presale{" "}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+    <div className="container mx-auto max-w-4xl px-4 py-10 text-tezforge-ink sm:py-12">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-black uppercase tracking-tight sm:text-4xl">
+          My Presales
+        </h1>
+        <Link to="/dashboard/create/presale">
+          <Button className="border-2 border-tezforge-ink bg-tezforge-blue font-black uppercase tracking-wider text-white shadow-[3px_3px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_rgba(26,26,46,1)] motion-reduce:transform-none">
+            Create Presale
+          </Button>
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <div aria-hidden="true" className="space-y-3">
+          <div className="h-28 animate-pulse border-2 border-tezforge-ink/20 bg-tezforge-cream-dark/50" />
+          <div className="h-28 animate-pulse border-2 border-tezforge-ink/20 bg-tezforge-cream-dark/50" />
+          <div className="h-28 animate-pulse border-2 border-tezforge-ink/20 bg-tezforge-cream-dark/50" />
+          <span className="sr-only">Loading presales…</span>
+        </div>
+      ) : myPresales.length > 0 ? (
+        <ul className="space-y-3">
+          {myPresales.map((presale) => (
+            <PresaleRow key={presale.address} presale={presale} />
+          ))}
+        </ul>
+      ) : (
+        <div className="border-2 border-dashed border-tezforge-ink bg-white px-6 py-14 text-center">
+          <p className="mb-4 text-base font-medium text-tezforge-ink/70 sm:text-lg">
+            You do not have any presales yet.
+          </p>
+          <Link to="/dashboard/create/presale">
+            <Button className="border-2 border-tezforge-ink bg-tezforge-blue font-black uppercase tracking-wider text-white shadow-[3px_3px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_rgba(26,26,46,1)] motion-reduce:transform-none">
+              Create Your First Presale <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
