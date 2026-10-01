@@ -46,11 +46,16 @@ export function PresaleParticipationForm({
   const {
     contribution: userContribution,
     purchasedTokens: userPurchasedTokens,
-    refetch: refetchContribution,
   } = useUserPresaleContribution(presaleData.address, account);
 
-  const { contribute, isPending, isConfirming, isSuccess, error } =
-    usePresaleContribute();
+  const {
+    contribute,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    invalidateOnSuccess: invalidateContribution,
+  } = usePresaleContribute();
 
   const {
     claimTokens,
@@ -58,6 +63,7 @@ export function PresaleParticipationForm({
     isConfirming: isClaimTokensConfirming,
     isSuccess: isClaimTokensSuccess,
     error: claimTokensError,
+    invalidateOnSuccess: invalidateClaimTokens,
   } = usePresaleClaimTokens();
 
   const {
@@ -66,6 +72,7 @@ export function PresaleParticipationForm({
     isConfirming: isClaimRefundConfirming,
     isSuccess: isClaimRefundSuccess,
     error: claimRefundError,
+    invalidateOnSuccess: invalidateClaimRefund,
   } = usePresaleClaimRefund();
 
   const { calculateTokenAmount } = usePresaleCalculation();
@@ -196,32 +203,42 @@ export function PresaleParticipationForm({
 
   useEffect(() => {
     if (isSuccess) {
-      refetchContribution();
+      invalidateContribution(presaleData.address);
       refetchPresale();
       // Reset the input after the transaction receipt confirms success.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setAmount("");
       toast.success("Contribution successful!");
     }
-  }, [isSuccess, refetchContribution, refetchPresale]);
+  }, [isSuccess, invalidateContribution, presaleData.address, refetchPresale]);
 
   // Handle claim tokens success
   useEffect(() => {
     if (isClaimTokensSuccess) {
-      refetchContribution();
+      invalidateClaimTokens(presaleData.address);
       refetchPresale();
       toast.success("Tokens claimed successfully! 🎉");
     }
-  }, [isClaimTokensSuccess, refetchContribution, refetchPresale]);
+  }, [
+    isClaimTokensSuccess,
+    invalidateClaimTokens,
+    presaleData.address,
+    refetchPresale,
+  ]);
 
   // Handle claim refund success
   useEffect(() => {
     if (isClaimRefundSuccess) {
-      refetchContribution();
+      invalidateClaimRefund(presaleData.address);
       refetchPresale();
       toast.success("Refund claimed successfully!");
     }
-  }, [isClaimRefundSuccess, refetchContribution, refetchPresale]);
+  }, [
+    isClaimRefundSuccess,
+    invalidateClaimRefund,
+    presaleData.address,
+    refetchPresale,
+  ]);
 
   // Handle errors
   useEffect(() => {
@@ -266,17 +283,17 @@ export function PresaleParticipationForm({
   // Countdown until claim time (presale end)
   const claimCountdown = presaleData.endTime
     ? (() => {
-      const remaining = Number(presaleData.endTime) * 1000 - nowMs;
-      const totalSeconds = Math.max(0, Math.floor(remaining / 1000));
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      const hh = hours.toString().padStart(2, "0");
-      const mm = minutes.toString().padStart(2, "0");
-      const ss = seconds.toString().padStart(2, "0");
-      return days > 0 ? `${days}d ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
-    })()
+        const remaining = Number(presaleData.endTime) * 1000 - nowMs;
+        const totalSeconds = Math.max(0, Math.floor(remaining / 1000));
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const hh = hours.toString().padStart(2, "0");
+        const mm = minutes.toString().padStart(2, "0");
+        const ss = seconds.toString().padStart(2, "0");
+        return days > 0 ? `${days}d ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
+      })()
     : null;
 
   const canContribute =
@@ -557,7 +574,11 @@ export function PresaleParticipationForm({
             {getButtonText()}
           </Button>
           {isAllowanceError && !isAllowanceLoading && (
-            <Button type="button" variant="outline" onClick={() => refetchAllowance()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => refetchAllowance()}
+            >
               Retry allowance check
             </Button>
           )}
