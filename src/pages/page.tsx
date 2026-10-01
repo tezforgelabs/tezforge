@@ -141,7 +141,10 @@ export default function Home() {
   }, [isLoadingPresales, featuredPresales]);
 
   return (
-    <main ref={pageRef} className="min-h-screen bg-tezforge-cream text-tezforge-ink">
+    <main
+      ref={pageRef}
+      className="min-h-screen bg-tezforge-cream text-tezforge-ink"
+    >
       <div className="container mx-auto max-w-7xl px-4 py-5 text-pretty sm:px-6 sm:py-7">
         {/* ── Header ── */}
         <header className="mb-12 lg:mb-16">
@@ -160,7 +163,6 @@ export default function Home() {
                 </div>
                 <span className="flex flex-col text-tezforge-ink">
                   <span>Tezforge</span>
-                  <span className="text-[10px] font-bold tracking-wider text-tezforge-blue sm:text-xs">Demo · no real funds</span>
                 </span>
               </Link>
 
@@ -239,7 +241,7 @@ export default function Home() {
             <div className="mb-6 inline-flex items-center gap-3 border-2 border-tezforge-ink bg-tezforge-ink px-4 py-2 text-white">
               <span className="size-2 bg-tezforge-green" aria-hidden="true" />
               <span className="text-xs font-black uppercase tracking-widest">
-                Build on Tezos
+                Built on Tezos
               </span>
             </div>
             <h1 className="mb-6 max-w-4xl text-balance text-5xl font-black uppercase leading-[0.95] tracking-tight sm:text-6xl xl:text-7xl animate-fade-in-up motion-reduce:animate-none">
@@ -253,7 +255,10 @@ export default function Home() {
                 to="/projects"
                 className={`inline-flex items-center justify-center border-2 border-tezforge-ink bg-tezforge-blue px-7 py-4 text-center text-sm font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_rgba(26,26,46,1)] transition-[transform,shadow] hover:-translate-y-0.5 hover:shadow-[4px_5px_0px_0px_rgba(26,26,46,1)] motion-reduce:transform-none ${focusStyles}`}
               >
-                Explore projects <span className="ml-2" aria-hidden="true">→</span>
+                Explore projects{" "}
+                <span className="ml-2" aria-hidden="true">
+                  →
+                </span>
               </Link>
               <Link
                 to="/dashboard/create"
@@ -269,19 +274,26 @@ export default function Home() {
               <span>01 / 03</span>
             </div>
             <div className="py-8">
-              <p className="mb-5 text-sm font-black uppercase tracking-[0.2em] text-tezforge-green">Token launches</p>
+              <p className="mb-5 text-sm font-black uppercase tracking-[0.2em] text-tezforge-green">
+                Token launches
+              </p>
               <p className="max-w-md text-4xl font-black uppercase leading-none tracking-tight sm:text-5xl lg:text-6xl">
                 Create a token. Start a presale.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-2 border-t-2 border-white/40 pt-5 text-xs font-black uppercase tracking-wider sm:text-sm">
-              <span>Discover</span><span>Back</span><span>Launch</span>
+              <span>Discover</span>
+              <span>Back</span>
+              <span>Launch</span>
             </div>
           </div>
         </section>
 
         {/* ── Stats ── */}
-        <section aria-label="Platform activity" className="mb-24 grid grid-cols-1 gap-4 stats-section md:grid-cols-3 lg:mb-28">
+        <section
+          aria-label="Platform activity"
+          className="mb-24 grid grid-cols-1 gap-4 stats-section md:grid-cols-3 lg:mb-28"
+        >
           <div className="stat-card flex min-h-48 flex-col justify-between border-2 border-tezforge-ink bg-white p-6 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] sm:p-7">
             <p className="mb-4 border-b border-tezforge-ink/25 pb-4 text-xs font-black uppercase tracking-widest">
               Total Projects
@@ -301,7 +313,9 @@ export default function Home() {
               ref={totalRaisedRef}
               className="break-words text-4xl font-black tabular-nums sm:text-5xl"
             >
-              {totalRaised.toLocaleString(undefined, { maximumFractionDigits: 4 })}
+              {totalRaised.toLocaleString(undefined, {
+                maximumFractionDigits: 4,
+              })}
             </p>
           </div>
           <div className="stat-card flex min-h-48 flex-col justify-between border-2 border-tezforge-ink bg-white p-6 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)] sm:p-7">
@@ -324,21 +338,27 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="how-card border-2 border-tezforge-ink bg-white p-7 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
-              <div className="mb-8 text-5xl font-black text-tezforge-blue">01</div>
+              <div className="mb-8 text-5xl font-black text-tezforge-blue">
+                01
+              </div>
               <h3 className="mb-3 text-2xl font-black uppercase">DISCOVER</h3>
               <p className="text-base font-bold leading-relaxed">
                 Explore live launches.
               </p>
             </div>
             <div className="how-card border-2 border-tezforge-ink bg-white p-7 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
-              <div className="mb-8 text-5xl font-black text-tezforge-blue">02</div>
+              <div className="mb-8 text-5xl font-black text-tezforge-blue">
+                02
+              </div>
               <h3 className="mb-3 text-2xl font-black uppercase">BACK</h3>
               <p className="text-base font-bold leading-relaxed">
                 Join a presale.
               </p>
             </div>
             <div className="how-card border-2 border-tezforge-ink bg-white p-7 shadow-[4px_4px_0px_0px_rgba(26,26,46,1)]">
-              <div className="mb-8 text-5xl font-black text-tezforge-blue">03</div>
+              <div className="mb-8 text-5xl font-black text-tezforge-blue">
+                03
+              </div>
               <h3 className="mb-3 text-2xl font-black uppercase">LAUNCH</h3>
               <p className="text-base font-bold leading-relaxed">
                 Create your own.

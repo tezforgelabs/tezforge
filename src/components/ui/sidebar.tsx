@@ -57,7 +57,6 @@ const SidebarContent = () => {
           </div>
           <span className="flex flex-col text-white font-semibold text-md uppercase tracking-wider">
             <span>Tezforge</span>
-            <span className="text-[10px] font-bold normal-case tracking-wide text-tezforge-green">Demo · no real funds</span>
           </span>
         </Link>
       </div>
@@ -248,7 +247,6 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
               </div>
               <span className="flex flex-col font-bold text-sm uppercase tracking-wider">
                 <span>Tezforge</span>
-                <span className="text-[10px] font-bold normal-case tracking-wide text-tezforge-blue">Demo · no real funds</span>
               </span>
             </Link>
             <button
