@@ -579,289 +579,418 @@ function ManagePresaleView({
   const presaleHasEnded = presale.claimEnabled || presale.refundsEnabled;
   const explorerHref = `${explorerUrl}/address/${presaleAddress}`;
 
+  const [cancelConfirming, setCancelConfirming] = useState(false);
+  useEffect(() => {
+    if (!cancelConfirming) return;
+    const timer = setTimeout(() => setCancelConfirming(false), 4000);
+    return () => clearTimeout(timer);
+  }, [cancelConfirming]);
+
+  const depositStepDone = hasDeposited;
+  const finalizeStepDone = presale.claimEnabled || presale.refundsEnabled;
+  const withdrawStepDone = false;
+  const currentStep = !depositStepDone
+    ? 1
+    : !finalizeStepDone
+      ? 2
+      : 3;
+
+  const stepBadge = (step: number, done: boolean) => {
+    if (done)
+      return "border-2 border-tezforge-ink bg-tezforge-green text-tezforge-ink";
+    if (step === currentStep)
+      return "border-2 border-tezforge-ink bg-tezforge-ink text-white";
+    return "border-2 border-tezforge-ink bg-white text-tezforge-ink/50";
+  };
+
+  const statusBadge = (() => {
+    switch (presale.status) {
+      case "live":
+        return { label: "Live", classes: "bg-tezforge-green" };
+      case "upcoming":
+        return { label: "Upcoming", classes: "bg-tezforge-blue text-white" };
+      case "cancelled":
+        return { label: "Cancelled", classes: "bg-tezforge-red text-white" };
+      case "finalized":
+        return { label: "Finalized", classes: "bg-tezforge-blue text-white" };
+      default:
+        return { label: "Ended", classes: "bg-tezforge-cream-dark" };
+    }
+  })();
+
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h3 className="text-xl font-bold">Presale is live on-chain!</h3>
-        <p>
-          Manage contract{" "}
-          <a
-            href={explorerHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline font-medium break-all sm:break-normal"
-          >
-            <span className="sm:hidden">
-              {presaleAddress.slice(0, 6)}...{presaleAddress.slice(-4)}
+    <div className="space-y-6">
+      {/* Status bar */}
+      <div className="border-2 border-tezforge-ink bg-white p-4 shadow-[3px_3px_0_0_rgba(26,26,46,1)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span
+              aria-hidden="true"
+              className="flex size-9 shrink-0 items-center justify-center border-2 border-tezforge-ink bg-tezforge-cream text-xs font-black uppercase"
+            >
+              {saleTokenSymbol.slice(0, 2)}
             </span>
-            <span className="hidden sm:inline">{presaleAddress}</span>
-          </a>
-        </p>
-        <p className="text-gray-500 mt-2">
-          Follow the steps below to prep your sale.
-        </p>
+            <div className="min-w-0">
+              <h3 className="truncate text-base font-black uppercase tracking-tight">
+                {saleTokenSymbol} Presale
+              </h3>
+              <a
+                href={explorerHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-xs text-tezforge-ink/60 underline underline-offset-2 hover:text-tezforge-blue"
+              >
+                {presaleAddress.slice(0, 6)}…{presaleAddress.slice(-4)} ↗
+              </a>
+            </div>
+          </div>
+          <span
+            className={`inline-flex shrink-0 items-center gap-1.5 border-2 border-tezforge-ink px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${statusBadge.classes}`}
+          >
+            {statusBadge.label}
+          </span>
+        </div>
+        {presale.hardCap > 0n && (
+          <div className="mt-3 flex items-center gap-3">
+            <div
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={presale.progress}
+              aria-label={`${saleTokenSymbol} presale funding progress`}
+              className="h-2.5 flex-1 overflow-hidden border border-tezforge-ink bg-tezforge-cream"
+            >
+              <div
+                className="h-full bg-tezforge-blue"
+                style={{ width: `${presale.progress}%` }}
+              />
+            </div>
+            <span className="shrink-0 text-sm font-black tabular-nums">
+              {presale.progress}%
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="border-4 border-[#1A1A2E] bg-[#F7F3EE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="text-lg font-black uppercase tracking-wider">
-            Step 1 · Deposit Sale Tokens
-          </p>
-          <span className="text-xs font-bold text-gray-600">
+      {/* Task stepper */}
+      <ol className="grid grid-cols-3 gap-2" aria-label="Setup progress">
+        {[
+          { step: 1, label: "Deposit tokens", done: depositStepDone },
+          { step: 2, label: "Finalize", done: finalizeStepDone },
+          { step: 3, label: "Withdraw", done: withdrawStepDone },
+        ].map(({ step, label, done }) => (
+          <li
+            key={step}
+            aria-current={step === currentStep ? "step" : undefined}
+            className={`flex items-center gap-2 border-2 border-tezforge-ink px-2.5 py-2 text-[11px] font-black uppercase tracking-wider shadow-[2px_2px_0_0_rgba(26,26,46,1)] sm:text-xs ${
+              step === currentStep
+                ? "bg-white"
+                : done
+                  ? "bg-tezforge-cream"
+                  : "bg-tezforge-cream/50 text-tezforge-ink/50"
+            }`}
+          >
+            <span
+              className={`flex size-5 shrink-0 items-center justify-center text-[10px] ${stepBadge(step, done)}`}
+            >
+              {done ? "✓" : step}
+            </span>
+            <span className="truncate">{label}</span>
+          </li>
+        ))}
+      </ol>
+
+      {/* Step 1 · Deposit */}
+      <section
+        aria-labelledby="step-deposit"
+        className={`border-2 border-tezforge-ink p-4 shadow-[3px_3px_0_0_rgba(26,26,46,1)] sm:p-5 ${
+          depositStepDone ? "bg-tezforge-cream/60" : "bg-tezforge-cream"
+        }`}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2
+            id="step-deposit"
+            className="flex items-center gap-2 text-base font-black uppercase tracking-wider"
+          >
+            Deposit Sale Tokens
+            {depositStepDone && (
+              <span className="border-2 border-tezforge-ink bg-tezforge-green px-1.5 py-0.5 text-[10px]">
+                ✓ Done
+              </span>
+            )}
+          </h2>
+          <span className="text-[11px] font-bold text-tezforge-ink/60">
             Fee: 2% of total token supply
           </span>
         </div>
-        <p className="text-sm text-gray-700">
-          Selling out your hard cap would require approximately{" "}
-          <span className="font-semibold">
-            {formatTokenDisplay(saleAmount)} {saleTokenSymbol}
-          </span>{" "}
-          for contributors.
-        </p>
-        <p className="text-sm text-gray-700">
-          The launchpad fee is 2% of the total token supply (
-          <span className="font-semibold">
-            {formatTokenDisplay(launchpadFee)} {saleTokenSymbol}
-          </span>
-          ). Approve and deposit the total below.
-        </p>
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-center">
-          <Button
-            onClick={handleApproveTokens}
-            disabled={
-              approveBusy ||
-              totalRequiredAmount === 0n ||
-              hasSufficientAllowance ||
-              hasDeposited ||
-              presaleHasEnded
-            }
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              hasSufficientAllowance || hasDeposited || presaleHasEnded
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-white text-[#1A1A2E]"
-            }`}
-          >
-            {approveBusy
-              ? "Approving..."
-              : presaleHasEnded
-                ? "Presale Ended"
-                : hasSufficientAllowance || hasDeposited
-                  ? "✓ Approved"
-                  : `Approve ${formatTokenDisplay(
-                      totalRequiredAmount,
-                    )} ${saleTokenSymbol}`}
-          </Button>
-          <Button
-            onClick={handleDepositTokens}
-            disabled={
-              depositBusy ||
-              saleAmount === 0n ||
-              !hasSufficientAllowance ||
-              hasDeposited ||
-              presaleHasEnded
-            }
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              hasDeposited || presaleHasEnded
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : hasSufficientAllowance
-                  ? "bg-[#0F59FF] text-[#1A1A2E] ring-4 ring-[#0F59FF] ring-opacity-50"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            {depositBusy
-              ? "Depositing..."
-              : presaleHasEnded
-                ? "Presale Ended"
-                : hasDeposited
-                  ? "✓ Deposited"
-                  : "Deposit & Cover Fee"}
-          </Button>
-        </div>
-        {(hasSufficientAllowance || hasDeposited) && (
-          <div className="mt-2 p-3 bg-green-50 border-2 border-green-400 rounded">
-            <p className="text-sm font-semibold text-green-800">
-              {hasDeposited
-                ? "✓ Tokens have been deposited successfully!"
-                : "✓ Approval confirmed. You can now deposit your tokens."}
+
+        {depositStepDone ? (
+          <p className="mt-3 text-sm font-medium text-tezforge-ink/70">
+            ✓ {formatTokenDisplay(saleAmount)} {saleTokenSymbol} deposited —
+            contributors are ready to buy.
+          </p>
+        ) : (
+          <>
+            <p className="mt-3 text-sm text-tezforge-ink/80">
+              Contributors receive{" "}
+              <span className="font-bold">
+                {formatTokenDisplay(saleAmount)} {saleTokenSymbol}
+              </span>
+              . Deposit that amount plus the{" "}
+              <span className="font-bold">
+                {formatTokenDisplay(launchpadFee)} {saleTokenSymbol}
+              </span>{" "}
+              fee.
             </p>
-          </div>
+
+            <ol className="mt-4 space-y-3">
+              <li className="flex flex-col gap-2 border-2 border-tezforge-ink bg-white p-3 shadow-[2px_2px_0_0_rgba(26,26,46,1)] sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wider">
+                    1. Approve
+                  </p>
+                  <p className="text-xs text-tezforge-ink/60">
+                    Allow the contract to take{" "}
+                    {formatTokenDisplay(totalRequiredAmount)} {saleTokenSymbol}
+                  </p>
+                </div>
+                {hasSufficientAllowance ? (
+                  <span className="shrink-0 border-2 border-tezforge-ink bg-tezforge-green px-2 py-1 text-[11px] font-black uppercase">
+                    ✓ Approved
+                  </span>
+                ) : (
+                  <Button
+                    onClick={handleApproveTokens}
+                    disabled={approveBusy || totalRequiredAmount === 0n}
+                    className="shrink-0 border-2 border-tezforge-ink bg-white text-xs font-black uppercase tracking-wider text-tezforge-ink shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
+                  >
+                    {approveBusy ? "Approving…" : `Approve`}
+                  </Button>
+                )}
+              </li>
+              <li className="flex flex-col gap-2 border-2 border-tezforge-ink bg-white p-3 shadow-[2px_2px_0_0_rgba(26,26,46,1)] sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wider">
+                    2. Deposit
+                  </p>
+                  <p className="text-xs text-tezforge-ink/60">
+                    Send {formatTokenDisplay(saleAmount)} {saleTokenSymbol} to
+                    the contract
+                  </p>
+                </div>
+                {hasDeposited ? (
+                  <span className="shrink-0 border-2 border-tezforge-ink bg-tezforge-green px-2 py-1 text-[11px] font-black uppercase">
+                    ✓ Deposited
+                  </span>
+                ) : (
+                  <Button
+                    onClick={handleDepositTokens}
+                    disabled={depositBusy || saleAmount === 0n || !hasSufficientAllowance}
+                    className="shrink-0 border-2 border-tezforge-ink bg-tezforge-blue text-xs font-black uppercase tracking-wider text-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none disabled:bg-gray-300 disabled:text-gray-500"
+                  >
+                    {depositBusy ? "Depositing…" : "Deposit"}
+                  </Button>
+                )}
+              </li>
+            </ol>
+          </>
         )}
-        <p className="text-xs text-gray-600">
-          Contributors receive {formatTokenDisplay(saleAmount)}{" "}
-          {saleTokenSymbol}. The launchpad fee is{" "}
-          {formatTokenDisplay(launchpadFee)} {saleTokenSymbol} (2% of total
-          supply).
-        </p>
-      </div>
+      </section>
 
       {presale.requiresWhitelist ? (
-        <div className="border-4 border-[#1A1A2E] bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] space-y-6">
-          <div className="flex items-center justify-between">
-            <p className="text-lg font-black uppercase tracking-wider">
-              Step 2 · Curate Your Whitelist
-            </p>
-            <span className="text-xs font-bold text-gray-600">
+        <section
+          aria-labelledby="step-whitelist"
+          className="border-2 border-tezforge-ink bg-white p-4 shadow-[3px_3px_0_0_rgba(26,26,46,1)] sm:p-5"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2
+              id="step-whitelist"
+              className="text-base font-black uppercase tracking-wider"
+            >
+              Whitelist
+            </h2>
+            <span className="text-[11px] font-bold text-tezforge-ink/60">
               Only these wallets can contribute
             </span>
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-3">
-              <Label className="font-bold uppercase text-xs">
-                Add a single wallet
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="wl-add" className="text-[11px] font-black uppercase tracking-wider">
+                Add a wallet
               </Label>
               <div className="flex gap-2">
                 <Input
-                  placeholder="0x..."
+                  id="wl-add"
+                  placeholder="0x…"
                   value={singleWhitelist}
                   onChange={(e) => setSingleWhitelist(e.target.value)}
+                  className="border-2 border-tezforge-ink font-mono text-xs"
                 />
                 <Button
                   type="button"
                   onClick={handleAddSingleWhitelist}
                   disabled={whitelistBusy || !singleWhitelist}
-                  className="border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+                  className="shrink-0 border-2 border-tezforge-ink bg-tezforge-green text-xs font-black uppercase tracking-wider text-tezforge-ink shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
                 >
                   {whitelistBusy && activeWhitelistAction === "addOne"
-                    ? "Adding..."
+                    ? "Adding…"
                     : "Add"}
                 </Button>
               </div>
             </div>
-            <div className="space-y-3">
-              <Label className="font-bold uppercase text-xs">
+            <div className="space-y-2">
+              <Label htmlFor="wl-remove" className="text-[11px] font-black uppercase tracking-wider">
                 Remove a wallet
               </Label>
               <div className="flex gap-2">
                 <Input
-                  placeholder="0x..."
+                  id="wl-remove"
+                  placeholder="0x…"
                   value={removeAddress}
                   onChange={(e) => setRemoveAddress(e.target.value)}
+                  className="border-2 border-tezforge-ink font-mono text-xs"
                 />
                 <Button
                   type="button"
                   onClick={handleRemoveWhitelist}
                   disabled={whitelistBusy || !removeAddress}
-                  className="border-4 border-[#1A1A2E] bg-[#FFD1DC] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+                  className="shrink-0 border-2 border-tezforge-ink bg-tezforge-cream-dark text-xs font-black uppercase tracking-wider text-tezforge-ink shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
                 >
                   {whitelistBusy && activeWhitelistAction === "remove"
-                    ? "Removing..."
+                    ? "Removing…"
                     : "Remove"}
                 </Button>
               </div>
             </div>
           </div>
-          <div className="space-y-3">
-            <Label className="font-bold uppercase text-xs">
-              Bulk upload (comma or line separated)
+          <div className="mt-4 space-y-2">
+            <Label htmlFor="wl-bulk" className="text-[11px] font-black uppercase tracking-wider">
+              Bulk upload — comma or line separated
             </Label>
             <Textarea
+              id="wl-bulk"
               rows={3}
-              placeholder="0xabc...
-0xdef..."
+              placeholder="0xabc…
+0xdef…"
               value={bulkWhitelist}
               onChange={(e) => setBulkWhitelist(e.target.value)}
+              className="border-2 border-tezforge-ink font-mono text-xs"
             />
             <Button
               type="button"
               onClick={handleBulkWhitelist}
               disabled={whitelistBusy || !bulkWhitelist}
-              className="border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
+              className="border-2 border-tezforge-ink bg-tezforge-green text-xs font-black uppercase tracking-wider text-tezforge-ink shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
             >
               {whitelistBusy && activeWhitelistAction === "bulkAdd"
-                ? "Uploading..."
+                ? "Uploading…"
                 : "Add Many"}
             </Button>
           </div>
-        </div>
+        </section>
       ) : (
-        <div className="border-4 border-[#1A1A2E] bg-[#E0F2FE] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
-          <p className="text-lg font-black uppercase tracking-wider">
-            Step 2 · Access
+        <section
+          aria-labelledby="step-access"
+          className="border-2 border-tezforge-ink bg-white p-4 shadow-[3px_3px_0_0_rgba(26,26,46,1)] sm:p-5"
+        >
+          <h2
+            id="step-access"
+            className="text-base font-black uppercase tracking-wider"
+          >
+            Access
+          </h2>
+          <p className="mt-2 text-sm text-tezforge-ink/70">
+            Open sale — anyone can contribute. Eligibility is checked on-chain
+            when a wallet submits a transaction.
           </p>
-          <p className="text-sm text-gray-700">
-            Contribution eligibility is checked against the contract when a
-            wallet submits a transaction.
-          </p>
-        </div>
+        </section>
       )}
 
-      <div className="border-4 border-[#1A1A2E] bg-white p-6 shadow-[4px_4px_0_rgba(26,26,46,1)] space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="text-lg font-black uppercase tracking-wider">
-            Step 3 · Finalize & Withdraw
-          </p>
-          <span className="text-xs font-bold text-gray-600">
-            3% fee when withdrawing proceeds
+      {/* Step 3 · Finalize / Cancel + Withdraw */}
+      <section
+        aria-labelledby="step-finalize"
+        className="border-2 border-tezforge-ink bg-white p-4 shadow-[3px_3px_0_0_rgba(26,26,46,1)] sm:p-5"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2
+            id="step-finalize"
+            className="text-base font-black uppercase tracking-wider"
+          >
+            After the Sale
+          </h2>
+          <span className="text-[11px] font-bold text-tezforge-ink/60">
+            3% fee on withdrawn proceeds
           </span>
         </div>
-        <p className="text-sm text-gray-700">
-          Once the sale ends, finalize to enable claiming. Cancelling will
-          refund contributors. Proceeds withdrawals automatically skim the 3%
-          launchpad fee before the transfer.
-        </p>
-        <div className="grid gap-3 md:grid-cols-2">
-          <Button
-            onClick={handleFinalize}
-            disabled={
-              ownerActionBusy || presale.claimEnabled || presale.refundsEnabled
-            }
-            className="border-4 border-[#1A1A2E] bg-[#0F59FF] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
-          >
-            {ownerActionBusy && activeOwnerAction === "finalize"
-              ? "Finalizing..."
-              : presale.claimEnabled
-                ? "Already Finalized"
-                : presale.refundsEnabled
-                  ? "Cancelled"
-                  : "Finalize Presale"}
-          </Button>
-          <Button
-            onClick={handleCancel}
-            disabled={ownerActionBusy}
-            className="border-4 border-[#1A1A2E] bg-[#FFD1DC] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)]"
-          >
-            {ownerActionBusy && activeOwnerAction === "cancel"
-              ? "Cancelling..."
-              : "Cancel Presale"}
-          </Button>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <Button
-            onClick={handleWithdrawProceeds}
-            disabled={ownerActionBusy || !presale.claimEnabled}
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              !presale.claimEnabled
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#64FE3E] text-[#1A1A2E]"
-            }`}
-          >
-            {ownerActionBusy && activeOwnerAction === "withdrawProceeds"
-              ? "Withdrawing..."
-              : "Withdraw Proceeds"}
-          </Button>
-          <Button
-            onClick={handleWithdrawTokens}
-            disabled={ownerActionBusy || !presale.claimEnabled}
-            className={`border-4 border-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] ${
-              !presale.claimEnabled
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#64FE3E] text-[#1A1A2E]"
-            }`}
-          >
-            {ownerActionBusy && activeOwnerAction === "withdrawTokens"
-              ? "Withdrawing..."
-              : "Withdraw Unsold Tokens"}
-          </Button>
-        </div>
-        {!presale.claimEnabled && (
-          <div className="mt-2 p-3 bg-yellow-50 border-2 border-yellow-400 rounded">
-            <p className="text-sm font-semibold text-yellow-800">
-              ⚠️ You must finalize the presale before withdrawing proceeds or
-              unsold tokens.
+
+        {presaleHasEnded ? (
+          <div className="mt-4 space-y-3">
+            <p className="text-sm font-medium text-tezforge-ink/70">
+              {presale.claimEnabled
+                ? "Sale finalized — contributors can claim, and you can withdraw."
+                : "Sale cancelled — contributors can claim refunds."}
             </p>
+            {presale.claimEnabled && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button
+                  onClick={handleWithdrawProceeds}
+                  disabled={ownerActionBusy}
+                  className="border-2 border-tezforge-ink bg-tezforge-green text-xs font-black uppercase tracking-wider text-tezforge-ink shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
+                >
+                  {ownerActionBusy && activeOwnerAction === "withdrawProceeds"
+                    ? "Withdrawing…"
+                    : "Withdraw Proceeds"}
+                </Button>
+                <Button
+                  onClick={handleWithdrawTokens}
+                  disabled={ownerActionBusy}
+                  className="border-2 border-tezforge-ink bg-tezforge-green text-xs font-black uppercase tracking-wider text-tezforge-ink shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
+                >
+                  {ownerActionBusy && activeOwnerAction === "withdrawTokens"
+                    ? "Withdrawing…"
+                    : "Withdraw Unsold Tokens"}
+                </Button>
+              </div>
+            )}
           </div>
+        ) : (
+          <>
+            <p className="mt-2 text-sm text-tezforge-ink/70">
+              When the sale ends, finalize it to enable claiming. Cancelling
+              instead refunds every contributor.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <Button
+                onClick={handleFinalize}
+                disabled={ownerActionBusy}
+                className="border-2 border-tezforge-ink bg-tezforge-blue text-xs font-black uppercase tracking-wider text-white shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none"
+              >
+                {ownerActionBusy && activeOwnerAction === "finalize"
+                  ? "Finalizing…"
+                  : "Finalize Presale"}
+              </Button>
+              <Button
+                onClick={
+                  cancelConfirming ? handleCancel : () => setCancelConfirming(true)
+                }
+                disabled={ownerActionBusy}
+                aria-live="polite"
+                className={`border-2 border-tezforge-ink text-xs font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none ${
+                  cancelConfirming
+                    ? "bg-tezforge-red text-white"
+                    : "bg-tezforge-cream-dark text-tezforge-ink"
+                }`}
+              >
+                {ownerActionBusy && activeOwnerAction === "cancel"
+                  ? "Cancelling…"
+                  : cancelConfirming
+                    ? "Tap again to confirm"
+                    : "Cancel Presale"}
+              </Button>
+            </div>
+          </>
         )}
-      </div>
+      </section>
     </div>
   );
 }

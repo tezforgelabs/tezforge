@@ -1,8 +1,7 @@
 import { AdminRoute } from "@/components/admin/AdminRoute";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { useReadContract } from "wagmi";
 import { useSetWhitelistedCreator } from "@/lib/hooks/useAdminActions";
 import { PresaleFactory } from "@/config";
@@ -11,13 +10,26 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { isAddress, type Address } from "viem";
-import { ArrowLeft, UserPlus, UserMinus, Check, X, Search } from "lucide-react";
+import { ArrowLeft, Check, X } from "lucide-react";
 import { getFriendlyTxErrorMessage } from "@/lib/utils/tx-errors";
+
+const inputClasses = "border-2 border-tezforge-ink font-mono text-xs";
+const buttonBase =
+  "border-2 border-tezforge-ink text-xs font-black uppercase tracking-wider shadow-[2px_2px_0_rgba(26,26,46,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(26,26,46,1)] motion-reduce:transform-none";
 
 function WhitelistChecker() {
   const [checkAddress, setCheckAddress] = useState("");
   const [addressToCheck, setAddressToCheck] = useState<Address | null>(null);
   const { presaleFactory } = useChainContracts();
+
+  const {
+    setWhitelistedCreator: setCreator,
+    isBusy: isSettingBusy,
+    isSuccess: isSetSuccess,
+    isError: isSetError,
+    error: setError,
+    reset: resetSet,
+  } = useSetWhitelistedCreator();
 
   const {
     data: isWhitelisted,
@@ -47,294 +59,183 @@ function WhitelistChecker() {
     }
   }, [addressToCheck, refetch]);
 
+  useEffect(() => {
+    if (isSetSuccess) {
+      const timer = window.setTimeout(() => {
+        toast.success("Whitelist updated");
+        resetSet();
+        void refetch();
+      }, 0);
+      return () => window.clearTimeout(timer);
+    }
+  }, [isSetSuccess, resetSet, refetch]);
+
+  useEffect(() => {
+    if (isSetError && setError) {
+      toast.error(getFriendlyTxErrorMessage(setError, "Whitelist update"));
+      resetSet();
+    }
+  }, [isSetError, setError, resetSet]);
+
+
+
   return (
-    <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-      <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-6">
-        <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
-          <Search className="w-5 h-5" />
-          Check Whitelist Status
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6 space-y-4">
-        <p className="text-sm text-gray-600">
-          Enter an address to check if it's whitelisted to create presales.
-        </p>
-        <div className="flex gap-4">
+    <section
+      aria-labelledby="check-heading"
+      className="border-2 border-tezforge-ink bg-white shadow-[3px_3px_0_0_rgba(26,26,46,1)]"
+    >
+      <div className="border-b-2 border-tezforge-ink px-4 py-3 sm:px-5">
+        <h2
+          id="check-heading"
+          className="text-base font-black uppercase tracking-wider"
+        >
+          Check &amp; Manage Creator
+        </h2>
+      </div>
+      <div className="p-4 sm:p-5">
+        <Label
+          htmlFor="wl-check"
+          className="text-[11px] font-black uppercase tracking-wider text-tezforge-ink/70"
+        >
+          Creator address
+        </Label>
+        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
           <Input
-            placeholder="Address to check (0x...)"
+            id="wl-check"
+            placeholder="0x…"
             value={checkAddress}
             onChange={(e) => setCheckAddress(e.target.value)}
-            className="border-2 border-[#1A1A2E] font-mono"
+            className={inputClasses}
           />
           <Button
             onClick={handleCheck}
             disabled={!checkAddress}
-            className="border-4 border-[#1A1A2E] bg-white text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-gray-100 whitespace-nowrap"
+            className={`shrink-0 bg-white text-tezforge-ink ${buttonBase}`}
           >
             Check
           </Button>
         </div>
-        {addressToCheck && !isLoading && (
+
+        {addressToCheck && (
           <div
-            className={`p-4 border-2 border-[#1A1A2E] ${
-              isWhitelisted ? "bg-green-100" : "bg-red-100"
-            }`}
+            role="status"
+            aria-atomic="true"
+            className="mt-4 border-2 border-tezforge-ink bg-tezforge-cream p-3"
           >
-            <div className="flex items-center gap-3">
-              {isWhitelisted ? (
-                <Check className="w-6 h-6 text-green-600" />
-              ) : (
-                <X className="w-6 h-6 text-red-600" />
-              )}
-              <div>
-                <p className="font-bold">
-                  {isWhitelisted ? "Whitelisted" : "Not Whitelisted"}
-                </p>
-                <p className="font-mono text-sm text-gray-600 break-all">
-                  {addressToCheck}
-                </p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                {isLoading ? (
+                  <span
+                    aria-hidden="true"
+                    className="size-6 animate-pulse bg-tezforge-cream-dark"
+                  />
+                ) : isWhitelisted ? (
+                  <span
+                    aria-hidden="true"
+                    className="flex size-6 shrink-0 items-center justify-center border-2 border-tezforge-ink bg-tezforge-green"
+                  >
+                    <Check className="size-4" />
+                  </span>
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="flex size-6 shrink-0 items-center justify-center border-2 border-tezforge-ink bg-tezforge-red text-white"
+                  >
+                    <X className="size-4" />
+                  </span>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-black uppercase tracking-wider">
+                    {isLoading
+                      ? "Checking…"
+                      : isWhitelisted
+                        ? "Whitelisted"
+                        : "Not whitelisted"}
+                  </p>
+                  <p
+                    className="truncate font-mono text-xs text-tezforge-ink/60"
+                    title={addressToCheck}
+                  >
+                    {addressToCheck}
+                  </p>
+                </div>
               </div>
+              {!isLoading &&
+                (isWhitelisted ? (
+                  <Button
+                    onClick={() => setCreator(addressToCheck as Address, false)}
+                    disabled={isSettingBusy}
+                    className={`shrink-0 bg-tezforge-cream-dark text-tezforge-ink ${buttonBase}`}
+                  >
+                    {isSettingBusy ? "Updating…" : "Remove"}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => setCreator(addressToCheck as Address, true)}
+                    disabled={isSettingBusy}
+                    className={`shrink-0 bg-tezforge-green text-tezforge-ink ${buttonBase}`}
+                  >
+                    {isSettingBusy ? "Updating…" : "Whitelist"}
+                  </Button>
+                ))}
             </div>
           </div>
         )}
-        {isLoading && (
-          <div className="p-4 border-2 border-[#1A1A2E] bg-gray-100">
-            <p className="text-gray-500">Checking...</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function WhitelistManager() {
-  const [addAddress, setAddAddress] = useState("");
-  const [removeAddress, setRemoveAddress] = useState("");
-
-  const {
-    setWhitelistedCreator: addCreator,
-    isBusy: isAdding,
-    isSuccess: isAddSuccess,
-    isError: isAddError,
-    error: addError,
-    reset: resetAdd,
-  } = useSetWhitelistedCreator();
-
-  const {
-    setWhitelistedCreator: removeCreator,
-    isBusy: isRemoving,
-    isSuccess: isRemoveSuccess,
-    isError: isRemoveError,
-    error: removeError,
-    reset: resetRemove,
-  } = useSetWhitelistedCreator();
-
-  // Add success/error handlers
-  useEffect(() => {
-    if (isAddSuccess) {
-      const timer = window.setTimeout(() => {
-        toast.success("Creator added to whitelist");
-        setAddAddress("");
-        resetAdd();
-      }, 0);
-      return () => window.clearTimeout(timer);
-    }
-  }, [isAddSuccess, resetAdd]);
-
-  useEffect(() => {
-    if (isAddError && addError) {
-      toast.error(getFriendlyTxErrorMessage(addError, "Whitelist update"));
-      resetAdd();
-    }
-  }, [isAddError, addError, resetAdd]);
-
-  useEffect(() => {
-    if (isRemoveSuccess) {
-      const timer = window.setTimeout(() => {
-        toast.success("Creator removed from whitelist");
-        setRemoveAddress("");
-        resetRemove();
-      }, 0);
-      return () => window.clearTimeout(timer);
-    }
-  }, [isRemoveSuccess, resetRemove]);
-
-  useEffect(() => {
-    if (isRemoveError && removeError) {
-      toast.error(getFriendlyTxErrorMessage(removeError, "Whitelist update"));
-      resetRemove();
-    }
-  }, [isRemoveError, removeError, resetRemove]);
-
-  const handleAdd = () => {
-    if (!addAddress || !isAddress(addAddress)) {
-      toast.error("Please enter a valid address");
-      return;
-    }
-    addCreator(addAddress as Address, true);
-  };
-
-  const handleRemove = () => {
-    if (!removeAddress || !isAddress(removeAddress)) {
-      toast.error("Please enter a valid address");
-      return;
-    }
-    removeCreator(removeAddress as Address, false);
-  };
-
-  return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {/* Add to Whitelist */}
-      <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#64FE3E] p-6">
-          <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
-            <UserPlus className="w-5 h-5" />
-            Add to Whitelist
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <p className="text-sm text-gray-600">
-            Add an address to allow them to create presales directly.
-          </p>
-          <Input
-            placeholder="Creator address (0x...)"
-            value={addAddress}
-            onChange={(e) => setAddAddress(e.target.value)}
-            className="border-2 border-[#1A1A2E] font-mono"
-          />
-          <Button
-            onClick={handleAdd}
-            disabled={isAdding || !addAddress}
-            className="w-full border-4 border-[#1A1A2E] bg-[#64FE3E] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#7ADF7A]"
-          >
-            {isAdding ? "Adding..." : "Add Creator"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Remove from Whitelist */}
-      <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-        <CardHeader className="border-b-2 border-[#1A1A2E] bg-[#FFB6C1] p-6">
-          <CardTitle className="font-black uppercase tracking-wider flex items-center gap-2">
-            <UserMinus className="w-5 h-5" />
-            Remove from Whitelist
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <p className="text-sm text-gray-600">
-            Remove an address from the whitelist to revoke their presale
-            creation rights.
-          </p>
-          <Input
-            placeholder="Creator address (0x...)"
-            value={removeAddress}
-            onChange={(e) => setRemoveAddress(e.target.value)}
-            className="border-2 border-[#1A1A2E] font-mono"
-          />
-          <Button
-            onClick={handleRemove}
-            disabled={isRemoving || !removeAddress}
-            className="w-full border-4 border-[#1A1A2E] bg-[#FFB6C1] text-[#1A1A2E] font-black uppercase tracking-wider shadow-[3px_3px_0_rgba(26,26,46,1)] hover:bg-[#FFA0AB]"
-          >
-            {isRemoving ? "Removing..." : "Remove Creator"}
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function RecentWhitelistEvents() {
-  // This could be expanded to fetch CreatorWhitelisted events from the factory
-  // For now, show a placeholder
-  return (
-    <Card className="border-4 border-[#1A1A2E] shadow-[4px_4px_0_rgba(26,26,46,1)] p-0 gap-0">
-      <CardHeader className="border-b-2 border-[#1A1A2E] bg-white p-6">
-        <CardTitle className="font-black uppercase tracking-wider">
-          Whitelist Information
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <div className="space-y-4">
-          <div className="p-4 bg-gray-50 border-2 border-gray-200">
-            <p className="text-sm text-gray-600">
-              <strong>How whitelisting works:</strong>
-            </p>
-            <ul className="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
-              <li>
-                Whitelisted addresses can create presales directly without
-                submitting a project first
-              </li>
-              <li>
-                Non-whitelisted users must submit a project proposal before they
-                can create a presale
-              </li>
-              <li>
-                Only the factory owner can add or remove addresses from the
-                whitelist
-              </li>
-              <li>
-                Whitelist status is stored on-chain in the PresaleFactory
-                contract
-              </li>
-            </ul>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-[#64FE3E] text-[#1A1A2E] font-bold">
-              Whitelisted
-            </Badge>
-            <span className="text-sm text-gray-600">
-              Can create presales directly
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-[#FFB6C1] text-[#1A1A2E] font-bold">
-              Not Whitelisted
-            </Badge>
-            <span className="text-sm text-gray-600">
-              Must submit project first
-            </span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
 function AdminWhitelistContent() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
+    <div className="container mx-auto max-w-3xl px-4 py-10 text-tezforge-ink sm:py-12">
+      <header className="mb-8">
         <Link
           to="/admin"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A2E] mb-4"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-black uppercase tracking-wider text-tezforge-ink/60 transition-colors hover:text-tezforge-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tezforge-blue"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="font-bold">Back to Admin</span>
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Back to Admin
         </Link>
-        <div className="border-b-4 border-[#1A1A2E] bg-[#64FE3E] p-6 shadow-[4px_4px_0_rgba(26,26,46,1)]">
-          <h1 className="text-4xl font-black uppercase tracking-wider">
-            Whitelist Creators
-          </h1>
-          <p className="text-sm text-gray-700 mt-2">
-            Manage which addresses can create presales directly.
-          </p>
+        <div className="mb-3">
+          <span className="inline-block border-2 border-tezforge-ink bg-tezforge-green px-3 py-1 text-xs font-black uppercase tracking-widest">
+            Admin
+          </span>
         </div>
-      </div>
+        <h1 className="text-4xl font-black uppercase leading-none tracking-tight sm:text-5xl">
+          Whitelist Creators
+        </h1>
+        <p className="mt-3 text-sm font-medium text-tezforge-ink/70 sm:text-base">
+          Manage which addresses can create presales directly.
+        </p>
+      </header>
 
-      {/* Checker */}
-      <div className="mb-8">
-        <WhitelistChecker />
-      </div>
+      <WhitelistChecker />
 
-      {/* Manager */}
-      <div className="mb-8">
-        <WhitelistManager />
-      </div>
-
-      {/* Info */}
-      <RecentWhitelistEvents />
+      <footer className="mt-6 border-2 border-dashed border-tezforge-ink bg-white/50 px-4 py-3 text-xs text-tezforge-ink/70">
+        <p className="font-black uppercase tracking-wider text-tezforge-ink/80">
+          How whitelisting works
+        </p>
+        <p className="mt-1">
+          Whitelisted addresses skip the project proposal and create presales
+          directly. Status is stored on-chain in the PresaleFactory contract;
+          only the factory owner can change it.
+        </p>
+        <div className="mt-2 flex flex-wrap gap-4">
+          <span className="flex items-center gap-1.5">
+            <span className="border-2 border-tezforge-ink bg-tezforge-green px-1.5 py-0.5 text-[10px] font-black uppercase">
+              Whitelisted
+            </span>
+            can create presales directly
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="border-2 border-tezforge-ink bg-tezforge-cream-dark px-1.5 py-0.5 text-[10px] font-black uppercase">
+              Not whitelisted
+            </span>
+            must submit project first
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }
